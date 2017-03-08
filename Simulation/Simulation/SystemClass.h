@@ -1,4 +1,6 @@
 #pragma once
+#include "ConfigClass.h"
+
 class SystemClass
 {
 public:
@@ -15,14 +17,20 @@ public:
 
 private:
 	bool Render();
-	void InitializeWindow(int& screenWidth, int& screenHeight);
+	bool InitializeWindow(int screenWidth, int screenHeight);
 	void ShutdownWindows();
 	void CalculateFrameStats();
+
+private:
 
 	LPCWSTR m_applicationName;
 	HINSTANCE m_hinstance;
 	HWND m_hwnd;
-	std::wstring mMainWndCaption;
+	//std::wstring mMainWndCaption;
+
+	//Configuration
+	ConfigClass* m_Config;
+	
 };
 
 static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);

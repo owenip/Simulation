@@ -14,12 +14,34 @@ ConfigClass::~ConfigClass()
 {
 }
 
-bool ConfigClass::Initialise()
+bool ConfigClass::Initialize()
 {
-	FullScreen = false;
-	screenWidth = 1024;
-	screenHeight = 768;
+	if (!ReadConfigFile())
+	{
+		FullScreen = false;
+		screenWidth = 1024;
+		screenHeight = 768;
+	}
 	return true;
+}
+
+void ConfigClass::Shutdown()
+{
+}
+
+bool ConfigClass::CheckFullScreen() const
+{
+	return FullScreen;
+}
+
+int ConfigClass::GetScreenWidth() const
+{
+	return screenWidth;
+}
+
+int ConfigClass::GetScreenHeight() const
+{
+	return screenHeight;
 }
 
 bool ConfigClass::ReadConfigFile()

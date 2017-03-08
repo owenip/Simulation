@@ -36,7 +36,7 @@ using namespace DirectX;
 
 
 // Win32
-#include <windows.h>
+#include <Winuser.h>
 #include <mmsystem.h>
 #include <wrl.h>
 #include <dinput.h>
@@ -52,7 +52,7 @@ using namespace DirectX;
 #include <vector>
 
 //Global
-const LPCTSTR mMainWndCaption =  L"08024ACW";
+const LPCTSTR mMainWndCaption = L"08025ACW";
 
 
 namespace DX

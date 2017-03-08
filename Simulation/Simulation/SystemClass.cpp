@@ -6,7 +6,8 @@
 SystemClass::SystemClass():
 	m_applicationName(nullptr),
 	m_hinstance(nullptr),
-	m_hwnd(nullptr)
+	m_hwnd(nullptr),
+	m_Config(nullptr)
 {
 }
 
@@ -17,32 +18,83 @@ SystemClass::~SystemClass()
 }
 
 bool SystemClass::Initialize()
-{
-	int screenWidth, screenHeight;
-	bool result;
+{	
+	bool result = false;
 
-	screenWidth = 0;
-	screenHeight = 0;
+	m_Config = new ConfigClass;
+	if (!m_Config)
+	{
+		MessageBoxA(NULL, "Unable to initialise the config class.", "Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	result = m_Config->Initialize();
+	if (!result)
+	{
+		MessageBoxA(NULL, "Unable to initialise the config class.", "Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	
+	if (!InitializeWindow(m_Config->GetScreenWidth(), m_Config->GetScreenHeight()))
+	{
+		MessageBoxA(NULL, "Unable to initialise the window.", "Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
 
-	InitializeWindow(screenWidth, screenHeight);
-
-	return false;
+	return true;
 }
 
 void SystemClass::Shutdown()
 {
+	if (m_Config)
+	{
+		m_Config->Shutdown();
+		delete m_Config;
+		m_Config = 0;
+	}
 }
 
 void SystemClass::Run()
 {
+	bool done, result;
+
+	MSG msg;
+	// Initialize the message structure.
+	ZeroMemory(&msg, sizeof(MSG));
+
+	// Loop until there is a quit message from the window or the user.
+	done = false;
+	while (!done)
+	{
+		// Handle the windows messages.
+		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+		// If windows signals to end the application then exit out.
+		if (msg.message == WM_QUIT)
+		{
+			done = true;
+		}
+		else
+		{
+			CalculateFrameStats();
+			
+			result = Render();
+			if (!result)
+			{
+				done = true;
+			}
+		}
+	}
 }
 
 bool SystemClass::Render()
 {
-	return false;
+	return true;
 }
 
-void SystemClass::InitializeWindow(int & screenWidth, int & screenHeight)
+bool SystemClass::InitializeWindow(int screenWidth, int screenHeight)
 {
 	WNDCLASSEX wc;
 	DEVMODE dmScreenSettings;
@@ -74,14 +126,17 @@ void SystemClass::InitializeWindow(int & screenWidth, int & screenHeight)
 	wc.cbSize = sizeof(WNDCLASSEX);
 
 	// Register the window class.
-	RegisterClassEx(&wc);
+	if (!RegisterClassEx(&wc))
+	{
+		MessageBoxA(NULL, "Unable to register the window class.", "Error", MB_OK | MB_ICONERROR);
+	}
 
 	// Determine the resolution of the clients desktop screen.
-	screenWidth = GetSystemMetrics(SM_CXSCREEN);
-	screenHeight = GetSystemMetrics(SM_CYSCREEN);
+	//screenWidth = GetSystemMetrics(SM_CXSCREEN);
+	//screenHeight = GetSystemMetrics(SM_CYSCREEN);
 
 	// Setup the screen settings depending on whether it is running in full screen or in windowed mode.
-	if (FULL_SCREEN)
+	if (m_Config->CheckFullScreen())
 	{
 		// If full screen set the screen to maximum size of the users desktop and 32bit.
 		memset(&dmScreenSettings, 0, sizeof(dmScreenSettings));
@@ -98,11 +153,7 @@ void SystemClass::InitializeWindow(int & screenWidth, int & screenHeight)
 		posX = posY = 0;
 	}
 	else
-	{
-		// If windowed then set it to 800x600 resolution.
-		screenWidth = 800;
-		screenHeight = 600;
-
+	{	
 		// Place the window in the middle of the screen.
 		posX = (GetSystemMetrics(SM_CXSCREEN) - screenWidth) / 2;
 		posY = (GetSystemMetrics(SM_CYSCREEN) - screenHeight) / 2;
@@ -113,6 +164,13 @@ void SystemClass::InitializeWindow(int & screenWidth, int & screenHeight)
 		WS_OVERLAPPEDWINDOW,
 		posX, posY, screenWidth, screenHeight, nullptr, nullptr, m_hinstance, nullptr);
 
+	//Check if window created
+	if (!m_hwnd)
+	{
+		MessageBoxA(NULL, "Could not create the render window.", "Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+
 	// Bring the window up on the screen and set it as main focus.
 	ShowWindow(m_hwnd, SW_SHOW);
 	SetForegroundWindow(m_hwnd);
@@ -121,11 +179,29 @@ void SystemClass::InitializeWindow(int & screenWidth, int & screenHeight)
 	// Hide the mouse cursor.
 	//ShowCursor(false);
 
-	return;
+	return true;
 }
 
 void SystemClass::ShutdownWindows()
 {
+	//ShowCursor(true);
+	if (m_Config->CheckFullScreen())
+	{
+		ChangeDisplaySettings(nullptr, 0);
+	}
+
+	// Remove the window.
+	DestroyWindow(m_hwnd);
+	m_hwnd = nullptr;
+
+	// Remove the application instance.
+	UnregisterClass(m_applicationName, m_hinstance);
+	m_hinstance = nullptr;
+
+	// Release the pointer to this class.
+	ApplicationHandle = nullptr;
+
+	return;
 }
 
 void SystemClass::CalculateFrameStats()
@@ -137,31 +213,31 @@ LRESULT CALLBACK SystemClass::MessageHandler(const HWND  hwnd, const UINT umsg, 
 {
 	switch (umsg)
 	{
-	case WM_DESTROY:
-	{
-		PostQuitMessage(0);
-		return 0;
-	}
+		case WM_DESTROY:
+		{
+			PostQuitMessage(0);
+			return 0;
+		}
 
-	// Check if the window is being closed.
-	case WM_CLOSE:
-	{
-		PostQuitMessage(0);
-		return 0;
-	}
+		// Check if the window is being closed.
+		case WM_CLOSE:
+		{
+			PostQuitMessage(0);
+			return 0;
+		}
 
-	case WM_KEYDOWN:
-	case WM_SYSKEYDOWN:
-	case WM_KEYUP:
-	case WM_SYSKEYUP:
-		Keyboard::ProcessMessage(umsg, wparam, lparam);
-		break;
+		case WM_KEYDOWN:
+		case WM_SYSKEYDOWN:
+		case WM_KEYUP:
+		case WM_SYSKEYUP:
+			Keyboard::ProcessMessage(umsg, wparam, lparam);
+			break;
 
 		// Any other messages send to the default message handler as our application won't make use of them.
-	default:
-	{
-		return DefWindowProc(hwnd, umsg, wparam, lparam);
-	}
+		default:
+		{
+			return DefWindowProc(hwnd, umsg, wparam, lparam);
+		}
 	}
 }
 
@@ -174,24 +250,24 @@ LRESULT CALLBACK WndProc(const HWND hwnd, const UINT umessage, const WPARAM wpar
 	switch (umessage)
 	{
 		// Check if the window is being destroyed.
-	case WM_DESTROY:
-	{
-		PostQuitMessage(0);
-		return 0;
-	}
+		case WM_DESTROY:
+		{
+			PostQuitMessage(0);
+			return 0;
+		}
 
-	// Check if the window is being closed.
-	case WM_CLOSE:
-	{
-		PostQuitMessage(0);
-		return 0;
-	}
+		// Check if the window is being closed.
+		case WM_CLOSE:
+		{
+			PostQuitMessage(0);
+			return 0;
+		}
 
-	// All other messages pass to the message handler in the system class.
-	default:
-	{
-		return ApplicationHandle->MessageHandler(hwnd, umessage, wparam, lparam);
-	}
+		// All other messages pass to the message handler in the system class.
+		default:
+		{
+			return ApplicationHandle->MessageHandler(hwnd, umessage, wparam, lparam);
+		}
 	}
 }
 

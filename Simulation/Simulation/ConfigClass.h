@@ -5,7 +5,12 @@ public:
 	ConfigClass();
 	~ConfigClass();
 
-	bool Initialise();
+	bool Initialize();
+	void Shutdown();
+
+	bool CheckFullScreen() const;
+	int GetScreenWidth() const;
+	int GetScreenHeight() const;
 
 private:
 	bool ReadConfigFile();
