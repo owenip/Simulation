@@ -1,0 +1,11 @@
+﻿  SystemClass.cpp
+  c:\program files (x86)\windows kits\8.1\include\um\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
+c:\temp\git\simulation\simulation\simulation\systemclass.cpp(22): warning C4101: 'result': unreferenced local variable
+c:\temp\git\simulation\simulation\simulation\systemclass.cpp(84): error C2065: 'FULL_SCREEN': undeclared identifier
+c:\temp\git\simulation\simulation\simulation\systemclass.cpp(114): error C2664: 'HWND CreateWindowExW(DWORD,LPCWSTR,LPCWSTR,DWORD,int,int,int,int,HWND,HMENU,HINSTANCE,LPVOID)': cannot convert argument 3 from 'std::wstring' to 'LPCWSTR'
+  c:\temp\git\simulation\simulation\simulation\systemclass.cpp(114): note: No user-defined-conversion operator available that can perform this conversion, or the operator cannot be called
+  pch.cpp
+  c:\program files (x86)\windows kits\8.1\include\um\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
+  main.cpp
+  c:\program files (x86)\windows kits\8.1\include\um\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
+  Generating Code...
