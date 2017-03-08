@@ -80,7 +80,7 @@ void SystemClass::Run()
 		{
 			CalculateFrameStats();
 			
-			result = Render();
+			result = Update();
 			if (!result)
 			{
 				done = true;
@@ -89,7 +89,7 @@ void SystemClass::Run()
 	}
 }
 
-bool SystemClass::Render()
+bool SystemClass::Update()
 {
 	return true;
 }

@@ -16,7 +16,7 @@ public:
 	LRESULT CALLBACK MessageHandler(HWND, UINT, WPARAM, LPARAM) const;
 
 private:
-	bool Render();
+	bool Update();
 	bool InitializeWindow(int screenWidth, int screenHeight);
 	void ShutdownWindows();
 	void CalculateFrameStats();
