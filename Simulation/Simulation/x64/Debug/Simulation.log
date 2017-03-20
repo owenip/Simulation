@@ -1,5 +1,2 @@
-﻿  SystemClass.cpp
-  c:\program files (x86)\windows kits\8.1\include\um\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
-c:\temp\git\simulation\simulation\simulation\systemclass.cpp(242): warning C4715: 'SystemClass::MessageHandler': not all control paths return a value
-  Simulation.vcxproj -> C:\Temp\Git\Simulation\Simulation\x64\Debug\Simulation.exe
+﻿  Simulation.vcxproj -> C:\Temp\Git\Simulation\Simulation\x64\Debug\Simulation.exe
   Simulation.vcxproj -> C:\Temp\Git\Simulation\Simulation\x64\Debug\Simulation.pdb (Partial PDB)

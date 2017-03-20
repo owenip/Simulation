@@ -28,7 +28,7 @@ private:
 	HWND m_hwnd;
 	//std::wstring mMainWndCaption;
 
-	//Configuration
+	//Configuration Class
 	ConfigClass* m_Config;
 	
 };

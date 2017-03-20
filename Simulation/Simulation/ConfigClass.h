@@ -14,9 +14,15 @@ public:
 
 private:
 	bool ReadConfigFile();
+	void StoreValue(string &key, string &value);
 
+	//Set 
+	void SetDefault();
+	void SetDefault(string &key);
 private:
-	bool FullScreen;
+	bool fullScreen;
 	int screenWidth, screenHeight;
+
+	const std::string configFileName = "config.txt";
 };
 

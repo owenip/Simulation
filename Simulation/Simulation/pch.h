@@ -11,6 +11,7 @@
 
 
 using namespace DirectX;
+using namespace std;
 
 //DXTK
 #include "CommonStates.h"
