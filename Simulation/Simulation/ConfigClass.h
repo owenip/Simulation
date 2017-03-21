@@ -16,9 +16,10 @@ private:
 	bool ReadConfigFile();
 	void StoreValue(string &key, string &value);
 
-	//Set 
-	void SetDefault();
+	//Set Default Value
 	void SetDefault(string &key);
+	void SetDefaultAll();
+
 private:
 	bool fullScreen;
 	int screenWidth, screenHeight;

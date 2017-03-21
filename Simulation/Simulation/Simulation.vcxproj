@@ -113,6 +113,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ConfigClass.cpp" />
+    <ClCompile Include="GraphicClass.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="SystemClass.cpp" />
@@ -122,6 +123,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ConfigClass.h" />
+    <ClInclude Include="GraphicClass.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="SystemClass.h" />
   </ItemGroup>

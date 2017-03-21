@@ -21,6 +21,7 @@ bool SystemClass::Initialize()
 {	
 	bool result = false;
 
+	//Initialise Config Class
 	m_Config = new ConfigClass;
 	if (!m_Config)
 	{
@@ -34,6 +35,7 @@ bool SystemClass::Initialize()
 		return false;
 	}
 	
+	//Initialse Window 
 	if (!InitializeWindow(m_Config->GetScreenWidth(), m_Config->GetScreenHeight()))
 	{
 		MessageBoxA(NULL, "Unable to initialise the window.", "Error", MB_OK | MB_ICONERROR);

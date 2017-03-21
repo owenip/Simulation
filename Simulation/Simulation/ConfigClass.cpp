@@ -19,9 +19,7 @@ bool ConfigClass::Initialize()
 {
 	if (!ReadConfigFile())
 	{
-		//fullScreen = false;
-		//screenWidth = 1024;
-		//screenHeight = 768;
+		SetDefaultAll();
 	}
 	return true;
 }
@@ -57,18 +55,22 @@ bool ConfigClass::ReadConfigFile()
 	else
 	{
 		string line;
+		//Get line
 		while (getline(configfile, line))
 		{
+			//Get key from the line
 			istringstream is_line(line);
 			string key;
 			if (getline(is_line, key, '='))
 			{
+				//Get Value from line
 				string value;
 				if (getline(is_line, value))
-				{
+				{					
 					StoreValue(key, value);
 				}
 			}
+			configfile.close();
 		}
 		return true;
 	}
@@ -84,7 +86,7 @@ void ConfigClass::StoreValue(string &key, string &value)
 		}
 		else
 		{
-			fullScreen = false;
+			SetDefault(key);
 		}
 	}
 	else if (key == "ScreenWidth")
@@ -95,7 +97,7 @@ void ConfigClass::StoreValue(string &key, string &value)
 		}
 		catch (const std::invalid_argument& ia)
 		{
-			screenWidth = 800;
+			SetDefault(key);
 			std::cerr << "Invalid argument: " << ia.what() << '\n';
 		}
 	}
@@ -107,9 +109,35 @@ void ConfigClass::StoreValue(string &key, string &value)
 		}
 		catch (const std::invalid_argument& ia)
 		{
-			screenHeight = 600;
+			SetDefault(key);
 			std::cerr << "Invalid argument: " << ia.what() << '\n';
 		}
 	}
 	return;
 }
+
+
+void ConfigClass::SetDefault(string & key)
+{
+	if (key == "FullScreen")
+	{
+		fullScreen = false;		
+	}
+	else if (key == "ScreenWidth")
+	{
+		screenWidth = 800;
+	}
+	else if (key == "ScreenHeight")
+	{	
+		screenHeight = 600;		
+	}
+}
+
+void ConfigClass::SetDefaultAll()
+{
+	SetDefault(string("FullScreen"));
+	SetDefault(string("ScreenWidth"));
+	SetDefault(string("ScreenHeight"));
+}
+
+
