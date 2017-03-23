@@ -1,2 +1,4 @@
-﻿  Simulation.vcxproj -> C:\Temp\Git\Simulation\Simulation\x64\Debug\Simulation.exe
-  Simulation.vcxproj -> C:\Temp\Git\Simulation\Simulation\x64\Debug\Simulation.pdb (Partial PDB)
+﻿  ConfigClass.cpp
+  c:\program files (x86)\windows kits\8.1\include\um\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
+  Simulation.vcxproj -> C:\Temp\Github\Simulation\Simulation\x64\Debug\Simulation.exe
+  Simulation.vcxproj -> C:\Temp\Github\Simulation\Simulation\x64\Debug\Simulation.pdb (Partial PDB)

@@ -69,9 +69,9 @@ bool ConfigClass::ReadConfigFile()
 				{					
 					StoreValue(key, value);
 				}
-			}
-			configfile.close();
+			}			
 		}
+		configfile.close();
 		return true;
 	}
 }

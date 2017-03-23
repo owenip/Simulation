@@ -113,6 +113,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ConfigClass.cpp" />
+    <ClCompile Include="D3DClass.cpp" />
     <ClCompile Include="GraphicClass.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="pch.cpp" />
@@ -123,12 +124,17 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ConfigClass.h" />
+    <ClInclude Include="D3DClass.h" />
     <ClInclude Include="GraphicClass.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="SystemClass.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="config.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Simulation.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
