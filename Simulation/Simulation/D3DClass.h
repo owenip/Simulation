@@ -13,5 +13,12 @@ public:
 private:
 	//Config Class
 	ConfigClass *mConfig;
+
+	//DirectX
+	IDXGISwapChain* mSwapChain;
+	ID3D11Device* mDevice;
+	ID3D11DeviceContext* mDeviceContext;
+
+
 };
 
