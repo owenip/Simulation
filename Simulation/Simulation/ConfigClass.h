@@ -21,9 +21,10 @@ private:
 	void SetDefaultAll();
 
 private:
-	bool fullScreen;
-	int screenWidth, screenHeight;
-
 	const std::string configFileName = "config.txt";
+
+	bool mFullScreen;
+	int mScreenWidth, mScreenHeight;
+	
 };
 

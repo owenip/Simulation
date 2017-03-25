@@ -3,9 +3,9 @@
 
 
 ConfigClass::ConfigClass():
-	fullScreen(false),
-	screenWidth(0),
-	screenHeight(0)
+	mFullScreen(false),
+	mScreenWidth(0),
+	mScreenHeight(0)
 {
 	
 }
@@ -30,17 +30,17 @@ void ConfigClass::Shutdown()
 
 bool ConfigClass::CheckFullScreen() const
 {
-	return fullScreen;
+	return mFullScreen;
 }
 
 int ConfigClass::GetScreenWidth() const
 {
-	return screenWidth;
+	return mScreenWidth;
 }
 
 int ConfigClass::GetScreenHeight() const
 {
-	return screenHeight;
+	return mScreenHeight;
 }
 
 bool ConfigClass::ReadConfigFile()
@@ -82,7 +82,7 @@ void ConfigClass::StoreValue(string &key, string &value)
 	{
 		if (value == "True")
 		{
-			fullScreen = true;
+			mFullScreen = true;
 		}
 		else
 		{
@@ -93,7 +93,7 @@ void ConfigClass::StoreValue(string &key, string &value)
 	{
 		try {
 			int InScreenWidth = stoi(value);
-			screenWidth = InScreenWidth;
+			mScreenWidth = InScreenWidth;
 		}
 		catch (const std::invalid_argument& ia)
 		{
@@ -105,7 +105,7 @@ void ConfigClass::StoreValue(string &key, string &value)
 	{
 		try {
 			int InScreenHeight = stoi(value);
-			screenHeight = InScreenHeight;
+			mScreenHeight = InScreenHeight;
 		}
 		catch (const std::invalid_argument& ia)
 		{
@@ -121,15 +121,15 @@ void ConfigClass::SetDefault(string & key)
 {
 	if (key == "FullScreen")
 	{
-		fullScreen = false;		
+		mFullScreen = false;		
 	}
 	else if (key == "ScreenWidth")
 	{
-		screenWidth = 800;
+		mScreenWidth = 800;
 	}
 	else if (key == "ScreenHeight")
 	{	
-		screenHeight = 600;		
+		mScreenHeight = 600;		
 	}
 }
 
