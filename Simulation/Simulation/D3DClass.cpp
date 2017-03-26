@@ -7,12 +7,11 @@ D3DClass::D3DClass():
 	mConfig(nullptr),
 	mSwapChain(nullptr),
 	mDevice(nullptr),
-	mDeviceContext(nullptr)
-	
+	mDeviceContext(nullptr), 
+	mRenderTargetView(nullptr)
+
 {
 	//Create Device and device context
-
-	
 }
 
 
@@ -23,7 +22,8 @@ D3DClass::~D3DClass()
 bool D3DClass::Initialize(const HWND hwnd, const ConfigClass * mConfig)
 {
 	HRESULT result;
-	
+	DX::ThrowIfFailed(mScreenWidth = mConfig->GetScreenWidth());
+	DX::ThrowIfFailed(mScreenHeight = mConfig->GetScreenHeight());
 
 	D3D_FEATURE_LEVEL featureLevel;
 
@@ -54,8 +54,8 @@ bool D3DClass::Initialize(const HWND hwnd, const ConfigClass * mConfig)
 	DXGI_SWAP_CHAIN_DESC sd;
 
 	// Set the width and height of the back buffer.
-	sd.BufferDesc.Width = mConfig->GetScreenWidth();
-	sd.BufferDesc.Height = mConfig->GetScreenHeight();
+	sd.BufferDesc.Width = mScreenWidth;
+	sd.BufferDesc.Height = mScreenHeight;
 
 	// Set the refresh rate of the back buffer.
 	sd.BufferDesc.RefreshRate.Numerator = 60;
@@ -157,7 +157,6 @@ bool D3DClass::Initialize(const HWND hwnd, const ConfigClass * mConfig)
 	mDeviceContext->OMSetRenderTargets(1, &mRenderTargetView, mDepthStencilView);
 
 	// Set the viewport transform.
-
 	mScreenViewport.TopLeftX = 0;
 	mScreenViewport.TopLeftY = 0;
 	mScreenViewport.Width = static_cast<float>(mConfig->GetScreenWidth());
@@ -167,6 +166,47 @@ bool D3DClass::Initialize(const HWND hwnd, const ConfigClass * mConfig)
 
 	mDeviceContext->RSSetViewports(1, &mScreenViewport);
 
+	// Setup the projection matrix.
+	mProj = XMMatrixPerspectiveFovLH(0.25*XM_PI, AspectRatio(), 1.0f, 1000.f);
+
+	// Initialize the world matrix to the identity matrix.
+	mWorld = XMMatrixIdentity();
+
+	// Create an orthographic projection matrix for 2D rendering.
+	mOrth = XMMatrixOrthographicLH(static_cast<float>(mScreenWidth), static_cast<float>(mScreenHeight), 1.0f, 1000.f);
+	
+	D3D11_BLEND_DESC blendStateDescription;
+	// Clear the blend state description.
+	ZeroMemory(&blendStateDescription, sizeof(D3D11_BLEND_DESC));
+
+	// Create an alpha enabled blend state description.
+	blendStateDescription.RenderTarget[0].BlendEnable = TRUE;
+	//blendStateDescription.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+	blendStateDescription.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	blendStateDescription.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	blendStateDescription.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	blendStateDescription.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	blendStateDescription.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	blendStateDescription.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	blendStateDescription.RenderTarget[0].RenderTargetWriteMask = 0x0f;
+
+	// Create the blend state using the description.
+	result = mDevice->CreateBlendState(&blendStateDescription, &m_alphaEnableBlendingState);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	// Modify the description to create an alpha disabled blend state description.
+	blendStateDescription.RenderTarget[0].BlendEnable = FALSE;
+
+	// Create the blend state using the description.
+	result = mDevice->CreateBlendState(&blendStateDescription, &m_alphaDisableBlendingState);
+	if (FAILED(result))
+	{
+		return false;
+	}
+	
 	return true;
 }
 
@@ -177,6 +217,11 @@ void D3DClass::Shutdown()
 		delete mConfig;
 		mConfig = nullptr;
 	}
+}
+
+float D3DClass::AspectRatio() const
+{
+	return static_cast<float>(mScreenWidth) / mScreenHeight;
 }
 
 

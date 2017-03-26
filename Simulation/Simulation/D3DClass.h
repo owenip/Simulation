@@ -12,6 +12,9 @@ public:
 	void Shutdown();
 
 private:
+	float AspectRatio() const;
+
+private:
 	//Config Class
 	ConfigClass *mConfig;
 
@@ -26,7 +29,15 @@ private:
 
 	D3D11_VIEWPORT mScreenViewport;
 
+	ID3D11BlendState* m_alphaEnableBlendingState;
+	ID3D11BlendState* m_alphaDisableBlendingState;
+
+	DirectX::SimpleMath::Matrix mWorld;
+	DirectX::SimpleMath::Matrix mProj;
+	DirectX::SimpleMath::Matrix mOrth;
+
 	bool m_vsync_enabled;
-	
+	int mScreenWidth;
+	int mScreenHeight;
 };
 
