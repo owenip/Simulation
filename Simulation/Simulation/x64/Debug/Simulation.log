@@ -1,17 +1,4 @@
-﻿  SystemClass.cpp
+﻿  GraphicClass.cpp
   c:\program files (x86)\windows kits\8.1\include\um\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
-  pch.cpp
-  c:\program files (x86)\windows kits\8.1\include\um\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
-  main.cpp
-  c:\program files (x86)\windows kits\8.1\include\um\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
-  GraphicClass.cpp
-  c:\program files (x86)\windows kits\8.1\include\um\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
-  D3DClass.cpp
-  c:\program files (x86)\windows kits\8.1\include\um\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
-  ConfigClass.cpp
-  c:\program files (x86)\windows kits\8.1\include\um\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
-  Generating Code...
-c:\users\owen\documents\github\simulation\simulation\simulation\systemclass.cpp(244): warning C4715: 'SystemClass::MessageHandler': not all control paths return a value
-  LINK : C:\Users\Owen\Documents\GitHub\Simulation\Simulation\x64\Debug\Simulation.exe not found or not built by the last incremental link; performing full link
-  Simulation.vcxproj -> C:\Users\Owen\Documents\GitHub\Simulation\Simulation\x64\Debug\Simulation.exe
-  Simulation.vcxproj -> C:\Users\Owen\Documents\GitHub\Simulation\Simulation\x64\Debug\Simulation.pdb (Partial PDB)
+  Simulation.vcxproj -> Z:\Github\Simulation\Simulation\x64\Debug\Simulation.exe
+  Simulation.vcxproj -> Z:\Github\Simulation\Simulation\x64\Debug\Simulation.pdb (Partial PDB)

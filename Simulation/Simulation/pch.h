@@ -89,3 +89,5 @@ namespace DX
 	}
 }
 
+// Convenience macro for releasing COM objects
+#define ReleaseCOM(x) if (x != NULL) { x->Release(); x = NULL; }

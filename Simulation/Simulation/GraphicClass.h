@@ -1,4 +1,6 @@
 #pragma once
+#include "D3DClass.h"
+
 class GraphicClass
 {
 public:
@@ -9,11 +11,25 @@ public:
 	bool Initialize(const HWND hwnd, const ConfigClass *mConfig);
 	void Shutdown();
 
-private:
+	bool Update();
 
-
+	
 private:
-	//Config Class
+	bool InitAntTweak(const HWND hwnd);
+
+	bool Render();
+
+	void CheckInput();
+private:
 	ConfigClass *mConfig;
+	D3DClass *mDirect3D;
+	TwBar *mATBar;
+	
+	std::unique_ptr<DirectX::Keyboard> m_keyboard;
+	std::unique_ptr<DirectX::Mouse> m_mouse;
+
+	int mScreenWidth;
+	int mScreenHeight;
+	char mLastKeyPressed;
 };
 

@@ -117,6 +117,7 @@
     <ClCompile Include="GraphicClass.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="pch.cpp" />
+    <ClCompile Include="RenderStates.cpp" />
     <ClCompile Include="SystemClass.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -127,6 +128,7 @@
     <ClInclude Include="D3DClass.h" />
     <ClInclude Include="GraphicClass.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="RenderStates.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SystemClass.h" />
   </ItemGroup>

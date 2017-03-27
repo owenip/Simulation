@@ -8,10 +8,10 @@ D3DClass::D3DClass():
 	mSwapChain(nullptr),
 	mDevice(nullptr),
 	mDeviceContext(nullptr), 
-	mRenderTargetView(nullptr)
-
+	mRenderTargetView(nullptr),
+	blendFactor{ 0.f,0.f,0.f,0.f }
 {
-	//Create Device and device context
+	
 }
 
 
@@ -150,11 +150,44 @@ bool D3DClass::Initialize(const HWND hwnd, const ConfigClass * mConfig)
 	depthStencilDesc.MiscFlags = 0;
 
 	// Create the texture for the depth buffer using the filled out description.
-	DX::ThrowIfFailed(mDevice->CreateTexture2D(&depthStencilDesc, nullptr, &m_depthStencilBuffer));
-	DX::ThrowIfFailed(mDevice->CreateDepthStencilView(m_depthStencilBuffer, nullptr, &mDepthStencilView));
+	DX::ThrowIfFailed(mDevice->CreateTexture2D(&depthStencilDesc, nullptr, &mDepthStencilBuffer));
+	DX::ThrowIfFailed(mDevice->CreateDepthStencilView(mDepthStencilBuffer, nullptr, &mDepthStencilView));
 
 	//Bind the render target view and depth/stencil view to the pipeline
 	mDeviceContext->OMSetRenderTargets(1, &mRenderTargetView, mDepthStencilView);
+
+
+
+	D3D11_RASTERIZER_DESC rasterDesc;
+	// Setup the raster description which will determine how and what polygons will be drawn.
+	rasterDesc.AntialiasedLineEnable = false;
+	rasterDesc.CullMode = D3D11_CULL_BACK;
+	rasterDesc.DepthBias = 0;
+	rasterDesc.DepthBiasClamp = 0.0f;
+	rasterDesc.DepthClipEnable = true;
+	rasterDesc.FillMode = D3D11_FILL_SOLID;
+	rasterDesc.FrontCounterClockwise = false;
+	rasterDesc.MultisampleEnable = false;
+	rasterDesc.ScissorEnable = false;
+	rasterDesc.SlopeScaledDepthBias = 0.0f;
+
+	// Create the rasterizer state from the description we just filled out.
+	result = mDevice->CreateRasterizerState(&rasterDesc, &m_NormalrasterState);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	// Now set the rasterizer state.
+	mDeviceContext->RSSetState(m_NormalrasterState);
+
+	rasterDesc.FillMode = D3D11_FILL_WIREFRAME;
+	// Create the rasterizer state from the description we just filled out.
+	result = mDevice->CreateRasterizerState(&rasterDesc, &m_WireFramerasterState);
+	if (FAILED(result))
+	{
+		return false;
+	}
 
 	// Set the viewport transform.
 	mScreenViewport.TopLeftX = 0;
@@ -207,6 +240,7 @@ bool D3DClass::Initialize(const HWND hwnd, const ConfigClass * mConfig)
 		return false;
 	}
 	
+
 	return true;
 }
 
@@ -217,6 +251,99 @@ void D3DClass::Shutdown()
 		delete mConfig;
 		mConfig = nullptr;
 	}
+	if (mSwapChain)
+	{
+		mSwapChain->SetFullscreenState(false, nullptr);
+	}
+	if (m_alphaEnableBlendingState)
+	{
+		m_alphaEnableBlendingState->Release();
+		m_alphaEnableBlendingState = nullptr;
+	}
+
+	if (m_alphaDisableBlendingState)
+	{
+		m_alphaDisableBlendingState->Release();
+		m_alphaDisableBlendingState = nullptr;
+	}
+	if (m_NormalrasterState)
+	{
+		m_NormalrasterState->Release();
+		m_NormalrasterState = nullptr;
+	}
+	if (m_WireFramerasterState)
+	{
+		m_WireFramerasterState->Release();
+		m_WireFramerasterState = nullptr;
+	}
+	if (mDepthStencilView)
+	{
+		mDepthStencilView->Release();
+		mDepthStencilView = nullptr;
+	}
+
+	if (mDepthStencilBuffer)
+	{
+		mDepthStencilBuffer->Release();
+		mDepthStencilBuffer = nullptr;
+	}
+
+	if (mRenderTargetView)
+	{
+		mRenderTargetView->Release();
+		mRenderTargetView = nullptr;
+	}
+
+	if (mDeviceContext)
+	{
+		mDeviceContext->Release();
+		mDeviceContext = nullptr;
+	}
+
+	if (mDevice)
+	{
+		mDevice->Release();
+		mDevice = nullptr;
+	}
+
+	if (mSwapChain)
+	{
+		mSwapChain->Release();
+		mSwapChain = nullptr;
+	}
+
+}
+
+void D3DClass::BeginScene(DirectX::SimpleMath::Vector4 ClearColour)
+{
+	FLOAT clearColour[4];
+	// Setup the color to clear the buffer to.
+	clearColour[0] = ClearColour.x;
+	clearColour[1] = ClearColour.y;
+	clearColour[2] = ClearColour.z;
+	clearColour[3] = ClearColour.w;
+	
+	// Clear the back buffer.
+	mDeviceContext->ClearRenderTargetView(mRenderTargetView, clearColour);
+	// Clear the depth buffer.
+	mDeviceContext->ClearDepthStencilView(mDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+
+	return;
+}
+
+void D3DClass::EndScene()
+{
+	// Present the back buffer to the screen since rendering is complete.
+	if (m_vsync_enabled)
+	{
+		// Lock to screen refresh rate.
+		mSwapChain->Present(1, 0);
+	}
+	else
+	{
+		// Present as fast as possible.
+		mSwapChain->Present(0, 0);
+	}
 }
 
 float D3DClass::AspectRatio() const
@@ -224,4 +351,56 @@ float D3DClass::AspectRatio() const
 	return static_cast<float>(mScreenWidth) / mScreenHeight;
 }
 
+ID3D11Device* D3DClass::GetDevice() const 
+{
+	return mDevice;
+}
 
+ID3D11DeviceContext* D3DClass::GetDeviceContext() const 
+{
+	return mDeviceContext;
+}
+
+void D3DClass::GetProj(SimpleMath::Matrix & projMatrix) const
+{
+	projMatrix = mProj;
+	return;
+}
+
+void D3DClass::GetWorld(SimpleMath::Matrix & worldMatrix) const
+{
+	worldMatrix = mWorld;
+	return;
+}
+
+void D3DClass::GetOrthoMatrix(SimpleMath::Matrix & orthoMatrix) const
+{
+	orthoMatrix = mOrth;
+	return;
+}
+
+void D3DClass::TurnOnAlphaBlending() const
+{
+	// Turn on the alpha blending.
+	mDeviceContext->OMSetBlendState(m_alphaEnableBlendingState, blendFactor, 0xffffffff);
+	return;
+}
+
+void D3DClass::TurnOffAlphaBlending()
+{
+	// Turn off the alpha blending.
+	mDeviceContext->OMSetBlendState(m_alphaDisableBlendingState, blendFactor, 0xffffffff);
+	return;
+}
+
+void D3DClass::TurnOnWireFrame() const
+{
+	mDeviceContext->RSSetState(m_WireFramerasterState);
+	return;
+}
+
+void D3DClass::TurnOffWireFrame() const
+{
+	mDeviceContext->RSSetState(m_NormalrasterState);
+	return;
+}

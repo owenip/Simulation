@@ -1,5 +1,6 @@
 #pragma once
 #include "ConfigClass.h"
+#include "GraphicClass.h"
 
 class SystemClass
 {
@@ -28,9 +29,9 @@ private:
 	HWND m_hwnd;
 	//std::wstring mMainWndCaption;
 
-	//Configuration Class
-	ConfigClass* m_Config;
 	
+	ConfigClass* mConfig;
+	GraphicClass *mGraphic;
 };
 
 static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);

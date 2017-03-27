@@ -7,7 +7,7 @@ SystemClass::SystemClass():
 	m_applicationName(nullptr),
 	m_hinstance(nullptr),
 	m_hwnd(nullptr),
-	m_Config(nullptr)
+	mConfig(nullptr)
 {
 }
 
@@ -22,13 +22,13 @@ bool SystemClass::Initialize()
 	bool result = false;
 
 	//Initialise Config Class
-	m_Config = new ConfigClass;
-	if (!m_Config)
+	mConfig = new ConfigClass;
+	if (!mConfig)
 	{
 		MessageBoxA(NULL, "Unable to initialise the config class.", "Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	result = m_Config->Initialize();
+	result = mConfig->Initialize();
 	if (!result)
 	{
 		MessageBoxA(NULL, "Unable to initialise the config class.", "Error", MB_OK | MB_ICONERROR);
@@ -36,9 +36,18 @@ bool SystemClass::Initialize()
 	}
 	
 	//Initialse Window 
-	if (!InitializeWindow(m_Config->GetScreenWidth(), m_Config->GetScreenHeight()))
+	if (!InitializeWindow(mConfig->GetScreenWidth(), mConfig->GetScreenHeight()))
 	{
 		MessageBoxA(NULL, "Unable to initialise the window.", "Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+
+	//Initialise Graphic Class
+	mGraphic = new GraphicClass;
+	result = mGraphic->Initialize(m_hwnd, mConfig);
+	if (!result)
+	{
+		MessageBoxA(NULL, "Unable to initialise the graphic class!", "Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
 
@@ -47,11 +56,17 @@ bool SystemClass::Initialize()
 
 void SystemClass::Shutdown()
 {
-	if (m_Config)
+	if (mGraphic)
 	{
-		m_Config->Shutdown();
-		delete m_Config;
-		m_Config = 0;
+		mGraphic->Shutdown();
+		delete mGraphic;
+		mGraphic = nullptr;
+	}
+	if (mConfig)
+	{
+		mConfig->Shutdown();
+		delete mConfig;
+		mConfig = nullptr;
 	}
 }
 
@@ -91,8 +106,12 @@ void SystemClass::Run()
 	}
 }
 
+
 bool SystemClass::Update()
 {
+	bool result;
+	result = mGraphic->Update();
+
 	return true;
 }
 
@@ -110,7 +129,7 @@ bool SystemClass::InitializeWindow(int screenWidth, int screenHeight)
 	m_hinstance = GetModuleHandle(nullptr);
 
 	// Give the application a name.
-	m_applicationName = L"08025ACW";
+	m_applicationName = L"08024ACW";
 
 
 	// Setup the windows class with default settings.
@@ -132,13 +151,9 @@ bool SystemClass::InitializeWindow(int screenWidth, int screenHeight)
 	{
 		MessageBoxA(NULL, "Unable to register the window class.", "Error", MB_OK | MB_ICONERROR);
 	}
-
-	// Determine the resolution of the clients desktop screen.
-	//screenWidth = GetSystemMetrics(SM_CXSCREEN);
-	//screenHeight = GetSystemMetrics(SM_CYSCREEN);
-
+	
 	// Setup the screen settings depending on whether it is running in full screen or in windowed mode.
-	if (m_Config->CheckFullScreen())
+	if (mConfig->CheckFullScreen())
 	{
 		// If full screen set the screen to maximum size of the users desktop and 32bit.
 		memset(&dmScreenSettings, 0, sizeof(dmScreenSettings));
@@ -187,7 +202,7 @@ bool SystemClass::InitializeWindow(int screenWidth, int screenHeight)
 void SystemClass::ShutdownWindows()
 {
 	//ShowCursor(true);
-	if (m_Config->CheckFullScreen())
+	if (mConfig->CheckFullScreen())
 	{
 		ChangeDisplaySettings(nullptr, 0);
 	}
@@ -227,14 +242,34 @@ LRESULT CALLBACK SystemClass::MessageHandler(const HWND  hwnd, const UINT umsg, 
 			PostQuitMessage(0);
 			return 0;
 		}
-
+		case WM_ACTIVATEAPP:
+		{
+			Keyboard::ProcessMessage(umsg, wparam, lparam);
+			Mouse::ProcessMessage(umsg, wparam, lparam);
+			break;
+		}
+		case WM_INPUT:
+		case WM_MOUSEMOVE:
+		case WM_LBUTTONDOWN:
+		case WM_LBUTTONUP:
+		case WM_RBUTTONDOWN:
+		case WM_RBUTTONUP:
+		case WM_MBUTTONDOWN:
+		case WM_MBUTTONUP:
+		case WM_MOUSEWHEEL:
+		case WM_XBUTTONDOWN:
+		case WM_XBUTTONUP:
+		case WM_MOUSEHOVER:
+			Mouse::ProcessMessage(umsg, wparam, lparam);
+			break;
 		case WM_KEYDOWN:
 		case WM_SYSKEYDOWN:
 		case WM_KEYUP:
 		case WM_SYSKEYUP:
+		{
 			Keyboard::ProcessMessage(umsg, wparam, lparam);
 			break;
-
+		}
 		// Any other messages send to the default message handler as our application won't make use of them.
 		default:
 		{
