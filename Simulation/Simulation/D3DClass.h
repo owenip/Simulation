@@ -59,13 +59,13 @@ private:
 	DirectX::SimpleMath::Matrix mWorld;
 	DirectX::SimpleMath::Matrix mProj;
 	DirectX::SimpleMath::Matrix mOrth;
-
-	
-
+		
 	bool m_vsync_enabled;
 	int mScreenWidth;
 	int mScreenHeight;
 	float blendFactor[4];
+
+
 
 };
 

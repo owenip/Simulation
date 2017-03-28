@@ -241,22 +241,22 @@ LRESULT CALLBACK SystemClass::MessageHandler(const HWND  hwnd, const UINT umsg, 
 		{
 			PostQuitMessage(0);
 			return 0;
-		}
-		//Check window is losing focus
-		case WM_KILLFOCUS:
+		}		
+		case WM_ACTIVATE:
 		{
-			//mGraphic->OnPause();
-		}
-		//Check window is having focus
-		case WM_SETFOCUS:
-		{
-			mGraphic->OnResume();
-		}
-		case WM_ACTIVATEAPP:
-		{
-			Keyboard::ProcessMessage(umsg, wparam, lparam);
-			Mouse::ProcessMessage(umsg, wparam, lparam);
-			break;
+			if (LOWORD(wparam) == WA_INACTIVE)
+			{
+				//Check window is losing focus
+				if(mGraphic)
+					mGraphic->OnPause();
+			}
+			else
+			{
+				//Check window is having focus
+				
+			}
+			return 0;
+				
 		}
 		case WM_INPUT:
 		case WM_MOUSEMOVE:
@@ -270,15 +270,17 @@ LRESULT CALLBACK SystemClass::MessageHandler(const HWND  hwnd, const UINT umsg, 
 		case WM_XBUTTONDOWN:
 		case WM_XBUTTONUP:
 		case WM_MOUSEHOVER:
+		{
 			Mouse::ProcessMessage(umsg, wparam, lparam);
-			break;
+			return 0;
+		}
 		case WM_KEYDOWN:
 		case WM_SYSKEYDOWN:
 		case WM_KEYUP:
 		case WM_SYSKEYUP:
 		{
 			Keyboard::ProcessMessage(umsg, wparam, lparam);
-			break;
+			return 0;
 		}
 		// Any other messages send to the default message handler as our application won't make use of them.
 		default:

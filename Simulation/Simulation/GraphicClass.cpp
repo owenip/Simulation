@@ -42,11 +42,37 @@ bool GraphicClass::Initialize(const HWND hwnd, const ConfigClass * mConfig)
 	m_mouse->SetWindow(hwnd);
 	tracker.Update(m_keyboard->GetState());
 
+	//Models Initialisation
+	//mSphere = GeometricPrimitive::CreateSphere(mDirect3D->GetDeviceContext());
+
+	//DXTK 2D
+	m_states = std::make_unique<CommonStates>(mDirect3D->GetDevice());
+
+	m_effect = std::make_unique<BasicEffect>(mDirect3D->GetDevice());
+	m_effect->SetVertexColorEnabled(true);
+	void const* shaderByteCode;
+	size_t byteCodeLength;
+	m_effect->GetVertexShaderBytecode(&shaderByteCode, &byteCodeLength);
+
+	DX::ThrowIfFailed(
+		mDirect3D->GetDevice()->CreateInputLayout(VertexPositionColor::InputElements,
+			VertexPositionColor::InputElementCount,
+			shaderByteCode, byteCodeLength,
+			m_inputLayout.ReleaseAndGetAddressOf()));
+
+	m_batch = std::make_unique<PrimitiveBatch<VertexPositionColor>>(mDirect3D->GetDeviceContext());
+
 	return true;
 }
 
 void GraphicClass::Shutdown()
 {
+	m_states.reset();
+	m_effect.reset();
+	m_batch.reset();
+	m_inputLayout.Reset();
+
+	mSphere.reset();
 
 	TwTerminate();
 
@@ -65,12 +91,13 @@ void GraphicClass::Shutdown()
 
 void GraphicClass::OnPause()
 {
+	tracker.Reset();
+	return;
 }
 
 void GraphicClass::OnResume()
 {
-	tracker.Reset();
-	return;
+	
 }
 
 bool GraphicClass::Update()
@@ -84,6 +111,48 @@ bool GraphicClass::Update()
 	{
 		return false;
 	}
+	return true;
+}
+
+bool GraphicClass::Render()
+{
+	// Clear the buffers to begin the scene.
+	mDirect3D->BeginScene(SimpleMath::Vector4(Colors::Black));
+
+	
+	SimpleMath::Matrix mWorld = SimpleMath::Matrix::Identity;
+	SimpleMath::Matrix mProj = SimpleMath::Matrix::Identity;
+
+	mDirect3D->GetWorld(mWorld);
+	mDirect3D->GetProj(mProj);
+
+	SimpleMath::Matrix mView = SimpleMath::Matrix::CreateLookAt(
+		SimpleMath::Vector3(2.f, 2.f, 2.f),
+		SimpleMath::Vector3::Zero, 
+		SimpleMath::Vector3::UnitY);
+
+	mDirect3D->GetDeviceContext()->OMSetBlendState(m_states->Opaque(), nullptr, 0xFFFFFFFF);
+	mDirect3D->GetDeviceContext()->OMSetDepthStencilState(m_states->DepthNone(), 0);
+	mDirect3D->GetDeviceContext()->RSSetState(m_states->CullNone());
+
+
+	m_effect->Apply(mDirect3D->GetDeviceContext());
+	mDirect3D->GetDeviceContext()->IASetInputLayout(m_inputLayout.Get());
+
+	m_batch->Begin();
+
+	VertexPositionColor v1(SimpleMath::Vector3(0.f, 0.5f, 0.5f), Colors::Yellow);
+	VertexPositionColor v2(SimpleMath::Vector3(0.5f, -0.5f, 0.5f), Colors::Yellow);
+	VertexPositionColor v3(SimpleMath::Vector3(-0.5f, -0.5f, 0.5f), Colors::Yellow);
+
+	m_batch->DrawTriangle(v1, v2, v3);
+
+	m_batch->End();
+
+	//Draw AntTweakBar
+	TwDraw();
+	//Present Scene
+	mDirect3D->EndScene();
 	return true;
 }
 
@@ -101,7 +170,7 @@ bool GraphicClass::InitAntTweak(const HWND hwnd)
 	int barSize[2] = { mScreenWidth / 4, mScreenHeight /4};
 	TwSetParam(mATBar, nullptr, "size", TW_PARAM_INT32, 2, barSize);
 	//Non-Changable variables
-	TwAddVarRW(mATBar, "No. of balls owned by this peer", TW_TYPE_INT32,&mNumberOfBalls,"");
+	TwAddVarRW(mATBar, "No. of balls owned by this peer", TW_TYPE_INT32,&mNumberOfBalls,"min=0 max=64000");
 	TwAddVarRW(mATBar, "No. of balls currently contended", TW_TYPE_INT32, nullptr, "");
 	TwAddVarRW(mATBar, "Total number of balls", TW_TYPE_INT32, nullptr, "");
 	TwAddVarRW(mATBar, "Magnitude of the applying force ", TW_TYPE_FLOAT, nullptr, "");
@@ -117,17 +186,7 @@ bool GraphicClass::InitAntTweak(const HWND hwnd)
 	return true;
 }
 
-bool GraphicClass::Render()
-{
-	// Clear the buffers to begin the scene.
-	mDirect3D->BeginScene(DirectX::SimpleMath::Vector4(Colors::Gray));
 
-	//Draw AntTweakBar
-	TwDraw();
-
-	mDirect3D->EndScene();
-	return true;
-}
 
 void GraphicClass::CheckInput()
 {

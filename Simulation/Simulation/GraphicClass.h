@@ -18,9 +18,10 @@ public:
 
 	
 private:
+	bool Render();
 	bool InitAntTweak(const HWND hwnd);
 
-	bool Render();
+	
 
 	void CheckInput();
 private:
@@ -36,6 +37,15 @@ private:
 	int mScreenHeight;
 	char mLastKeyPressed;
 
+	//Ball
 	int mNumberOfBalls = 9;
+	std::unique_ptr<DirectX::GeometricPrimitive> mSphere;
+
+	//DXTk 2D
+	std::unique_ptr<DirectX::CommonStates> m_states;
+	std::unique_ptr<DirectX::BasicEffect> m_effect;
+	std::unique_ptr<DirectX::PrimitiveBatch<DirectX::VertexPositionColor>> m_batch;
+	Microsoft::WRL::ComPtr<ID3D11InputLayout> m_inputLayout;
+
 };
 
