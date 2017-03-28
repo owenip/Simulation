@@ -11,6 +11,9 @@ public:
 	bool Initialize(const HWND hwnd, const ConfigClass *mConfig);
 	void Shutdown();
 
+	void OnPause();
+	void OnResume();
+
 	bool Update();
 
 	
@@ -25,11 +28,14 @@ private:
 	D3DClass *mDirect3D;
 	TwBar *mATBar;
 	
-	std::unique_ptr<DirectX::Keyboard> m_keyboard;
-	std::unique_ptr<DirectX::Mouse> m_mouse;
+	unique_ptr<Keyboard> m_keyboard;
+	unique_ptr<Mouse> m_mouse;
+	Keyboard::KeyboardStateTracker tracker;
 
 	int mScreenWidth;
 	int mScreenHeight;
 	char mLastKeyPressed;
+
+	int mNumberOfBalls = 9;
 };
 

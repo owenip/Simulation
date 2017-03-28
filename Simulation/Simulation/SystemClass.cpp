@@ -242,6 +242,16 @@ LRESULT CALLBACK SystemClass::MessageHandler(const HWND  hwnd, const UINT umsg, 
 			PostQuitMessage(0);
 			return 0;
 		}
+		//Check window is losing focus
+		case WM_KILLFOCUS:
+		{
+			//mGraphic->OnPause();
+		}
+		//Check window is having focus
+		case WM_SETFOCUS:
+		{
+			mGraphic->OnResume();
+		}
 		case WM_ACTIVATEAPP:
 		{
 			Keyboard::ProcessMessage(umsg, wparam, lparam);
