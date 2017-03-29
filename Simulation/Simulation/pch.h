@@ -1,5 +1,27 @@
 #pragma once
 
+// Win32
+#include <windows.h>
+#include <Winuser.h>
+#include <mmsystem.h>
+#include <wrl.h>
+#include <exception>
+#define DIRECTINPUT_VERSION 0x0800
+#include <dinput.h>
+
+#pragma comment(lib, "winmm.lib")
+
+
+// STL
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <sstream>
+#include <cstdio>
+#include <vector>
+#include <bemapiset.h>
+#include <profileapi.h>
+
 // DirectX
 #include <d3d11.h>
 #include <directxmath.h>
@@ -36,29 +58,14 @@ using namespace std;
 #include <AntTweakBar.h>
 
 
-// Win32
-#include <Winuser.h>
-#include <mmsystem.h>
-#include <wrl.h>
-#include <dinput.h>
-#include <exception>
-#pragma comment(lib, "winmm.lib")
 
-
-// STL
-#include <fstream>
-#include <iostream>
-#include <string>
-#include <sstream>
-#include <cstdio>
-#include <vector>
 
 //Global
 const LPCTSTR mMainWndCaption = L"08025ACW";
 
 //My Own Class
 #include "ConfigClass.h"
-
+#include "TimerClass.h"
 
 namespace DX
 {

@@ -117,8 +117,9 @@
     <ClCompile Include="GraphicClass.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="pch.cpp" />
-    <ClCompile Include="RenderStates.cpp" />
+    <None Include="RenderStates.cpp" />
     <ClCompile Include="SystemClass.cpp" />
+    <ClCompile Include="TimerClass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -128,9 +129,10 @@
     <ClInclude Include="D3DClass.h" />
     <ClInclude Include="GraphicClass.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include="RenderStates.h" />
+    <None Include="RenderStates.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SystemClass.h" />
+    <ClInclude Include="TimerClass.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="config.txt" />

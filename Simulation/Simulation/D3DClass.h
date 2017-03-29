@@ -31,7 +31,7 @@ public:
 	void TurnOnWireFrame() const;
 	void TurnOffWireFrame() const;
 
-private:
+
 	float AspectRatio() const;
 
 private:

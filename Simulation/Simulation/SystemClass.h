@@ -14,7 +14,7 @@ public:
 	void Shutdown();
 	void Run();
 
-	LRESULT CALLBACK MessageHandler(HWND, UINT, WPARAM, LPARAM) const;
+	LRESULT CALLBACK MessageHandler(HWND, UINT, WPARAM, LPARAM);
 
 private:
 	bool Update();
@@ -30,8 +30,12 @@ private:
 	//std::wstring mMainWndCaption;
 
 	
-	ConfigClass* mConfig;
+	ConfigClass* mConfig;	
 	GraphicClass *mGraphic;
+	TimerClass *mTimer;
+
+
+	bool      mAppPaused;
 };
 
 static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);

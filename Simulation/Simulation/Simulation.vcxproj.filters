@@ -33,12 +33,18 @@
     <ClCompile Include="D3DClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RenderStates.cpp">
+    <ClCompile Include="TimerClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="RenderStates.cpp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="RenderStates.h">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -59,7 +65,7 @@
     <ClInclude Include="D3DClass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RenderStates.h">
+    <ClInclude Include="TimerClass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -7,7 +7,11 @@ SystemClass::SystemClass():
 	m_applicationName(nullptr),
 	m_hinstance(nullptr),
 	m_hwnd(nullptr),
-	mConfig(nullptr)
+	mConfig(nullptr),
+	mGraphic(nullptr),
+	mTimer(nullptr), 
+	mAppPaused(false)
+	
 {
 }
 
@@ -42,9 +46,22 @@ bool SystemClass::Initialize()
 		return false;
 	}
 
+	//Timer initialse
+	mTimer = new TimerClass;
+	if (!mTimer)
+	{
+		return false;
+	}
+	result = mTimer->Initialize();
+	if (!result)
+	{
+		MessageBox(m_hwnd, L"Could not initialize Timer.", L"Error", MB_OK);
+		return false;
+	}
+
 	//Initialise Graphic Class
 	mGraphic = new GraphicClass;
-	result = mGraphic->Initialize(m_hwnd, mConfig);
+	result = mGraphic->Initialize(m_hwnd, mConfig, mTimer);
 	if (!result)
 	{
 		MessageBoxA(NULL, "Unable to initialise the graphic class!", "Error", MB_OK | MB_ICONERROR);
@@ -77,9 +94,10 @@ void SystemClass::Run()
 	MSG msg;
 	// Initialize the message structure.
 	ZeroMemory(&msg, sizeof(MSG));
-
+	
 	// Loop until there is a quit message from the window or the user.
 	done = false;
+	mTimer->Reset();
 	while (!done)
 	{
 		// Handle the windows messages.
@@ -95,13 +113,16 @@ void SystemClass::Run()
 		}
 		else
 		{
+			mTimer->Tick();
+						
 			CalculateFrameStats();
-			
+
 			result = Update();
 			if (!result)
 			{
 				done = true;
-			}
+			}			
+			
 		}
 	}
 }
@@ -223,10 +244,36 @@ void SystemClass::ShutdownWindows()
 
 void SystemClass::CalculateFrameStats()
 {
+	// Code computes the average frames per second, and also the 
+	// average time it takes to render one frame.  These stats 
+	// are appended to the window caption bar.
+
+	static int frameCnt = 0;
+	static float timeElapsed = 0.0f;
+
+	frameCnt++;
+
+	// Compute averages over one second period.
+	if ((mTimer -> TotalTime() - timeElapsed) >= 1.0f)
+	{
+		float fps = static_cast<float>(frameCnt); // fps = frameCnt / 1
+		float mspf = 1000.0f / fps;
+
+		std::wostringstream outs;
+		outs.precision(6);
+		outs << mMainWndCaption << L"    "
+			<< L"FPS: " << fps << L"    "
+			<< L"Frame Time: " << mspf << L" (ms)";
+		SetWindowText(m_hwnd, outs.str().c_str());
+
+		// Reset for next average.
+		frameCnt = 0;
+		timeElapsed += 1.0f;
+	}
 }
 
 
-LRESULT CALLBACK SystemClass::MessageHandler(const HWND  hwnd, const UINT umsg, const WPARAM wparam, const LPARAM lparam) const
+LRESULT CALLBACK SystemClass::MessageHandler(const HWND  hwnd, const UINT umsg, const WPARAM wparam, const LPARAM lparam)
 {
 	switch (umsg)
 	{
@@ -246,13 +293,13 @@ LRESULT CALLBACK SystemClass::MessageHandler(const HWND  hwnd, const UINT umsg, 
 		{
 			if (LOWORD(wparam) == WA_INACTIVE)
 			{
-				//Check window is losing focus
+				//Check window is losing focus				
 				if(mGraphic)
 					mGraphic->OnPause();
 			}
 			else
 			{
-				//Check window is having focus
+				//Check window is having focus				
 				
 			}
 			return 0;

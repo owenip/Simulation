@@ -21,6 +21,7 @@ D3DClass::~D3DClass()
 
 bool D3DClass::Initialize(const HWND hwnd, const ConfigClass * mConfig)
 {
+	
 	HRESULT result;
 	DX::ThrowIfFailed(mScreenWidth = mConfig->GetScreenWidth());
 	DX::ThrowIfFailed(mScreenHeight = mConfig->GetScreenHeight());
@@ -32,7 +33,7 @@ bool D3DClass::Initialize(const HWND hwnd, const ConfigClass * mConfig)
 		D3D_DRIVER_TYPE_HARDWARE,
 		nullptr,
 		0,
-		nullptr, 0,		///Default Feature Levels
+		nullptr, 0,			///Default Feature Levels
 		D3D11_SDK_VERSION,
 		&mDevice,
 		&featureLevel,

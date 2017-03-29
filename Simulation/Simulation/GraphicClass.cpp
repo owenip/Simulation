@@ -4,7 +4,11 @@
 
 
 GraphicClass::GraphicClass():
-	mConfig(nullptr)
+	mConfig(nullptr),
+	mDirect3D(nullptr),
+	mATBar(nullptr),
+	mTimer(nullptr)
+
 {
 
 }
@@ -14,7 +18,7 @@ GraphicClass::~GraphicClass()
 {
 }
 
-bool GraphicClass::Initialize(const HWND hwnd, const ConfigClass * mConfig)
+bool GraphicClass::Initialize(const HWND hwnd, const ConfigClass * mConfig, TimerClass *SysTimer)
 {
 	bool result = false;
 	DX::ThrowIfFailed(mScreenWidth = mConfig->GetScreenWidth());
@@ -36,31 +40,18 @@ bool GraphicClass::Initialize(const HWND hwnd, const ConfigClass * mConfig)
 	//AntTweakBar initialse
 	InitAntTweak(hwnd);
 
+	//Timer link
+	mTimer = SysTimer;
+
 	//Mouse & keyboard initialisation
 	m_keyboard = std::make_unique<Keyboard>();
 	m_mouse = std::make_unique<Mouse>();
 	m_mouse->SetWindow(hwnd);
 	tracker.Update(m_keyboard->GetState());
 
+	
 	//Models Initialisation
-	//mSphere = GeometricPrimitive::CreateSphere(mDirect3D->GetDeviceContext());
-
-	//DXTK 2D
-	m_states = std::make_unique<CommonStates>(mDirect3D->GetDevice());
-
-	m_effect = std::make_unique<BasicEffect>(mDirect3D->GetDevice());
-	m_effect->SetVertexColorEnabled(true);
-	void const* shaderByteCode;
-	size_t byteCodeLength;
-	m_effect->GetVertexShaderBytecode(&shaderByteCode, &byteCodeLength);
-
-	DX::ThrowIfFailed(
-		mDirect3D->GetDevice()->CreateInputLayout(VertexPositionColor::InputElements,
-			VertexPositionColor::InputElementCount,
-			shaderByteCode, byteCodeLength,
-			m_inputLayout.ReleaseAndGetAddressOf()));
-
-	m_batch = std::make_unique<PrimitiveBatch<VertexPositionColor>>(mDirect3D->GetDeviceContext());
+	mSphere = GeometricPrimitive::CreateSphere(mDirect3D->GetDeviceContext());
 
 	return true;
 }
@@ -117,37 +108,26 @@ bool GraphicClass::Update()
 bool GraphicClass::Render()
 {
 	// Clear the buffers to begin the scene.
-	mDirect3D->BeginScene(SimpleMath::Vector4(Colors::Black));
+	mDirect3D->BeginScene(SimpleMath::Vector4(Colors::CornflowerBlue));
 
 	
 	SimpleMath::Matrix mWorld = SimpleMath::Matrix::Identity;
 	SimpleMath::Matrix mProj = SimpleMath::Matrix::Identity;
 
-	mDirect3D->GetWorld(mWorld);
-	mDirect3D->GetProj(mProj);
+	//mDirect3D->GetWorld(mWorld);
+	//mDirect3D->GetProj(mProj);
+	m_view = SimpleMath::Matrix::CreateLookAt(SimpleMath::Vector3(2.f, 2.f, 2.f),
+	                                          SimpleMath::Vector3::Zero, SimpleMath::Vector3::UnitY);
+	m_proj = SimpleMath::Matrix::CreatePerspectiveFieldOfView(XM_PI / 4.f,
+		mDirect3D->AspectRatio(), 0.1f, 10.f); 
 
-	SimpleMath::Matrix mView = SimpleMath::Matrix::CreateLookAt(
-		SimpleMath::Vector3(2.f, 2.f, 2.f),
-		SimpleMath::Vector3::Zero, 
-		SimpleMath::Vector3::UnitY);
+	//SimpleMath::Matrix mView = SimpleMath::Matrix::CreateLookAt(
+	//SimpleMath::Vector3(2.f, 2.f, 2.f),
+	//SimpleMath::Vector3::Zero, 
+	//SimpleMath::Vector3::UnitY);
+	
 
-	mDirect3D->GetDeviceContext()->OMSetBlendState(m_states->Opaque(), nullptr, 0xFFFFFFFF);
-	mDirect3D->GetDeviceContext()->OMSetDepthStencilState(m_states->DepthNone(), 0);
-	mDirect3D->GetDeviceContext()->RSSetState(m_states->CullNone());
-
-
-	m_effect->Apply(mDirect3D->GetDeviceContext());
-	mDirect3D->GetDeviceContext()->IASetInputLayout(m_inputLayout.Get());
-
-	m_batch->Begin();
-
-	VertexPositionColor v1(SimpleMath::Vector3(0.f, 0.5f, 0.5f), Colors::Yellow);
-	VertexPositionColor v2(SimpleMath::Vector3(0.5f, -0.5f, 0.5f), Colors::Yellow);
-	VertexPositionColor v3(SimpleMath::Vector3(-0.5f, -0.5f, 0.5f), Colors::Yellow);
-
-	m_batch->DrawTriangle(v1, v2, v3);
-
-	m_batch->End();
+	mSphere->Draw(mWorld, m_view, m_proj, Colors::Black);
 
 	//Draw AntTweakBar
 	TwDraw();
