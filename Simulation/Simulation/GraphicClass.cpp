@@ -111,13 +111,16 @@ bool GraphicClass::Render()
 	mDirect3D->BeginScene(SimpleMath::Vector4(Colors::CornflowerBlue));
 
 	
-	SimpleMath::Matrix mWorld = SimpleMath::Matrix::Identity;
+	SimpleMath::Matrix mWorld;
 	SimpleMath::Matrix mProj = SimpleMath::Matrix::Identity;
 
-	//mDirect3D->GetWorld(mWorld);
+	mDirect3D->GetWorld(mWorld);
 	//mDirect3D->GetProj(mProj);
-	m_view = SimpleMath::Matrix::CreateLookAt(SimpleMath::Vector3(2.f, 2.f, 2.f),
-	                                          SimpleMath::Vector3::Zero, SimpleMath::Vector3::UnitY);
+	m_view = SimpleMath::Matrix::CreateLookAt(
+						SimpleMath::Vector3(2.f, 2.f, 2.f),
+	                    SimpleMath::Vector3::Zero, 
+						SimpleMath::Vector3::UnitY);
+
 	m_proj = SimpleMath::Matrix::CreatePerspectiveFieldOfView(XM_PI / 4.f,
 		mDirect3D->AspectRatio(), 0.1f, 10.f); 
 
