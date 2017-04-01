@@ -57,9 +57,6 @@ using namespace std;
 //AntTweakBar
 #include <AntTweakBar.h>
 
-
-
-
 //Global
 const LPCTSTR mMainWndCaption = L"08025ACW";
 
@@ -98,3 +95,4 @@ namespace DX
 
 // Convenience macro for releasing COM objects
 #define ReleaseCOM(x) if (x != NULL) { x->Release(); x = NULL; }
+

@@ -6,6 +6,8 @@ public:
 	CameraClass(const CameraClass&) = default;
 	~CameraClass() = default;
 
+	bool Initialize(const SimpleMath::Vector3 &gravityWellPos);
+
 	void SetLookAt(SimpleMath::Vector3 newtarget);
 
 	void SetPosition(SimpleMath::Vector3 &cameraPos);
@@ -19,25 +21,39 @@ public:
 	void MoveLeft();
 	void MoveRight();
 
+	void Zooming(float &distance);
 	void ZoomIn();
 	void ZoomOut();
 
 	void SetMovementGain(float &movementGain);
 
-
 	void GetView(SimpleMath::Matrix &inView) const;
+	void GetProj(SimpleMath::Matrix &inProj) const;
 
 private:
-	void SetViewMatrix();
-
+	void UpdateViewMatrix();
+	void CalCamPosHeight(float &newHeight);
+	//Clamp Zooming distance
+	float Clamp(float n, float lower, float upper) {
+		return std::fmax(lower, std::fmin(n, upper));
+	}
 
 private:
 	SimpleMath::Vector3 mCamPos;
 	//SimpleMath::Vector3 mMove;
 	float mMovementGain;
-
+	
+	SimpleMath::Vector3 mUp;
 	SimpleMath::Vector3 mLookAt;
+
 	SimpleMath::Matrix mView;
+	SimpleMath::Matrix mProj;
+
+	float mDsitanceFromTarget;
+	const float mMinDistFromTarget = 2.0f;
+	const float mMaxDistFromTarget = 8.0f;
+	float mHeightfromTarget;
+	
 
 };
 

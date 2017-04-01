@@ -20,11 +20,15 @@ public:
 	
 private:
 	bool Render();
-	bool InitAntTweak(const HWND hwnd);
-
-	
-
+	bool InitAntTweak(const HWND hwnd);	
 	void CheckInput();
+
+	//Gravity Well movement control
+	void GwMove(SimpleMath::Vector3 direction);
+	void GwMoveForward();
+	void GwMoveBackward();
+	void GwMoveLeft();
+	void GwMoveRight();
 private:
 	ConfigClass *mConfig;
 	D3DClass *mDirect3D;
@@ -57,6 +61,11 @@ private:
 	DirectX::SimpleMath::Matrix m_world;
 	DirectX::SimpleMath::Matrix m_view;
 	DirectX::SimpleMath::Matrix m_proj;
+
+	//Gravity Well
+	DirectX::SimpleMath::Vector3 mGravityWellPos;
+	float mGWMovementGain;
+
 	std::unique_ptr<DirectX::GeometricPrimitive> mSphere;
 
 };

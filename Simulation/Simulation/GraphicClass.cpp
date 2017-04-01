@@ -50,11 +50,15 @@ bool GraphicClass::Initialize(const HWND hwnd, const ConfigClass * mConfig, Time
 	
 	//Camera Initialisation
 	mCamera = new CameraClass;
-	mCamera->SetPosition(SimpleMath::Vector3(2.f, 2.f, 5.f));
+	DX::ThrowIfFailed(mCamera->Initialize(SimpleMath::Vector3::Zero));
+
+	//mCamera->SetPosition(SimpleMath::Vector3(0.f, 2.f, 5.f));
 
 	//Models Initialisation
-	mSphere = GeometricPrimitive::CreateSphere(mDirect3D->GetDeviceContext());
+	mGravityWellPos = SimpleMath::Vector3::Zero;
+	mGWMovementGain = 0.001f;
 
+	mSphere = GeometricPrimitive::CreateSphere(mDirect3D->GetDeviceContext());
 	return true;
 }
 
@@ -123,20 +127,16 @@ bool GraphicClass::Render()
 	SimpleMath::Matrix mProj = SimpleMath::Matrix::Identity;
 
 	mDirect3D->GetWorld(mWorld);
-	//mDirect3D->GetProj(mProj);
-	/*m_view = SimpleMath::Matrix::CreateLookAt(
-						SimpleMath::Vector3(2.f, 2.f, 2.f),
-	                    SimpleMath::Vector3::Zero, 
-						SimpleMath::Vector3::UnitY);*/
-
-	/*m_proj = SimpleMath::Matrix::CreatePerspectiveFieldOfView(XM_PI / 4.f,
-		mDirect3D->AspectRatio(), 0.1f, 10.f); */
-	
+		
 	mCamera->GetView(m_view);
 	mDirect3D->GetProj(mProj);
+
+	mWorld.Translation(mGravityWellPos);
 	mSphere->Draw(mWorld, m_view, mProj, Colors::Black);
 
-	mWorld.Translation(SimpleMath::Vector3(0.5f, 0.f, 0.f));
+	//Second sphere
+	mDirect3D->GetWorld(mWorld);
+	mWorld.Translation(SimpleMath::Vector3(0.f, 0.f, 2.f));
 	mSphere->Draw(mWorld, m_view, mProj, Colors::Wheat);
 
 	//Draw AntTweakBar
@@ -238,32 +238,39 @@ void GraphicClass::CheckInput()
 	{
 		//Decrease the height of the gravity well above the surface
 	}
+
 	//Camera Control
-	else if (tracker.pressed.W)
+	if (kbState.W)
 	{
 		//Camera move forward
-		mCamera->MoveForward();
+		this->GwMoveForward();
 	}
-	else if (tracker.pressed.S)
+	else if (kbState.S)
 	{
 		//Camera move Backward
+		this->GwMoveBackward();
 	}
-	else if (tracker.pressed.A)
+	else if (kbState.A)
 	{
 		//Camera move left
+		this->GwMoveLeft();
 	}
-	else if (tracker.pressed.D)
+	else if (kbState.D)
 	{
 		//Camera move right
+		this->GwMoveRight();
 	}
-	else if (tracker.pressed.Up)
+	else if (kbState.Up)
 	{
 		//Camera Zoom in
+		mCamera->ZoomIn();
 	}
-	else if (tracker.pressed.Down)
+	else if (kbState.Down)
 	{
 		//Camera zoom out
+		mCamera->ZoomOut();
 	}
+	
 		
 	auto mouse = m_mouse->GetState();
 	if (mouse.leftButton && mouse.rightButton)
@@ -286,4 +293,36 @@ void GraphicClass::CheckInput()
 		//Handle move position to move the position of peer paralled to the surface
 	}
 	
+}
+
+void GraphicClass::GwMove(SimpleMath::Vector3 direction)
+{
+	SimpleMath::Vector3 move = direction*mGWMovementGain;
+	mGravityWellPos += move;
+	mCamera->SetLookAt(mGravityWellPos);
+	return;
+}
+
+void GraphicClass::GwMoveForward()
+{
+	this->GwMove(SimpleMath::Vector3::Forward);
+	return;
+}
+
+void GraphicClass::GwMoveBackward()
+{
+	this->GwMove(SimpleMath::Vector3::Backward);
+	return;
+}
+
+void GraphicClass::GwMoveLeft()
+{
+	this->GwMove(SimpleMath::Vector3::Left);
+	return;
+}
+
+void GraphicClass::GwMoveRight()
+{
+	this->GwMove(SimpleMath::Vector3::Right);
+	return;
 }
