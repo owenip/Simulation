@@ -39,6 +39,8 @@ private:
 	
 	unique_ptr<Keyboard> m_keyboard;
 	unique_ptr<Mouse> m_mouse;
+	int mouseX;
+	int mouseY;
 	Keyboard::KeyboardStateTracker tracker;
 
 	int mScreenWidth;

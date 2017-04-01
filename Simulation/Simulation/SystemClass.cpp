@@ -300,7 +300,8 @@ LRESULT CALLBACK SystemClass::MessageHandler(const HWND  hwnd, const UINT umsg, 
 			else
 			{
 				//Check window is having focus				
-				
+				Keyboard::ProcessMessage(umsg, wparam, lparam);
+				Mouse::ProcessMessage(umsg, wparam, lparam);
 			}
 			return 0;
 				

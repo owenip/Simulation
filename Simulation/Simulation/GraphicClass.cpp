@@ -7,7 +7,9 @@ GraphicClass::GraphicClass():
 	mConfig(nullptr),
 	mDirect3D(nullptr),
 	mATBar(nullptr),
-	mTimer(nullptr)
+	mTimer(nullptr),
+	mouseX(0),
+	mouseY(0)
 {
 
 }
@@ -44,9 +46,12 @@ bool GraphicClass::Initialize(const HWND hwnd, const ConfigClass * mConfig, Time
 
 	//Mouse & keyboard initialisation
 	m_keyboard = std::make_unique<Keyboard>();
+	tracker.Update(m_keyboard->GetState());
+
 	m_mouse = std::make_unique<Mouse>();
 	m_mouse->SetWindow(hwnd);
-	tracker.Update(m_keyboard->GetState());
+	//m_mouse->SetMode(Mouse::MODE_RELATIVE);
+	
 	
 	//Camera Initialisation
 	mCamera = new CameraClass;
@@ -107,7 +112,7 @@ bool GraphicClass::Update()
 {
 	bool result;
 
-	CheckInput();
+	this->CheckInput();
 
 	result = Render();
 	if (!result)
@@ -160,7 +165,7 @@ bool GraphicClass::InitAntTweak(const HWND hwnd)
 	int barSize[2] = { mScreenWidth / 4, mScreenHeight /4};
 	TwSetParam(mATBar, nullptr, "size", TW_PARAM_INT32, 2, barSize);
 	//Non-Changable variables
-	TwAddVarRW(mATBar, "No. of balls owned by this peer", TW_TYPE_INT32,&mNumberOfBalls,"min=0 max=64000");
+	TwAddVarRW(mATBar, "No. of balls owned by this peer", TW_TYPE_INT32,&mNumberOfBalls,"min=0 max=64000 keyincr=+ keydecr=-");
 	TwAddVarRW(mATBar, "No. of balls currently contended", TW_TYPE_INT32, nullptr, "");
 	TwAddVarRW(mATBar, "Total number of balls", TW_TYPE_INT32, nullptr, "");
 	TwAddVarRW(mATBar, "Magnitude of the applying force ", TW_TYPE_FLOAT, nullptr, "");
@@ -172,7 +177,8 @@ bool GraphicClass::InitAntTweak(const HWND hwnd)
 	TwAddVarRW(mATBar, "Target frequency of the physics (in Hz)", TW_TYPE_FLOAT, nullptr, "");
 	TwAddVarRW(mATBar, "Target frequency of the graphics (in Hz),", TW_TYPE_FLOAT, nullptr, "");
 	TwAddVarRW(mATBar, "Target frequency of the networking (in Hz),", TW_TYPE_FLOAT, nullptr, "");
-
+	TwAddVarRW(mATBar, "Mouse X", TW_TYPE_INT32, &mouseX, "");
+	TwAddVarRW(mATBar, "Mouse Y", TW_TYPE_INT32, &mouseY, "");
 	return true;
 }
 
@@ -261,7 +267,7 @@ void GraphicClass::CheckInput()
 		this->GwMoveRight();
 	}
 	else if (kbState.Up)
-	{
+{	
 		//Camera Zoom in
 		mCamera->ZoomIn();
 	}
@@ -273,6 +279,14 @@ void GraphicClass::CheckInput()
 	
 		
 	auto mouse = m_mouse->GetState();
+	if (mouse.positionMode == Mouse::MODE_RELATIVE)
+	{
+		mouseX = mouse.x;
+		mouseY = mouse.y;
+
+		mGravityWellPos += SimpleMath::Vector3(float(mouse.x),0.f, float(mouse.y)) * mGWMovementGain;
+		mCamera->SetLookAt(mGravityWellPos);
+	}
 	if (mouse.leftButton && mouse.rightButton)
 	{
 		//Cancel force
@@ -292,7 +306,7 @@ void GraphicClass::CheckInput()
 	{
 		//Handle move position to move the position of peer paralled to the surface
 	}
-	
+	m_mouse->SetMode(mouse.middleButton ? Mouse::MODE_RELATIVE : Mouse::MODE_ABSOLUTE);
 }
 
 void GraphicClass::GwMove(SimpleMath::Vector3 direction)

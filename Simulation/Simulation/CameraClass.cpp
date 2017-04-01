@@ -105,6 +105,7 @@ void CameraClass::MoveRight()
 void CameraClass::Zooming(float &distance)
 {
 	distance = Clamp(distance, mMinDistFromTarget, mMaxDistFromTarget);
+	CalCamPosHeight(mHeightfromTarget);
 	SimpleMath::Vector3 newPos = mLookAt + SimpleMath::Vector3(0.f, mHeightfromTarget, mDsitanceFromTarget);
 
 	this->SetPosition(newPos);
