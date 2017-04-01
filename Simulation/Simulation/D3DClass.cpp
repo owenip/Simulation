@@ -201,7 +201,9 @@ bool D3DClass::Initialize(const HWND hwnd, const ConfigClass * mConfig)
 	mDeviceContext->RSSetViewports(1, &mScreenViewport);
 
 	// Setup the projection matrix.
-	mProj = XMMatrixPerspectiveFovLH(0.25*XM_PI, AspectRatio(), 1.0f, 1000.f);
+	//mProj = XMMatrixPerspectiveFovLH(0.25*XM_PI, AspectRatio(), 1.0f, 1000.f);
+	mProj = SimpleMath::Matrix::CreatePerspectiveFieldOfView(XM_PI / 4.f,
+		this->AspectRatio(), 0.1f, 10.f);
 
 	// Initialize the world matrix to the identity matrix.
 	mWorld = XMMatrixIdentity();

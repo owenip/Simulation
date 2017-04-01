@@ -12,6 +12,8 @@ public:
 	int GetScreenWidth() const;
 	int GetScreenHeight() const;
 
+	//Camera Pos
+	
 private:
 	bool ReadConfigFile();
 	void StoreValue(string &key, string &value);
@@ -26,5 +28,6 @@ private:
 	bool mFullScreen;
 	int mScreenWidth, mScreenHeight;
 	
+
 };
 

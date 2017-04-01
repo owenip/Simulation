@@ -1,5 +1,6 @@
 #pragma once
 #include "D3DClass.h"
+#include "CameraClass.h"
 
 class GraphicClass
 {
@@ -39,6 +40,9 @@ private:
 	int mScreenWidth;
 	int mScreenHeight;
 	char mLastKeyPressed;
+
+	//Camera
+	CameraClass *mCamera;
 
 	//Ball
 	int mNumberOfBalls = 9;

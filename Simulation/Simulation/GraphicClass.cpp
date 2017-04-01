@@ -8,7 +8,6 @@ GraphicClass::GraphicClass():
 	mDirect3D(nullptr),
 	mATBar(nullptr),
 	mTimer(nullptr)
-
 {
 
 }
@@ -48,8 +47,11 @@ bool GraphicClass::Initialize(const HWND hwnd, const ConfigClass * mConfig, Time
 	m_mouse = std::make_unique<Mouse>();
 	m_mouse->SetWindow(hwnd);
 	tracker.Update(m_keyboard->GetState());
-
 	
+	//Camera Initialisation
+	mCamera = new CameraClass;
+	mCamera->SetPosition(SimpleMath::Vector3(2.f, 2.f, 5.f));
+
 	//Models Initialisation
 	mSphere = GeometricPrimitive::CreateSphere(mDirect3D->GetDeviceContext());
 
@@ -64,6 +66,12 @@ void GraphicClass::Shutdown()
 	m_inputLayout.Reset();
 
 	mSphere.reset();
+
+	if (mCamera)
+	{
+		delete mCamera;
+		mCamera = nullptr;
+	}
 
 	TwTerminate();
 
@@ -116,21 +124,20 @@ bool GraphicClass::Render()
 
 	mDirect3D->GetWorld(mWorld);
 	//mDirect3D->GetProj(mProj);
-	m_view = SimpleMath::Matrix::CreateLookAt(
+	/*m_view = SimpleMath::Matrix::CreateLookAt(
 						SimpleMath::Vector3(2.f, 2.f, 2.f),
 	                    SimpleMath::Vector3::Zero, 
-						SimpleMath::Vector3::UnitY);
+						SimpleMath::Vector3::UnitY);*/
 
-	m_proj = SimpleMath::Matrix::CreatePerspectiveFieldOfView(XM_PI / 4.f,
-		mDirect3D->AspectRatio(), 0.1f, 10.f); 
-
-	//SimpleMath::Matrix mView = SimpleMath::Matrix::CreateLookAt(
-	//SimpleMath::Vector3(2.f, 2.f, 2.f),
-	//SimpleMath::Vector3::Zero, 
-	//SimpleMath::Vector3::UnitY);
+	/*m_proj = SimpleMath::Matrix::CreatePerspectiveFieldOfView(XM_PI / 4.f,
+		mDirect3D->AspectRatio(), 0.1f, 10.f); */
 	
+	mCamera->GetView(m_view);
+	mDirect3D->GetProj(mProj);
+	mSphere->Draw(mWorld, m_view, mProj, Colors::Black);
 
-	mSphere->Draw(mWorld, m_view, m_proj, Colors::Black);
+	mWorld.Translation(SimpleMath::Vector3(0.5f, 0.f, 0.f));
+	mSphere->Draw(mWorld, m_view, mProj, Colors::Wheat);
 
 	//Draw AntTweakBar
 	TwDraw();
@@ -234,11 +241,12 @@ void GraphicClass::CheckInput()
 	//Camera Control
 	else if (tracker.pressed.W)
 	{
-		//Camera move Up
+		//Camera move forward
+		mCamera->MoveForward();
 	}
 	else if (tracker.pressed.S)
 	{
-		//Camera move down
+		//Camera move Backward
 	}
 	else if (tracker.pressed.A)
 	{
