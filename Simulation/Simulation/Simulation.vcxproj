@@ -142,6 +142,9 @@
   <ItemGroup>
     <ResourceCompile Include="Simulation.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="earth.bmp" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="..\packages\directxtk_desktop_2015.2017.2.10.1\build\native\directxtk_desktop_2015.targets" Condition="Exists('..\packages\directxtk_desktop_2015.2017.2.10.1\build\native\directxtk_desktop_2015.targets')" />

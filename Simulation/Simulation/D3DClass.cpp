@@ -9,7 +9,7 @@ D3DClass::D3DClass():
 	mDevice(nullptr),
 	mDeviceContext(nullptr), 
 	mRenderTargetView(nullptr),
-	blendFactor{ 0.f,0.f,0.f,0.f }
+	blendFactor{ 0.f,0.f,0.f,0.3f }
 {
 	
 }
@@ -203,10 +203,10 @@ bool D3DClass::Initialize(const HWND hwnd, const ConfigClass * mConfig)
 	// Setup the projection matrix.
 	//mProj = XMMatrixPerspectiveFovLH(0.25*XM_PI, AspectRatio(), 1.0f, 1000.f);
 	mProj = SimpleMath::Matrix::CreatePerspectiveFieldOfView(XM_PI / 4.f,
-		this->AspectRatio(), 0.1f, 10.f);
+		this->AspectRatio(), 1.f, 1000.f);
 
 	// Initialize the world matrix to the identity matrix.
-	mWorld = XMMatrixIdentity();
+	mWorld = SimpleMath::Matrix::Identity;
 
 	// Create an orthographic projection matrix for 2D rendering.
 	mOrth = XMMatrixOrthographicLH(static_cast<float>(mScreenWidth), static_cast<float>(mScreenHeight), 1.0f, 1000.f);

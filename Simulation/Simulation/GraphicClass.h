@@ -68,10 +68,12 @@ private:
 	DirectX::SimpleMath::Matrix m_proj;
 
 	//Gravity Well
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_texture;
 	DirectX::SimpleMath::Vector3 mGravityWellPos;
 	float mGWMovementGain;
 
-	std::unique_ptr<DirectX::GeometricPrimitive> mSphere;
-
+	std::unique_ptr<DirectX::GeometricPrimitive> mGravityWell;
+	std::unique_ptr<DirectX::GeometricPrimitive> m_shape;
+	
 };
 
