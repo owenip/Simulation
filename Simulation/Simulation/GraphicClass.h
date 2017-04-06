@@ -16,8 +16,7 @@ public:
 	void OnResume();
 
 	bool Update();
-
-	
+		
 private:
 	bool Render();
 	bool InitAntTweak(const HWND hwnd);	

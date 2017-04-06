@@ -1,3 +1,14 @@
-﻿  GraphicClass.cpp
-  Simulation.vcxproj -> \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\x64\Debug\Simulation.exe
-  Simulation.vcxproj -> \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\x64\Debug\Simulation.pdb (Partial PDB)
+﻿  TimerClass.cpp
+  SystemClass.cpp
+  pch.cpp
+  main.cpp
+  GraphicClass.cpp
+  D3DClass.cpp
+  ConfigClass.cpp
+  CameraClass.cpp
+  Generating Code...
+  Simulation.vcxproj -> \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\bin\Simulation.exe
+  Simulation.vcxproj -> \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\bin\Simulation.pdb (Partial PDB)
+  \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\Resources\earth.bmp
+  \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\Resources\config.txt
+          2 file(s) copied.
