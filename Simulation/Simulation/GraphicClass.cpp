@@ -50,7 +50,7 @@ bool GraphicClass::Initialize(const HWND hwnd, const ConfigClass * mConfig, Time
 
 	m_mouse = std::make_unique<Mouse>();
 	m_mouse->SetWindow(hwnd);
-	//m_mouse->SetMode(Mouse::MODE_RELATIVE);
+	m_mouse->SetMode(Mouse::MODE_RELATIVE);
 	
 	
 	//Camera Initialisation
@@ -63,7 +63,7 @@ bool GraphicClass::Initialize(const HWND hwnd, const ConfigClass * mConfig, Time
 	mGravityWellPos = SimpleMath::Vector3::Zero;
 	mGWMovementGain = 0.001f;
 
-	mSphere = GeometricPrimitive::CreateSphere(mDirect3D->GetDeviceContext());
+	mSphere = GeometricPrimitive::CreateCylinder(mDirect3D->GetDeviceContext(), 0.05f, 5.f);
 	return true;
 }
 
@@ -236,13 +236,15 @@ void GraphicClass::CheckInput()
 		//Decrease frequency of Time scale (globally)
 		//Minimum 0.001
 	}
-	else if (tracker.pressed.M)
+	else if (kbState.M)
 	{
 		//Increase the height of the gravity well above the surface
+		this->GwMoveUp();
 	}
-	else if (tracker.pressed.M)
+	else if (kbState.N)
 	{
 		//Decrease the height of the gravity well above the surface
+		this->GwMoveDown();
 	}
 
 	//Camera Control
@@ -276,16 +278,13 @@ void GraphicClass::CheckInput()
 		//Camera zoom out
 		mCamera->ZoomOut();
 	}
-	
-		
+			
 	auto mouse = m_mouse->GetState();
 	if (mouse.positionMode == Mouse::MODE_RELATIVE)
 	{
-		mouseX = mouse.x;
-		mouseY = mouse.y;
-
-		mGravityWellPos += SimpleMath::Vector3(float(mouse.x),0.f, float(mouse.y)) * mGWMovementGain;
-		mCamera->SetLookAt(mGravityWellPos);
+		float mouseX = static_cast<float>(mouse.x);
+		float mouseY = static_cast<float>(mouse.y);
+		this->GwMoveByMouse(mouseX, mouseY);
 	}
 	if (mouse.leftButton && mouse.rightButton)
 	{
@@ -302,11 +301,7 @@ void GraphicClass::CheckInput()
 		//Clear Attrating force
 		//Apply repellor force
 	}
-	
-	{
-		//Handle move position to move the position of peer paralled to the surface
-	}
-	m_mouse->SetMode(mouse.middleButton ? Mouse::MODE_RELATIVE : Mouse::MODE_ABSOLUTE);
+	//m_mouse->SetMode(mouse.middleButton ? Mouse::MODE_RELATIVE : Mouse::MODE_ABSOLUTE);
 }
 
 void GraphicClass::GwMove(SimpleMath::Vector3 direction)
@@ -339,4 +334,21 @@ void GraphicClass::GwMoveRight()
 {
 	this->GwMove(SimpleMath::Vector3::Right);
 	return;
+}
+
+void GraphicClass::GwMoveByMouse(float & mouseX, float & mouseY)
+{
+	SimpleMath::Vector3 move = SimpleMath::Vector3(mouseX, 0.f, mouseY);
+	this->GwMove(move);
+	return;
+}
+
+void GraphicClass::GwMoveUp()
+{
+	this->GwMove(SimpleMath::Vector3::Up);
+}
+
+void GraphicClass::GwMoveDown()
+{
+	this->GwMove(SimpleMath::Vector3::Down);
 }

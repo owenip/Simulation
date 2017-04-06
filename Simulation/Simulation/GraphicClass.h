@@ -29,6 +29,9 @@ private:
 	void GwMoveBackward();
 	void GwMoveLeft();
 	void GwMoveRight();
+	void GwMoveByMouse(float &mouseX, float &mouseY);
+	void GwMoveUp();
+	void GwMoveDown();
 private:
 	ConfigClass *mConfig;
 	D3DClass *mDirect3D;
