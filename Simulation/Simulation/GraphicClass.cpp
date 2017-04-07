@@ -61,27 +61,36 @@ bool GraphicClass::Initialize(const HWND hwnd, const ConfigClass * mConfig, Time
 	m_states = std::make_unique<DirectX::CommonStates>(mDirect3D->GetDevice());
 	m_effect = std::make_unique<DirectX::BasicEffect>(mDirect3D->GetDevice());
 	m_effect->SetTextureEnabled(false);
-	m_effect->SetAmbientLightColor(SimpleMath::Vector3(.3f, .3f, .3f));
-	m_effect->SetAlpha(.3f);
+	m_effect->SetAmbientLightColor(SimpleMath::Vector3(.5f, .5f, .5f));
+	m_effect->SetAlpha(.5f);
 
-	//Sphere
-	m_shape = GeometricPrimitive::CreateSphere(mDirect3D->GetDeviceContext());
-	m_shape->CreateInputLayout(m_effect.get(),
-		m_inputLayout.ReleaseAndGetAddressOf());
-
-	//Models Initialisation
-	mGravityWellPos = SimpleMath::Vector3::Zero;
-	mGWMovementGain = 0.001f;
-
-	//mGravityWell = GeometricPrimitive::CreateCylinder(mDirect3D->GetDeviceContext(), 0.05f, 5.f);
-	mGravityWell = GeometricPrimitive::CreateCylinder(mDirect3D->GetDeviceContext(),0.05f, 5.f);
-	//mGravityWell->CreateInputLayout(m_effect.get(), m_inputLayout.ReleaseAndGetAddressOf());
-
+	m_fxFactory = std::make_unique<EffectFactory>(mDirect3D->GetDevice());
 
 	//Texture
 	DX::ThrowIfFailed(
-		CreateWICTextureFromFile(mDirect3D->GetDevice(), L"earth.bmp", nullptr,
+		CreateWICTextureFromFile(mDirect3D->GetDevice(), L".\\Resources\\earth.bmp", nullptr,
 			m_texture.ReleaseAndGetAddressOf()));
+
+	//mSurface->CreateInputLayout(m_effect.get(),
+	//	m_inputLayout.ReleaseAndGetAddressOf());
+
+	//
+	//Models Initialisation
+	//Surface
+	mSurface = GeometricPrimitive::CreateCylinder(mDirect3D->GetDeviceContext(), 0.05f, 50.f);
+	
+	//Wall
+	mWall = GeometricPrimitive::CreateCylinder(mDirect3D->GetDeviceContext(), 25.f, 50.f);
+	mWall->CreateInputLayout(m_effect.get(), mWallInputLayout.ReleaseAndGetAddressOf());
+
+	m_model = Model::CreateFromCMO(mDirect3D->GetDevice(), L".\\Resources\\wall.cmo", *m_fxFactory);
+	
+	//GravityWell
+	mGravityWellPos = SimpleMath::Vector3::Zero;
+	mGWMovementGain = 0.001f;
+	mGravityWell = GeometricPrimitive::CreateSphere(mDirect3D->GetDeviceContext(),1.f);
+	mGravityWell->CreateInputLayout(m_effect.get(), mGwInputLayout.ReleaseAndGetAddressOf());
+
 	//m_effect->SetTexture(m_texture.Get());
 
 	return true;
@@ -89,6 +98,9 @@ bool GraphicClass::Initialize(const HWND hwnd, const ConfigClass * mConfig, Time
 
 void GraphicClass::Shutdown()
 {
+	m_fxFactory.reset();
+	m_model.reset();
+
 	m_texture.Reset();
 	m_states.reset();
 	m_effect.reset();
@@ -135,6 +147,7 @@ bool GraphicClass::Update()
 
 	this->CheckInput();
 
+
 	result = Render();
 	if (!result)
 	{
@@ -157,23 +170,50 @@ bool GraphicClass::Render()
 	m_effect->SetProjection(m_proj);
 	m_effect->SetWorld(m_world);
 
+	//Draw Model
+	//Surface
+	m_world.Translation(SimpleMath::Vector3(0.f,-5.f,0.f));
+	mSurface->Draw(m_world, m_view, m_proj, Colors::Silver);
 
-	m_shape->Draw(m_effect.get(), m_inputLayout.Get(), true, false, [=]
+	//GravityWell
+	mDirect3D->GetWorld(m_world);
+	m_world.Translation(mGravityWellPos);
+	m_effect->SetWorld(m_world);
+	m_effect->SetColorAndAlpha(SimpleMath::Color(0.f, 0.f, 0.f, 0.3));
+	mGravityWell->Draw(m_effect.get(),mGwInputLayout.Get(), true, false, [=]
 	{
-		mDirect3D->GetDeviceContext()->OMSetBlendState(m_states->NonPremultiplied(), nullptr, 0xFFFFFFFF);
+		mDirect3D->GetDeviceContext()->RSSetState(m_states->CullNone());
+	});
+	//Wall
+	
+	mDirect3D->GetWorld(m_world);
+	m_effect->SetWorld(m_world);
+	m_effect->SetColorAndAlpha(SimpleMath::Color(1.f, 1.f, 1.f, 0.5));
+
+
+	//mWall->Draw(m_effect.get(), mWallInputLayout.Get(), true, false, [=]
+	//{
+	//	mDirect3D->GetDeviceContext()->RSSetState(m_states->CullNone());
+	//});
+	
+	
+	m_model->UpdateEffects([&](IEffect* effect)
+	{
+		auto TranEffect = dynamic_cast<BasicEffect*>(effect);
+		if (TranEffect)
+		{
+			m_effect->SetColorAndAlpha(SimpleMath::Color(0.f, 0.f, 0.f, 0.3));
+		}
 	});
 
-	//mGravityWell->Draw(m_effect.get(), m_inputLayout.Get());
+	m_world.CreateScale(2.f);
 
-	m_world.Translation(mGravityWellPos);
-	//mGravityWell->Draw(m_world, m_view, m_proj, Colors::Black);
-
-	//Second sphere
-	mDirect3D->GetWorld(m_world);
-	m_world.Translation(SimpleMath::Vector3(0.f, -0.5f, 2.f));
+	m_model->Draw(mDirect3D->GetDeviceContext(), *m_states, m_world, m_view, m_proj,false, [=]
+	{
+		mDirect3D->GetDeviceContext()->RSSetState(m_states->CullNone());
+	});
 
 	
-	mGravityWell->Draw(m_world, m_view, m_proj, Colors::Wheat);
 
 	//Draw AntTweakBar
 	TwDraw();

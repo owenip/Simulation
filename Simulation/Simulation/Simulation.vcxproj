@@ -53,6 +53,9 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\ImageContentTask.props" />
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\MeshContentTask.props" />
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\ShaderGraphContentTask.props" />
   </ImportGroup>
   <ImportGroup Label="Shared">
   </ImportGroup>
@@ -80,6 +83,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -88,9 +92,10 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
     </ClCompile>
     <PostBuildEvent>
-      <Command>copy "$(ProjectDir)Resources\*.*" "$(ProjectDir)bin"</Command>
+      <Command>copy "$(ProjectDir)Resources\*.*" "$(ProjectDir)bin\Resources\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -100,6 +105,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -113,13 +119,14 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(ProjectDir)Resources\*.*" "$(ProjectDir)bin"</Command>
+      <Command>copy "$(ProjectDir)Resources\*.*" "$(ProjectDir)bin\Resources\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -129,7 +136,6 @@
     <ClCompile Include="GraphicClass.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="pch.cpp" />
-    <None Include="RenderStates.cpp" />
     <ClCompile Include="SystemClass.cpp" />
     <ClCompile Include="TimerClass.cpp" />
   </ItemGroup>
@@ -142,7 +148,6 @@
     <ClInclude Include="D3DClass.h" />
     <ClInclude Include="GraphicClass.h" />
     <ClInclude Include="pch.h" />
-    <None Include="RenderStates.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SystemClass.h" />
     <ClInclude Include="TimerClass.h" />
@@ -161,6 +166,9 @@
     <Import Project="..\packages\directxtk_desktop_2015.2017.2.10.1\build\native\directxtk_desktop_2015.targets" Condition="Exists('..\packages\directxtk_desktop_2015.2017.2.10.1\build\native\directxtk_desktop_2015.targets')" />
     <Import Project="..\packages\AntTweakBar.redist.1.16.3\build\native\AntTweakBar.redist.targets" Condition="Exists('..\packages\AntTweakBar.redist.1.16.3\build\native\AntTweakBar.redist.targets')" />
     <Import Project="..\packages\AntTweakBar.1.16.3\build\native\AntTweakBar.targets" Condition="Exists('..\packages\AntTweakBar.1.16.3\build\native\AntTweakBar.targets')" />
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\ImageContentTask.targets" />
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\MeshContentTask.targets" />
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\ShaderGraphContentTask.targets" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

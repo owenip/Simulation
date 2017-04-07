@@ -23,7 +23,7 @@ private:
 	void SetDefaultAll();
 
 private:
-	const std::string configFileName = "config.txt";
+	const std::string configFileName = ".\\Resources\\config.txt";
 
 	bool mFullScreen;
 	int mScreenWidth, mScreenHeight;

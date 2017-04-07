@@ -42,12 +42,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="RenderStates.cpp">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="RenderStates.h">
-      <Filter>Resource Files</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
