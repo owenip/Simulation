@@ -37,8 +37,8 @@ bool BallManagerClass::Initialise(D3DClass *Direct3D, ConfigClass *Config)
 	{
 		BallClass *Ball = new BallClass();
 
-		Ball->Initialize(-1, mBallRadius, 10.f, SimpleMath::Vector3(i * (mBallRadius * 2), 0.f, 0.f),
-						SimpleMath::Vector3::Zero, SimpleMath::Vector3::Zero, 0.99f);
+		Ball->Initialize(-1, mBallRadius, 10.f, SimpleMath::Vector3(i * (mBallRadius * 2), mBallRadius, 0.f),
+			SimpleMath::Vector3(0.f, 0.0f, 0.f), SimpleMath::Vector3(0.f, 0.f, 0.f), 0.99f);
 
 		mBallIndex.push_back(Ball);
 	}
