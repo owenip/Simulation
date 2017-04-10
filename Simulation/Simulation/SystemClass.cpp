@@ -47,7 +47,7 @@ bool SystemClass::Initialize()
 	}
 
 	//Timer initialse
-	mTimer = new TimerClass;
+	mTimer = make_shared<TimerClass>();
 	if (!mTimer)
 	{
 		return false;
@@ -61,7 +61,7 @@ bool SystemClass::Initialize()
 
 	//Initialise Graphic Class
 	mGraphic = new GraphicClass;
-	result = mGraphic->Initialize(m_hwnd, mConfig.get(), mTimer);
+	result = mGraphic->Initialize(m_hwnd, mConfig, mTimer);
 	if (!result)
 	{
 		MessageBoxA(NULL, "Unable to initialise the graphic class!", "Error", MB_OK | MB_ICONERROR);
@@ -198,7 +198,7 @@ bool SystemClass::InitializeWindow(int screenWidth, int screenHeight)
 	}
 
 	// Create the window with the screen settings and get the handle to it.
-	m_hwnd = CreateWindowEx(WS_EX_APPWINDOW, m_applicationName, mMainWndCaption,
+	m_hwnd = CreateWindowEx(WS_EX_APPWINDOW, m_applicationName, mMainWndCaption.c_str(),
 		WS_OVERLAPPEDWINDOW,
 		posX, posY, screenWidth, screenHeight, nullptr, nullptr, m_hinstance, nullptr);
 
@@ -276,19 +276,7 @@ void SystemClass::CalculateFrameStats()
 LRESULT CALLBACK SystemClass::MessageHandler(const HWND  hwnd, const UINT umsg, const WPARAM wparam, const LPARAM lparam)
 {
 	switch (umsg)
-	{
-		case WM_DESTROY:
-		{
-			PostQuitMessage(0);
-			return 0;
-		}
-
-		// Check if the window is being closed.
-		case WM_CLOSE:
-		{
-			PostQuitMessage(0);
-			return 0;
-		}		
+	{		
 		case WM_ACTIVATE:
 		{
 			if (LOWORD(wparam) == WA_INACTIVE)

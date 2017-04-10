@@ -8,7 +8,7 @@ public:
 	BallManagerClass();
 	~BallManagerClass();
 
-	bool Initialise(D3DClass *Direct3D, ConfigClass *mConfig);
+	bool Initialise(shared_ptr<D3DClass> Direct3D, shared_ptr<ConfigClass> Config);
 	void Update(float dt);
 	void Render(SimpleMath::Matrix View);
 	void Shutdown();
@@ -18,10 +18,8 @@ private:
 	
 
 private:
-	D3DClass *mDirect3D;
-	ID3D11Device *mDevice;
-	ID3D11DeviceContext *mDeviceContext;
-	ConfigClass *mConfig;
+	shared_ptr<D3DClass> mDirect3D;
+	shared_ptr<ConfigClass> mConfig;
 
 	int mNumberOfBalls;
 	float mBallRadius;

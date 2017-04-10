@@ -23,7 +23,6 @@ private:
 	void CalculateFrameStats();
 
 private:
-
 	LPCWSTR m_applicationName;
 	HINSTANCE m_hinstance;
 	HWND m_hwnd;
@@ -33,11 +32,13 @@ private:
 	//ConfigClass* mConfig;	
 	shared_ptr<ConfigClass> mConfig;
 	GraphicClass *mGraphic;
-	TimerClass *mTimer;
+	
+	shared_ptr<TimerClass> mTimer;
 
 
 	bool      mAppPaused;
 };
 
+const std::wstring mMainWndCaption = L"08025ACW";
 static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 static SystemClass* ApplicationHandle = 0;

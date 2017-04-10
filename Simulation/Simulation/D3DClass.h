@@ -10,7 +10,7 @@ public:
 	D3DClass& operator=(const D3DClass&) = default;
 	~D3DClass();
 
-	bool Initialize(const HWND hwnd, const ConfigClass *mConfig);
+	bool Initialize(const HWND hwnd, shared_ptr<ConfigClass> Config);
 	void Shutdown();
 
 	//Clear buffer for next frame

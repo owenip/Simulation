@@ -15,13 +15,14 @@ D3DClass::D3DClass():
 
 D3DClass::~D3DClass()
 {
+	this->Shutdown();
 }
 
-bool D3DClass::Initialize(const HWND hwnd, const ConfigClass * Config)
+bool D3DClass::Initialize(const HWND hwnd, shared_ptr<ConfigClass> Config)
 {
 	
 	HRESULT result;
-	mConfig = make_shared<ConfigClass>(Config);
+	mConfig = Config;
 	DX::ThrowIfFailed(mScreenWidth = mConfig->GetScreenWidth());
 	DX::ThrowIfFailed(mScreenHeight = mConfig->GetScreenHeight());
 

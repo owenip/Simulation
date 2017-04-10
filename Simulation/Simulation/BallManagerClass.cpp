@@ -10,26 +10,25 @@ BallManagerClass::BallManagerClass()
 
 BallManagerClass::~BallManagerClass()
 {
+	this->Shutdown();
 }
 
-bool BallManagerClass::Initialise(D3DClass *Direct3D, ConfigClass *Config)
+bool BallManagerClass::Initialise(shared_ptr<D3DClass> Direct3D, shared_ptr<ConfigClass> Config)
 {
 	assert(mDirect3D = Direct3D);
-	assert(mDevice = mDirect3D->GetDevice());
-	assert(mDeviceContext = mDirect3D->GetDeviceContext());
 	assert(mConfig = Config);
 
 	mNumberOfBalls = mConfig->GetNumberOfBalls();
 	mBallRadius = mConfig->GetBallRadius();
 
 
-	m_Balleffect = std::make_unique<DirectX::BasicEffect>(mDevice);
+	m_Balleffect = std::make_unique<DirectX::BasicEffect>(mDirect3D->GetDevice());
 	m_Balleffect->SetTextureEnabled(true);
 	CreateTexture();
 	m_Balleffect->SetTexture(m_LightTexture.Get());
 
 
-	mBallPrimitive = GeometricPrimitive::CreateSphere(mDeviceContext, mBallRadius * 2);
+	mBallPrimitive = GeometricPrimitive::CreateSphere(mDirect3D->GetDeviceContext(), mBallRadius * 2);
 	mBallPrimitive->CreateInputLayout(m_Balleffect.get(),
 		m_inputLayout.ReleaseAndGetAddressOf());
 		
@@ -101,11 +100,14 @@ void BallManagerClass::Shutdown()
 	m_LightTexture.Reset();
 	m_Mediumtexture.Reset();
 	m_Heavytexture.Reset();
+
+	mConfig.reset();
+	mDirect3D.reset();
 }
 
 void BallManagerClass::CreateTexture()
 {
 	DX::ThrowIfFailed(
-		CreateWICTextureFromFile(mDevice, L".\\Resources\\earth.bmp", nullptr,
+		CreateWICTextureFromFile(mDirect3D->GetDevice(), L".\\Resources\\earth.bmp", nullptr,
 			m_LightTexture.ReleaseAndGetAddressOf()));
 }

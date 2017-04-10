@@ -27,6 +27,9 @@ void ParticleClass::Integrate(float duration)
 	//Impose drag
 	mVelocity *= powf(mDamping, duration);
 
+	//Clear the forces
+	ClearAccumulator();
+
 }
 
 void ParticleClass::SetMass(const float mass)

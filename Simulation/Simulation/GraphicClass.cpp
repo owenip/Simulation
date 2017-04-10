@@ -15,24 +15,25 @@ GraphicClass::GraphicClass():
 
 GraphicClass::~GraphicClass()
 {
+	this->Shutdown();
 }
 
-bool GraphicClass::Initialize(const HWND hwnd, shared_ptr<ConfigClass> Config, TimerClass *SysTimer)
+bool GraphicClass::Initialize(const HWND hwnd, shared_ptr<ConfigClass> Config, shared_ptr<TimerClass> SysTimer)
 {
 	bool result = false;
 
-	mConfig = make_shared<ConfigClass>(Config);
+	mConfig = Config;
 	DX::ThrowIfFailed(mScreenWidth = mConfig->GetScreenWidth());
 	DX::ThrowIfFailed(mScreenHeight = mConfig->GetScreenHeight());
 	DX::ThrowIfFailed(mNumberOfBalls = mConfig->GetNumberOfBalls());
 
 	//DirectX Class initialisation
-	mDirect3D = new D3DClass;
+	mDirect3D = make_unique<D3DClass>();
 	if (!mDirect3D)
 	{
 		return false;
 	}
-	result = mDirect3D->Initialize(hwnd, mConfig.get());
+	result = mDirect3D->Initialize(hwnd, mConfig);
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize Direct3D.", L"Error", MB_OK);
@@ -55,7 +56,7 @@ bool GraphicClass::Initialize(const HWND hwnd, shared_ptr<ConfigClass> Config, T
 	
 	
 	//Camera Initialisation
-	mCamera = new CameraClass;
+	mCamera = std::make_unique<CameraClass>();
 	DX::ThrowIfFailed(mCamera->Initialize(SimpleMath::Vector3::Zero));
 
 	//Effect Initialisation
@@ -103,18 +104,13 @@ bool GraphicClass::Initialize(const HWND hwnd, shared_ptr<ConfigClass> Config, T
 
 	//GravityWell
 	mGravityWellPos = SimpleMath::Vector3::Zero;
-	mGWMovementGain = 0.001f;
+	mGWMovementGain = 0.01f;
 	mGravityWell = GeometricPrimitive::CreateSphere(mDirect3D->GetDeviceContext(),1.f);
 	mGravityWell->CreateInputLayout(m_effect.get(), mGwInputLayout.ReleaseAndGetAddressOf());
 
 	//Balls Manager Initialisation
-	mBallManager = new BallManagerClass;
-	if (!mBallManager)
-	{
-		return false;
-	}
-
-	result = mBallManager->Initialise(mDirect3D, mConfig.get());
+	mBallManager = make_unique<BallManagerClass>();
+	result = mBallManager->Initialise(mDirect3D, mConfig);
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize BallManager.", L"Error", MB_OK);
@@ -138,29 +134,15 @@ void GraphicClass::Shutdown()
 
 	mGravityWell.reset();
 
-	if (mBallManager)
-	{
-		mBallManager->Shutdown();
-		delete mBallManager;
-		mBallManager = nullptr;
-	}
+	mBallManager.reset();	
 
-	if (mCamera)
-	{
-		delete mCamera;
-		mCamera = nullptr;
-	}
+	mCamera.reset();	
 
 	TwTerminate();
 
-	if (mDirect3D)
-	{
-		mDirect3D->Shutdown();
-		delete mDirect3D;
-		mDirect3D = nullptr;
-	}
-
+	mDirect3D.reset();
 	mConfig.reset();
+	mTimer.reset();
 }
 
 void GraphicClass::OnPause()

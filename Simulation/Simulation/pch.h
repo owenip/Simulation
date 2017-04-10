@@ -56,7 +56,6 @@ using namespace DirectX;
 #include <AntTweakBar.h>
 
 //Global
-const LPCTSTR mMainWndCaption = L"08025ACW";
 
 //My Own Class
 #include "ConfigClass.h"

@@ -11,7 +11,7 @@ public:
 	GraphicClass& operator=(const GraphicClass&) = default;
 	~GraphicClass();
 
-	bool Initialize(const HWND hwnd, shared_ptr<ConfigClass> Config, TimerClass *SysTimer);
+	bool Initialize(const HWND hwnd, shared_ptr<ConfigClass> Config, shared_ptr<TimerClass> SysTimer);
 	void Shutdown();
 
 	void OnPause();
@@ -34,14 +34,12 @@ private:
 	void GwMoveUp();
 	void GwMoveDown();
 private:
-	//ConfigClass *mConfig;
-	D3DClass *mDirect3D;
+	shared_ptr<D3DClass> mDirect3D;
+	shared_ptr<ConfigClass> mConfig;
 	TwBar *mATBar;
 
-	shared_ptr<ConfigClass> mConfig;
-
 	//Timer
-	TimerClass *mTimer;
+	shared_ptr<TimerClass > mTimer;
 	
 	unique_ptr<Keyboard> m_keyboard;
 	unique_ptr<Mouse> m_mouse;
@@ -52,7 +50,7 @@ private:
 	char mLastKeyPressed;
 
 	//Camera
-	CameraClass *mCamera;
+	unique_ptr<CameraClass> mCamera;
 
 	//Ball
 	int mNumberOfBalls;
@@ -91,6 +89,6 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv;
 
 	//Balls
-	BallManagerClass *mBallManager;
+	std::unique_ptr<BallManagerClass> mBallManager;
 };
 
