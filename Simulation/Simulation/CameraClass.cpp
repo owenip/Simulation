@@ -10,7 +10,8 @@ CameraClass::CameraClass():
 	mView(SimpleMath::Matrix::Identity),
 	mUp(SimpleMath::Vector3::Up),
 	mDsitanceFromTarget(0.f),
-	mHeightfromTarget(0.f)
+	mHeightfromTarget(0.f),
+	mRotationRad(0.f)
 {
 	
 }
@@ -18,7 +19,7 @@ CameraClass::CameraClass():
 bool CameraClass::Initialize(const SimpleMath::Vector3 &gravityWellPos)
 {
 	mMovementGain = 0.001f;
-	mDsitanceFromTarget = 5.f;
+	mDsitanceFromTarget = 15.f;
 	this->CalCamPosHeight(mHeightfromTarget);
 
 	//Setup ViewMatrix and parameters
@@ -30,7 +31,6 @@ void CameraClass::SetLookAt(SimpleMath::Vector3 newtarget)
 {	
 	mLookAt = newtarget;
 	this->SetPosition(mLookAt + SimpleMath::Vector3(0.f, mHeightfromTarget, mDsitanceFromTarget));
-
 	return;
 }
 
@@ -61,7 +61,7 @@ void CameraClass::GetProj(SimpleMath::Matrix & inProj) const
 }
 
 void CameraClass::UpdateViewMatrix()
-{
+{	
 	mView = SimpleMath::Matrix::CreateLookAt(mCamPos, mLookAt, SimpleMath::Vector3::Up);
 	return;
 }
@@ -101,6 +101,16 @@ void CameraClass::MoveRight()
 {
 	this->Move(SimpleMath::Vector3::Right);
 }
+
+void CameraClass::RotateY()
+{		
+	mRotationRad += XM_PI * 0.05;
+	
+	SimpleMath::Vector3 newPos = mCamPos.Transform(mCamPos, SimpleMath::Matrix::CreateRotationY(mRotationRad));
+	this->SetPosition(newPos);
+	return;	
+}
+
 
 void CameraClass::Zooming(float &distance)
 {

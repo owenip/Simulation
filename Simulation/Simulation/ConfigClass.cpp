@@ -10,11 +10,6 @@ ConfigClass::ConfigClass():
 	
 }
 
-
-ConfigClass::~ConfigClass()
-{
-}
-
 bool ConfigClass::Initialize()
 {
 	if (!ReadConfigFile())
@@ -22,10 +17,6 @@ bool ConfigClass::Initialize()
 		SetDefaultAll();
 	}
 	return true;
-}
-
-void ConfigClass::Shutdown()
-{
 }
 
 bool ConfigClass::CheckFullScreen() const
@@ -41,6 +32,16 @@ int ConfigClass::GetScreenWidth() const
 int ConfigClass::GetScreenHeight() const
 {
 	return mScreenHeight;
+}
+
+int ConfigClass::GetNumberOfBalls() const
+{
+	return mNumberOfBalls;
+}
+
+float ConfigClass::GetBallRadius() const
+{
+	return mBallRadius;
 }
 
 bool ConfigClass::ReadConfigFile()
@@ -113,6 +114,30 @@ void ConfigClass::StoreValue(string &key, string &value)
 			std::cerr << "Invalid argument: " << ia.what() << '\n';
 		}
 	}
+	else if (key == "NumOfBalls")
+	{
+		try {
+			int InNumberOfBalls = stoi(value);
+			mNumberOfBalls = InNumberOfBalls;
+		}
+		catch (const std::invalid_argument& ia)
+		{
+			SetDefault(key);
+			std::cerr << "Invalid argument: " << ia.what() << '\n';
+		}
+	}
+	else if (key == "BallRadius")
+	{
+		try {
+			float InBallRadius = stof(value);
+			mBallRadius = InBallRadius;
+		}
+		catch (const std::invalid_argument& ia)
+		{
+			SetDefault(key);
+			std::cerr << "Invalid argument: " << ia.what() << '\n';
+		}
+	}
 	return;
 }
 
@@ -130,6 +155,14 @@ void ConfigClass::SetDefault(string & key)
 	else if (key == "ScreenHeight")
 	{	
 		mScreenHeight = 600;		
+	}
+	else if (key == "NumOfBalls")
+	{
+		mNumberOfBalls = 5;
+	}
+	else if (key == "BallRadius")
+	{
+		mBallRadius = 1.f;
 	}
 }
 

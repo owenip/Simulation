@@ -21,6 +21,8 @@ public:
 	void MoveLeft();
 	void MoveRight();
 
+	void RotateY();
+
 	void Zooming(float &distance);
 	void ZoomIn();
 	void ZoomOut();
@@ -50,11 +52,11 @@ private:
 	SimpleMath::Matrix mProj;
 
 	float mDsitanceFromTarget;
-	const float mMinDistFromTarget = 2.0f;
-	const float mMaxDistFromTarget = 8.0f;
+	const float mMinDistFromTarget = 1.0f;
+	const float mMaxDistFromTarget = 25.0f;
 	float mHeightfromTarget;
 	
-
+	float mRotationRad;
 
 };
 

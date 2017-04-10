@@ -81,7 +81,6 @@ void SystemClass::Shutdown()
 	}
 	if (mConfig)
 	{
-		mConfig->Shutdown();
 		delete mConfig;
 		mConfig = nullptr;
 	}
@@ -131,7 +130,7 @@ void SystemClass::Run()
 bool SystemClass::Update()
 {
 	bool result;
-	result = mGraphic->Update();
+	result = mGraphic->Update(mTimer->DeltaTime());
 
 	return true;
 }

@@ -7,9 +7,7 @@ GraphicClass::GraphicClass():
 	mConfig(nullptr),
 	mDirect3D(nullptr),
 	mATBar(nullptr),
-	mTimer(nullptr),
-	mouseX(0),
-	mouseY(0)
+	mTimer(nullptr)
 {
 
 }
@@ -19,11 +17,13 @@ GraphicClass::~GraphicClass()
 {
 }
 
-bool GraphicClass::Initialize(const HWND hwnd, const ConfigClass * mConfig, TimerClass *SysTimer)
+bool GraphicClass::Initialize(const HWND hwnd, ConfigClass * Config, TimerClass *SysTimer)
 {
 	bool result = false;
+	mConfig = Config;
 	DX::ThrowIfFailed(mScreenWidth = mConfig->GetScreenWidth());
 	DX::ThrowIfFailed(mScreenHeight = mConfig->GetScreenHeight());
+	DX::ThrowIfFailed(mNumberOfBalls = mConfig->GetNumberOfBalls());
 
 	//DirectX Class initialisation
 	mDirect3D = new D3DClass;
@@ -60,38 +60,66 @@ bool GraphicClass::Initialize(const HWND hwnd, const ConfigClass * mConfig, Time
 	//Effect Initialisation
 	m_states = std::make_unique<DirectX::CommonStates>(mDirect3D->GetDevice());
 	m_effect = std::make_unique<DirectX::BasicEffect>(mDirect3D->GetDevice());
-	m_effect->SetTextureEnabled(false);
+	m_effect->SetTextureEnabled(true);
 	m_effect->SetAmbientLightColor(SimpleMath::Vector3(.5f, .5f, .5f));
 	m_effect->SetAlpha(.5f);
 
 	m_fxFactory = std::make_unique<EffectFactory>(mDirect3D->GetDevice());
+	
+	/*EffectFactory::EffectInfo info;
+	info.name = L"default";
+	info.alpha = 1.f;*/
+	//info.ambientColor = XMFLOAT3(0.2f, 0.2f, 0.2f);
+	
+
+	//auto effect = m_fxFactory->CreateEffect(info, mDirect3D->GetDeviceContext());
 
 	//Texture
 	DX::ThrowIfFailed(
 		CreateWICTextureFromFile(mDirect3D->GetDevice(), L".\\Resources\\earth.bmp", nullptr,
 			m_texture.ReleaseAndGetAddressOf()));
 
-	//mSurface->CreateInputLayout(m_effect.get(),
-	//	m_inputLayout.ReleaseAndGetAddressOf());
+	DX::ThrowIfFailed(
+		CreateDDSTextureFromFile(mDirect3D->GetDevice(), L".\\Resources\\roomtexture.dds",
+			nullptr, mSurfaceTex.ReleaseAndGetAddressOf()));
 
+	m_effect->SetTexture(m_texture.Get());
+
+	
 	//
 	//Models Initialisation
-	//Surface
-	mSurface = GeometricPrimitive::CreateCylinder(mDirect3D->GetDeviceContext(), 0.05f, 50.f);
-	
-	//Wall
-	mWall = GeometricPrimitive::CreateCylinder(mDirect3D->GetDeviceContext(), 25.f, 50.f);
-	mWall->CreateInputLayout(m_effect.get(), mWallInputLayout.ReleaseAndGetAddressOf());
+	//
 
-	m_model = Model::CreateFromCMO(mDirect3D->GetDevice(), L".\\Resources\\wall.cmo", *m_fxFactory);
-	
+	//Surface
+	/*mSurface = GeometricPrimitive::CreateCylinder(mDirect3D->GetDeviceContext(), 0.05f, 50.f);*/
+	mSurface = Model::CreateFromCMO(mDirect3D->GetDevice(), L".\\Resources\\surface.cmo", *m_fxFactory, true, true);
+
+	//Wall
+	/*mWall = GeometricPrimitive::CreateCylinder(mDirect3D->GetDeviceContext(), 25.f, 50.f);
+	mWall->CreateInputLayout(m_effect.get(), mWallInputLayout.ReleaseAndGetAddressOf());*/
+
+	mWall = Model::CreateFromCMO(mDirect3D->GetDevice(), L".\\Resources\\wall.cmo", *m_fxFactory, true,true);
+
 	//GravityWell
 	mGravityWellPos = SimpleMath::Vector3::Zero;
 	mGWMovementGain = 0.001f;
 	mGravityWell = GeometricPrimitive::CreateSphere(mDirect3D->GetDeviceContext(),1.f);
 	mGravityWell->CreateInputLayout(m_effect.get(), mGwInputLayout.ReleaseAndGetAddressOf());
 
-	//m_effect->SetTexture(m_texture.Get());
+	//Balls Manager Initialisation
+	mBallManager = new BallManagerClass;
+	if (!mBallManager)
+	{
+		return false;
+	}
+
+	result = mBallManager->Initialise(mDirect3D, mConfig);
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize BallManager.", L"Error", MB_OK);
+		return false;
+	}
+
 
 	return true;
 }
@@ -99,7 +127,7 @@ bool GraphicClass::Initialize(const HWND hwnd, const ConfigClass * mConfig, Time
 void GraphicClass::Shutdown()
 {
 	m_fxFactory.reset();
-	m_model.reset();
+	mWall.reset();
 
 	m_texture.Reset();
 	m_states.reset();
@@ -108,6 +136,13 @@ void GraphicClass::Shutdown()
 	m_inputLayout.Reset();
 
 	mGravityWell.reset();
+
+	if (mBallManager)
+	{
+		mBallManager->Shutdown();
+		delete mBallManager;
+		mBallManager = nullptr;
+	}
 
 	if (mCamera)
 	{
@@ -123,11 +158,6 @@ void GraphicClass::Shutdown()
 		delete mDirect3D;
 		mDirect3D = nullptr;
 	}
-	if (mConfig)
-	{
-		delete mConfig;
-		mConfig = nullptr;
-	}	
 }
 
 void GraphicClass::OnPause()
@@ -141,13 +171,14 @@ void GraphicClass::OnResume()
 	
 }
 
-bool GraphicClass::Update()
+bool GraphicClass::Update(float dt)
 {
 	bool result;
 
 	this->CheckInput();
 
-
+	mBallManager->Update(dt);
+	
 	result = Render();
 	if (!result)
 	{
@@ -169,51 +200,43 @@ bool GraphicClass::Render()
 	m_effect->SetView(m_view);
 	m_effect->SetProjection(m_proj);
 	m_effect->SetWorld(m_world);
+	
 
 	//Draw Model
-	//Surface
-	m_world.Translation(SimpleMath::Vector3(0.f,-5.f,0.f));
-	mSurface->Draw(m_world, m_view, m_proj, Colors::Silver);
+	//Surface	
+	//mSurface->Draw(m_world, m_view, m_proj, Colors::Silver);
+	mSurface->Draw(mDirect3D->GetDeviceContext(), *m_states, m_world, m_view, m_proj, true, [=]() mutable
+	{
+		mDirect3D->GetDeviceContext()->RSSetState(m_states->CullClockwise());		
+	});
+
+	//Wall
+	
+	mDirect3D->GetWorld(m_world);
+	//
+	//mWall->Draw(m_effect.get(), mWallInputLayout.Get(), true, false, [=]
+	//{
+	//	mDirect3D->GetDeviceContext()->RSSetState(m_states->CullNone());
+	//});	
+
+	mWall->Draw(mDirect3D->GetDeviceContext(), *m_states, m_world, m_view, m_proj,true, [=]
+	{
+		mDirect3D->GetDeviceContext()->RSSetState(m_states->CullNone());
+		
+	});	
+
+	//Balls
+	mBallManager->Render(m_view);
 
 	//GravityWell
 	mDirect3D->GetWorld(m_world);
 	m_world.Translation(mGravityWellPos);
 	m_effect->SetWorld(m_world);
-	m_effect->SetColorAndAlpha(SimpleMath::Color(0.f, 0.f, 0.f, 0.3));
-	mGravityWell->Draw(m_effect.get(),mGwInputLayout.Get(), true, false, [=]
+	m_effect->SetColorAndAlpha(SimpleMath::Color(0.f, 0.f, 0.f, 0.3f));
+	mGravityWell->Draw(m_effect.get(), mGwInputLayout.Get(), true, false, [=]
 	{
 		mDirect3D->GetDeviceContext()->RSSetState(m_states->CullNone());
 	});
-	//Wall
-	
-	mDirect3D->GetWorld(m_world);
-	m_effect->SetWorld(m_world);
-	m_effect->SetColorAndAlpha(SimpleMath::Color(1.f, 1.f, 1.f, 0.5));
-
-
-	//mWall->Draw(m_effect.get(), mWallInputLayout.Get(), true, false, [=]
-	//{
-	//	mDirect3D->GetDeviceContext()->RSSetState(m_states->CullNone());
-	//});
-	
-	
-	m_model->UpdateEffects([&](IEffect* effect)
-	{
-		auto TranEffect = dynamic_cast<BasicEffect*>(effect);
-		if (TranEffect)
-		{
-			m_effect->SetColorAndAlpha(SimpleMath::Color(0.f, 0.f, 0.f, 0.3));
-		}
-	});
-
-	m_world.CreateScale(2.f);
-
-	m_model->Draw(mDirect3D->GetDeviceContext(), *m_states, m_world, m_view, m_proj,false, [=]
-	{
-		mDirect3D->GetDeviceContext()->RSSetState(m_states->CullNone());
-	});
-
-	
 
 	//Draw AntTweakBar
 	TwDraw();
@@ -248,8 +271,7 @@ bool GraphicClass::InitAntTweak(const HWND hwnd)
 	TwAddVarRW(mATBar, "Target frequency of the physics (in Hz)", TW_TYPE_FLOAT, nullptr, "");
 	TwAddVarRW(mATBar, "Target frequency of the graphics (in Hz),", TW_TYPE_FLOAT, nullptr, "");
 	TwAddVarRW(mATBar, "Target frequency of the networking (in Hz),", TW_TYPE_FLOAT, nullptr, "");
-	TwAddVarRW(mATBar, "Mouse X", TW_TYPE_INT32, &mouseX, "");
-	TwAddVarRW(mATBar, "Mouse Y", TW_TYPE_INT32, &mouseY, "");
+
 	return true;
 }
 
@@ -349,6 +371,10 @@ void GraphicClass::CheckInput()
 		//Camera zoom out
 		mCamera->ZoomOut();
 	}
+	//else if (tracker.pressed.Right)
+	//{
+	//	mCamera->RotateY();
+	//}
 			
 	auto mouse = m_mouse->GetState();
 	if (mouse.positionMode == Mouse::MODE_RELATIVE)

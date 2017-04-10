@@ -1,6 +1,8 @@
 #pragma once
 #include "D3DClass.h"
 #include "CameraClass.h"
+#include "BallManagerClass.h"
+
 
 class GraphicClass
 {
@@ -9,13 +11,13 @@ public:
 	GraphicClass& operator=(const GraphicClass&) = default;
 	~GraphicClass();
 
-	bool Initialize(const HWND hwnd, const ConfigClass *mConfig, TimerClass *SysTimer);
+	bool Initialize(const HWND hwnd, ConfigClass *mConfig, TimerClass *SysTimer);
 	void Shutdown();
 
 	void OnPause();
 	void OnResume();
 
-	bool Update();
+	bool Update(float dt);
 		
 private:
 	bool Render();
@@ -41,8 +43,6 @@ private:
 	
 	unique_ptr<Keyboard> m_keyboard;
 	unique_ptr<Mouse> m_mouse;
-	int mouseX;
-	int mouseY;
 	Keyboard::KeyboardStateTracker tracker;
 
 	int mScreenWidth;
@@ -53,7 +53,7 @@ private:
 	CameraClass *mCamera;
 
 	//Ball
-	int mNumberOfBalls = 9;
+	int mNumberOfBalls;
 
 	//DXTk 2D
 	std::unique_ptr<DirectX::CommonStates> m_states;
@@ -70,18 +70,25 @@ private:
 	DirectX::SimpleMath::Matrix m_proj;
 
 	//Models
-	std::unique_ptr<DirectX::Model> m_model;
+	std::unique_ptr<DirectX::Model> mWall;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_texture;
+
 	//Gravity Well	
 	DirectX::SimpleMath::Vector3 mGravityWellPos;
 	float mGWMovementGain;
 	std::unique_ptr<DirectX::GeometricPrimitive> mGravityWell;
 	Microsoft::WRL::ComPtr<ID3D11InputLayout> mGwInputLayout;
+
 	//Surface
-	std::unique_ptr<DirectX::GeometricPrimitive> mSurface;
+	std::unique_ptr<DirectX::Model> mSurface;
+	Microsoft::WRL::ComPtr<ID3D11InputLayout> mSurfaceInputLayout;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mSurfaceTex;
+
 	//Wall
-	std::unique_ptr<DirectX::GeometricPrimitive> mWall;
-	Microsoft::WRL::ComPtr<ID3D11InputLayout> mWallInputLayout;
-	
+	//std::unique_ptr<DirectX::GeometricPrimitive> mWall;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv;
+
+	//Balls
+	BallManagerClass *mBallManager;
 };
 

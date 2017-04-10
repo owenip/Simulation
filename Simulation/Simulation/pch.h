@@ -31,9 +31,8 @@
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "d3dcompiler.lib")
 
-
-using namespace DirectX;
 using namespace std;
+using namespace DirectX;
 
 //DXTK
 #include "CommonStates.h"
@@ -63,6 +62,7 @@ const LPCTSTR mMainWndCaption = L"08025ACW";
 //My Own Class
 #include "ConfigClass.h"
 #include "TimerClass.h"
+#include "D3DClass.h"
 
 namespace DX
 {

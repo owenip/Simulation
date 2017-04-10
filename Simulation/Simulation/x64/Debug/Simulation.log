@@ -1,9 +1,13 @@
-﻿  GraphicClass.cpp
-\\adir.hull.ac.uk\home\468\468834\desktop\github\simulation\simulation\simulation\graphicclass.cpp(182): warning C4305: 'argument': truncation from 'double' to 'float'
-\\adir.hull.ac.uk\home\468\468834\desktop\github\simulation\simulation\simulation\graphicclass.cpp(205): warning C4305: 'argument': truncation from 'double' to 'float'
+﻿  BallManagerClass.cpp
   Simulation.vcxproj -> \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\bin\Simulation.exe
   Simulation.vcxproj -> \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\bin\Simulation.pdb (Partial PDB)
   \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\Resources\earth.bmp
   \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\Resources\config.txt
   \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\Resources\wall.cmo
-          3 file(s) copied.
+  \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\Resources\blue.dds
+  \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\Resources\wall-Nick.cmo
+  \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\Resources\wall_texture.jpg
+  \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\Resources\wall_texture.dds
+  \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\Resources\surface.cmo
+  \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\Resources\roomtexture.dds
+          9 file(s) copied.

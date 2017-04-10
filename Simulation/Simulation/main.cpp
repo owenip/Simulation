@@ -25,7 +25,7 @@ int WINAPI WinMain(const HINSTANCE, const HINSTANCE, const PSTR, const int)
 	// Shutdown and release the system object.
 	System->Shutdown();
 	delete System;
-	System = 0; // parasoft-suppress  CODSTA-MCPP-04 "Not require in spec."
+	System = nullptr; 
 
 	return 0;
 }

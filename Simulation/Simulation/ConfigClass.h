@@ -3,16 +3,16 @@ class ConfigClass
 {
 public:
 	ConfigClass();
-	~ConfigClass();
+	~ConfigClass() = default;
 
 	bool Initialize();
-	void Shutdown();
 
 	bool CheckFullScreen() const;
 	int GetScreenWidth() const;
 	int GetScreenHeight() const;
 
-	//Camera Pos
+	int GetNumberOfBalls() const;
+	float GetBallRadius() const;
 	
 private:
 	bool ReadConfigFile();
@@ -28,6 +28,7 @@ private:
 	bool mFullScreen;
 	int mScreenWidth, mScreenHeight;
 	
-
+	int mNumberOfBalls;
+	float mBallRadius;
 };
 
