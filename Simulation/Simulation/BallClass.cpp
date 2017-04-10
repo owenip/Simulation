@@ -13,8 +13,9 @@ BallClass::~BallClass()
 {
 }
 
-void BallClass::Initialize(int OwenerID, float Radius, float mass, Vector3 Position, Vector3 Velocity, Vector3 Accerleration, float damping)
+void BallClass::Initialize(int BallID, int OwenerID, float Radius, float mass, Vector3 Position, Vector3 Velocity, Vector3 Accerleration, float damping)
 {
+	mBallID = BallID;
 	mOwenerID = OwenerID;
 	mRadius = Radius;
 	
@@ -33,6 +34,16 @@ void BallClass::Update(float dt)
 
 void BallClass::Shutdown()
 {
+}
+
+void BallClass::SetBallID(const int BallID)
+{
+	mBallID = BallID;
+}
+
+int BallClass::GetBallId() const
+{
+	return mBallID;
 }
 
 void BallClass::SetOwenerID(const int owenerID)

@@ -1,8 +1,6 @@
 #include "pch.h"
 #include "D3DClass.h"
 
-
-
 D3DClass::D3DClass():
 	mConfig(nullptr),
 	mSwapChain(nullptr),
@@ -19,10 +17,11 @@ D3DClass::~D3DClass()
 {
 }
 
-bool D3DClass::Initialize(const HWND hwnd, const ConfigClass * mConfig)
+bool D3DClass::Initialize(const HWND hwnd, const ConfigClass * Config)
 {
 	
 	HRESULT result;
+	mConfig = make_shared<ConfigClass>(Config);
 	DX::ThrowIfFailed(mScreenWidth = mConfig->GetScreenWidth());
 	DX::ThrowIfFailed(mScreenHeight = mConfig->GetScreenHeight());
 
@@ -249,11 +248,8 @@ bool D3DClass::Initialize(const HWND hwnd, const ConfigClass * mConfig)
 
 void D3DClass::Shutdown()
 {
-	if (mConfig)
-	{
-		delete mConfig;
-		mConfig = nullptr;
-	}
+	mConfig.reset();
+
 	if (mSwapChain)
 	{
 		mSwapChain->SetFullscreenState(false, nullptr);

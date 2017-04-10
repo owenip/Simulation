@@ -30,7 +30,8 @@ private:
 	//std::wstring mMainWndCaption;
 
 	
-	ConfigClass* mConfig;	
+	//ConfigClass* mConfig;	
+	shared_ptr<ConfigClass> mConfig;
 	GraphicClass *mGraphic;
 	TimerClass *mTimer;
 

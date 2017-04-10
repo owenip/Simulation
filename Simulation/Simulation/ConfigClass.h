@@ -3,6 +3,7 @@ class ConfigClass
 {
 public:
 	ConfigClass();
+	ConfigClass(const ConfigClass&) = default;
 	~ConfigClass() = default;
 
 	bool Initialize();

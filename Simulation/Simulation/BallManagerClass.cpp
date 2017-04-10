@@ -37,8 +37,8 @@ bool BallManagerClass::Initialise(D3DClass *Direct3D, ConfigClass *Config)
 	{
 		BallClass *Ball = new BallClass();
 
-		Ball->Initialize(-1, mBallRadius, 10.f, SimpleMath::Vector3(i * (mBallRadius * 2), mBallRadius, 0.f),
-			SimpleMath::Vector3(0.f, 0.0f, 0.f), SimpleMath::Vector3(0.f, 0.f, 0.f), 0.99f);
+		Ball->Initialize(i,-1, mBallRadius, 10.f, SimpleMath::Vector3(i * (mBallRadius * 2), mBallRadius * 10.f, 0.f),
+			SimpleMath::Vector3(0.f, -5.0f, 0.f), SimpleMath::Vector3(0.f, -2.f, 0.f), 0.99f);
 
 		mBallIndex.push_back(Ball);
 	}
@@ -55,6 +55,13 @@ void BallManagerClass::Update(float dt)
 	for each (BallClass *Ball in mBallIndex)
 	{
 		Ball->Update(dt);
+
+		if (Ball->GetPosition().y < mBallRadius)
+		{
+			Ball->SetPosition(Ball->GetPosition().x, mBallRadius, Ball->GetPosition().z);
+			Ball->SetVelocity(SimpleMath::Vector3(0.f, 0.0f, 0.f));
+			Ball->SetAcceleration(SimpleMath::Vector3(0.f, 0.0f, 0.f));
+		}
 	}
 
 	//May make balls sleep according to their accerlation and collision states

@@ -36,7 +36,8 @@ public:
 
 private:
 	//Config Class
-	ConfigClass *mConfig;
+	//ConfigClass *mConfig;
+	shared_ptr<ConfigClass> mConfig;
 
 	//DirectX
 	IDXGISwapChain *mSwapChain;

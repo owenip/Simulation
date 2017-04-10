@@ -26,7 +26,7 @@ bool SystemClass::Initialize()
 	bool result = false;
 
 	//Initialise Config Class
-	mConfig = new ConfigClass;
+	mConfig = make_shared<ConfigClass>();
 	if (!mConfig)
 	{
 		MessageBoxA(NULL, "Unable to initialise the config class.", "Error", MB_OK | MB_ICONERROR);
@@ -61,7 +61,7 @@ bool SystemClass::Initialize()
 
 	//Initialise Graphic Class
 	mGraphic = new GraphicClass;
-	result = mGraphic->Initialize(m_hwnd, mConfig, mTimer);
+	result = mGraphic->Initialize(m_hwnd, mConfig.get(), mTimer);
 	if (!result)
 	{
 		MessageBoxA(NULL, "Unable to initialise the graphic class!", "Error", MB_OK | MB_ICONERROR);
@@ -79,11 +79,12 @@ void SystemClass::Shutdown()
 		delete mGraphic;
 		mGraphic = nullptr;
 	}
-	if (mConfig)
+	mConfig.reset();
+	/*if (mConfig)
 	{
 		delete mConfig;
 		mConfig = nullptr;
-	}
+	}*/
 }
 
 void SystemClass::Run()

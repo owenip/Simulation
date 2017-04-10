@@ -1,5 +1,5 @@
 #pragma once
-#include "D3DClass.h"
+#include "pch.h"
 #include "CameraClass.h"
 #include "BallManagerClass.h"
 
@@ -11,7 +11,7 @@ public:
 	GraphicClass& operator=(const GraphicClass&) = default;
 	~GraphicClass();
 
-	bool Initialize(const HWND hwnd, ConfigClass *mConfig, TimerClass *SysTimer);
+	bool Initialize(const HWND hwnd, shared_ptr<ConfigClass> Config, TimerClass *SysTimer);
 	void Shutdown();
 
 	void OnPause();
@@ -34,9 +34,11 @@ private:
 	void GwMoveUp();
 	void GwMoveDown();
 private:
-	ConfigClass *mConfig;
+	//ConfigClass *mConfig;
 	D3DClass *mDirect3D;
 	TwBar *mATBar;
+
+	shared_ptr<ConfigClass> mConfig;
 
 	//Timer
 	TimerClass *mTimer;

@@ -17,10 +17,11 @@ GraphicClass::~GraphicClass()
 {
 }
 
-bool GraphicClass::Initialize(const HWND hwnd, ConfigClass * Config, TimerClass *SysTimer)
+bool GraphicClass::Initialize(const HWND hwnd, shared_ptr<ConfigClass> Config, TimerClass *SysTimer)
 {
 	bool result = false;
-	mConfig = Config;
+
+	mConfig = make_shared<ConfigClass>(Config);
 	DX::ThrowIfFailed(mScreenWidth = mConfig->GetScreenWidth());
 	DX::ThrowIfFailed(mScreenHeight = mConfig->GetScreenHeight());
 	DX::ThrowIfFailed(mNumberOfBalls = mConfig->GetNumberOfBalls());
@@ -31,7 +32,7 @@ bool GraphicClass::Initialize(const HWND hwnd, ConfigClass * Config, TimerClass 
 	{
 		return false;
 	}
-	result = mDirect3D->Initialize(hwnd, mConfig);
+	result = mDirect3D->Initialize(hwnd, mConfig.get());
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize Direct3D.", L"Error", MB_OK);
@@ -113,7 +114,7 @@ bool GraphicClass::Initialize(const HWND hwnd, ConfigClass * Config, TimerClass 
 		return false;
 	}
 
-	result = mBallManager->Initialise(mDirect3D, mConfig);
+	result = mBallManager->Initialise(mDirect3D, mConfig.get());
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize BallManager.", L"Error", MB_OK);
@@ -158,6 +159,8 @@ void GraphicClass::Shutdown()
 		delete mDirect3D;
 		mDirect3D = nullptr;
 	}
+
+	mConfig.reset();
 }
 
 void GraphicClass::OnPause()
@@ -177,7 +180,7 @@ bool GraphicClass::Update(float dt)
 
 	this->CheckInput();
 
-	mBallManager->Update(dt);
+	mBallManager->Update(mTimer->DeltaTime());
 	
 	result = Render();
 	if (!result)
