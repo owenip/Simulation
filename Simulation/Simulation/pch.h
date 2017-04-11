@@ -18,6 +18,7 @@
 #include <sstream>
 #include <cstdio>
 #include <vector>
+#include <algorithm>
 #include <bemapiset.h>
 #include <profileapi.h>
 
