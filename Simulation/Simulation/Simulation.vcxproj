@@ -145,6 +145,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Resources\cup.cmo" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BallClass.h" />
@@ -165,6 +166,7 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="earth.bmp" />
+    <Image Include="Resources\cup.jpg" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Resources\config.txt" />

@@ -72,6 +72,11 @@ private:
 	//Models
 	std::unique_ptr<DirectX::Model> mWall;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_texture;
+	//Testing cup
+	std::unique_ptr<DirectX::Model> mCup;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mCupTexture;
+	std::unique_ptr<DirectX::CommonStates> mCupStates;
+	std::unique_ptr<DirectX::EffectFactory> mCupfxFactory;
 
 	//Gravity Well	
 	DirectX::SimpleMath::Vector3 mGravityWellPos;

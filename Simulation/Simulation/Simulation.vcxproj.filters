@@ -54,6 +54,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Resources\cup.cmo">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -100,6 +103,9 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="earth.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\cup.jpg">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
