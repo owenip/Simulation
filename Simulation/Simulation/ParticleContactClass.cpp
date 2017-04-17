@@ -163,21 +163,21 @@ void ParticleContactResolver::ResolveContacts(ParticleContactClass * contactArra
 			if (contactArray[i].particle[0] == contactArray[maxIndex].particle[0])
 			{
 				temp = move[0] * contactArray[i].contactNormal;
-				contactArray[i].penetration -= move[0] * contactArray[i].contactNormal;
+				contactArray[i].penetration -=  contactArray[i].contactNormal.Dot(move[0]);
 			}
 			else if (contactArray[i].particle[0] == contactArray[maxIndex].particle[1])
 			{
-				contactArray[i].penetration -= move[1] * contactArray[i].contactNormal;
+				contactArray[i].penetration -= contactArray[i].contactNormal.Dot(move[1]);
 			}
 			if (contactArray[i].particle[1])
 			{
 				if (contactArray[i].particle[1] == contactArray[maxIndex].particle[0])
 				{
-					contactArray[i].penetration += move[0] * contactArray[i].contactNormal;
+					contactArray[i].penetration += contactArray[i].contactNormal.Dot(move[0]);
 				}
 				else if (contactArray[i].particle[1] == contactArray[maxIndex].particle[1])
 				{
-					contactArray[i].penetration += move[1] * contactArray[i].contactNormal;
+					contactArray[i].penetration += contactArray[i].contactNormal.Dot(move[1]);
 				}
 			}
 		}
