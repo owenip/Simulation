@@ -70,12 +70,10 @@ private:
 	DirectX::SimpleMath::Matrix m_proj;
 
 	//Models
-	std::unique_ptr<DirectX::Model> mWall;
+	
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_texture;
 	//Testing cup
 	std::unique_ptr<DirectX::Model> mCup;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mCupTexture;
-	std::unique_ptr<DirectX::CommonStates> mCupStates;
 	std::unique_ptr<DirectX::EffectFactory> mCupfxFactory;
 
 	//Gravity Well	
@@ -91,7 +89,8 @@ private:
 
 	//Wall
 	//std::unique_ptr<DirectX::GeometricPrimitive> mWall;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv;
+	std::unique_ptr<DirectX::Model> mWall;
+	std::unique_ptr<DirectX::EffectFactory> mWallfxFactory;
 
 	//Balls
 	std::unique_ptr<BallManagerClass> mBallManager;

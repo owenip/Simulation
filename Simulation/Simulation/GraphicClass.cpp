@@ -79,25 +79,7 @@ bool GraphicClass::Initialize(const HWND hwnd, shared_ptr<ConfigClass> Config, s
 		{
 			alpha->SetAlpha(.3f);
 		}
-		/*auto lights = dynamic_cast<IEffectLights*>(effect);
-		if (lights)
-		{
-		lights->SetLightingEnabled(true);
-		lights->SetPerPixelLighting(true);
-		lights->SetLightEnabled(0, true);
-		lights->SetLightDiffuseColor(0, Colors::Gold);
-		lights->SetLightEnabled(1, false);
-		lights->SetLightEnabled(2, false);
-		}*/
 	});
-
-	/*EffectFactory::EffectInfo info;
-	info.name = L"default";
-	info.alpha = 1.f;*/
-	//info.ambientColor = XMFLOAT3(0.2f, 0.2f, 0.2f);
-	
-
-	//auto effect = m_fxFactory->CreateEffect(info, mDirect3D->GetDeviceContext());
 
 	//Texture
 	DX::ThrowIfFailed(
@@ -122,8 +104,17 @@ bool GraphicClass::Initialize(const HWND hwnd, shared_ptr<ConfigClass> Config, s
 	//Wall
 	/*mWall = GeometricPrimitive::CreateCylinder(mDirect3D->GetDeviceContext(), 25.f, 50.f);
 	mWall->CreateInputLayout(m_effect.get(), mWallInputLayout.ReleaseAndGetAddressOf());*/
-
+	mWallfxFactory = std::make_unique<EffectFactory>(mDirect3D->GetDevice());
+	mWallfxFactory->SetDirectory(L".\\Resources\\");
 	mWall = Model::CreateFromCMO(mDirect3D->GetDevice(), L".\\Resources\\wall.cmo", *m_fxFactory, true,true);
+	mWall->UpdateEffects([](IEffect* effect)
+	{
+		auto alpha = dynamic_cast<BasicEffect*>(effect);
+		if (alpha)
+		{
+			alpha->SetAlpha(.5f);
+		}
+	});
 
 	//GravityWell
 	mGravityWellPos = SimpleMath::Vector3::Zero;
@@ -147,8 +138,6 @@ bool GraphicClass::Initialize(const HWND hwnd, shared_ptr<ConfigClass> Config, s
 void GraphicClass::Shutdown()
 {
 	mCup.reset();
-	mCupStates.reset();
-	mCupTexture.Reset();
 	mCupfxFactory.reset();
 
 	m_fxFactory.reset();
@@ -218,25 +207,10 @@ bool GraphicClass::Render()
 	//Draw Model
 	//Surface	
 	//mSurface->Draw(m_world, m_view, m_proj, Colors::Silver);
-	mSurface->Draw(mDirect3D->GetDeviceContext(), *m_states, m_world, m_view, m_proj, true, [=]() mutable
+	mSurface->Draw(mDirect3D->GetDeviceContext(), *m_states, m_world, m_view, m_proj, true, [=]
 	{
 		mDirect3D->GetDeviceContext()->RSSetState(m_states->CullClockwise());		
 	});
-
-	//Wall
-	
-	mDirect3D->GetWorld(m_world);
-	//
-	//mWall->Draw(m_effect.get(), mWallInputLayout.Get(), true, false, [=]
-	//{
-	//	mDirect3D->GetDeviceContext()->RSSetState(m_states->CullNone());
-	//});	
-
-	mWall->Draw(mDirect3D->GetDeviceContext(), *m_states, m_world, m_view, m_proj,true, [=]
-	{
-		mDirect3D->GetDeviceContext()->RSSetState(m_states->CullNone());
-		
-	});	
 
 	//Balls
 	mBallManager->Render(m_view);
@@ -246,16 +220,25 @@ bool GraphicClass::Render()
 	m_world.Translation(mGravityWellPos);
 	m_effect->SetWorld(m_world);
 	m_effect->SetColorAndAlpha(SimpleMath::Color(0.f, 0.f, 0.f, 0.3f));
-	/*mGravityWell->Draw(m_effect.get(), mGwInputLayout.Get(), true, false, [=]
+	mGravityWell->Draw(m_effect.get(), mGwInputLayout.Get(), true, false, [=]
 	{
 		mDirect3D->GetDeviceContext()->RSSetState(m_states->CullNone());
-	});*/
+	});
 
-	//Testing Cup
-	mCup->Draw(mDirect3D->GetDeviceContext(), *m_states, m_world, m_view, m_proj, false, [=]
+	//Wall	
+	mDirect3D->GetWorld(m_world);
+	mWall->Draw(mDirect3D->GetDeviceContext(), *m_states, m_world, m_view, m_proj, false, [=]
 	{
 		mDirect3D->GetDeviceContext()->OMSetBlendState(m_states->NonPremultiplied(), nullptr, 0xFFFFFFFF);
+		mDirect3D->GetDeviceContext()->RSSetState(m_states->CullNone());
 	});
+
+	//Testing Cup
+	/*mCup->Draw(mDirect3D->GetDeviceContext(), *m_states, m_world, m_view, m_proj, false, [=]
+	{
+		mDirect3D->GetDeviceContext()->OMSetBlendState(m_states->NonPremultiplied(), nullptr, 0xFFFFFFFF);
+	});*/
+
 
 	//Draw AntTweakBar
 	TwDraw();
