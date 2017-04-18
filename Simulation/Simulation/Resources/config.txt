@@ -2,5 +2,5 @@
 FullScreen=false
 ScreenWidth=1024
 ScreenHeight=768
-NumOfBalls=5
+NumOfBalls=24
 BallRadius=1

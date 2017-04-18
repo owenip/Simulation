@@ -1,17 +1,5 @@
-﻿  TimerClass.cpp
-  SystemClass.cpp
-  pch.cpp
-  ParticleForceGenerator.cpp
-  ParticleContactClass.cpp
-  ParticleClass.cpp
-  main.cpp
-  GraphicClass.cpp
-  D3DClass.cpp
-  ConfigClass.cpp
-  CameraClass.cpp
-  BallManagerClass.cpp
-  BallClass.cpp
-  Generating Code...
+﻿  BallManagerClass.cpp
+\\adir.hull.ac.uk\home\468\468834\desktop\github\simulation\simulation\simulation\ballmanagerclass.cpp(61): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
   Simulation.vcxproj -> \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\bin\Simulation.exe
   Simulation.vcxproj -> \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\bin\Simulation.pdb (Partial PDB)
   \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\Resources\earth.bmp
