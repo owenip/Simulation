@@ -50,7 +50,7 @@ bool BallManagerClass::Initialise(shared_ptr<D3DClass> Direct3D, shared_ptr<Conf
 	auto CurSpawnX = 0.f;
 	auto CurSpawnZ = 0.f;
 
-	while (ProcessedBall < mNumberOfBalls)
+	while (ProcessedBall <= mNumberOfBalls)
 	{
 		//Direction 1:UP 2:Down 3:Left 4:Right
 		

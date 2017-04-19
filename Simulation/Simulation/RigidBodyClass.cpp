@@ -114,3 +114,240 @@ void RigidBodyClass::CalculateDerivedData()
 		inverseInertiaTensor,
 		transformMatrix);
 }
+
+void RigidBodyClass::Integrate(float duration)
+{
+	if (!isAwake) return;
+
+	// Calculate linear acceleration from force inputs.
+    lastFrameAcceleration = acceleration;
+    lastFrameAcceleration += forceAccum * inverseMass;
+	
+    // Calculate angular acceleration from torque inputs.	
+	SimpleMath::Vector3 angularAcceleration = torqueAccum.Transform(torqueAccum,inverseInertiaTensorWorld);
+
+    // Adjust velocities
+    // Update linear velocity from both acceleration and impulse.
+    velocity += lastFrameAcceleration * duration;
+
+    // Update angular velocity from both acceleration and impulse.
+    rotation += angularAcceleration *  duration;
+
+    // Impose drag.
+    velocity *= pow(linearDamping, duration);
+    rotation *= pow(angularDamping, duration);
+
+    // Adjust positions
+    // Update linear position.
+    position += velocity * duration;
+
+    // Update angular position.
+    orientation = orientation + (rotation * duration);
+
+    // Normalise the orientation, and update the matrices with the new
+    // position and orientation
+    calculateDerivedData();
+
+    // Clear accumulators.
+    clearAccumulators();
+
+  //  // Update the kinetic energy store, and possibly put the body to
+  //  // sleep.
+  //  if (canSleep) {
+  //      float currentMotion = velocity.Dot(velocity) +
+  //          rotation.Dot(rotation);
+
+		//float bias = pow(0.5, duration);
+  //      motion = bias*motion + (1-bias)*currentMotion;
+
+  //      if (motion < sleepEpsilon) setAwake(false);
+  //      else if (motion > 10 * sleepEpsilon) motion = 10 * sleepEpsilon;
+  //  }
+}
+
+void RigidBodyClass::SetMass(const float mass)
+{
+	assert(mass != 0);
+	RigidBodyClass::inverseMass = 1.0f / mass;
+}
+
+float RigidBodyClass::GetMass() const
+{
+	if (inverseMass == 0) {
+		return FLT_MAX;
+	}
+	else {
+		return 1.0f / inverseMass;
+	}
+}
+
+void RigidBodyClass::SetInverseMass(const float inverseMass)
+{
+	RigidBodyClass::inverseMass = inverseMass;
+}
+
+float RigidBodyClass::GetInverseMass() const
+{
+	return inverseMass;
+}
+
+bool RigidBodyClass::HasFiniteMass() const
+{
+	return inverseMass >= 0.0f;
+}
+
+void RigidBodyClass::SetInertiaTensor(const SimpleMath::Matrix & inertiaTensor)
+{
+	inertiaTensor.Invert(inverseInertiaTensor);
+}
+
+void RigidBodyClass::GetInertiaTensor(SimpleMath::Matrix &inertiaTensor) const
+{
+	inverseInertiaTensor.Invert(inertiaTensor);
+}
+
+SimpleMath::Matrix RigidBodyClass::GetInertiaTensor() const
+{
+	SimpleMath::Matrix it;
+	GetInertiaTensor(it);
+	return it;
+}
+
+void RigidBodyClass::GetInertiaTensorWorld(SimpleMath::Matrix & inertiaTensor) const
+{
+	inverseInertiaTensorWorld.Invert(inertiaTensor);
+}
+
+SimpleMath::Matrix RigidBodyClass::GetInertiaTensorWorld() const
+{
+	SimpleMath::Matrix it;
+	GetInertiaTensorWorld(it);
+	return it;
+}
+
+void RigidBodyClass::SetInverseInertiaTensor(const SimpleMath::Matrix & inverseInertiaTensor)
+{
+	RigidBodyClass::inverseInertiaTensor = inverseInertiaTensor;
+}
+
+void RigidBodyClass::GetInverseInertiaTensor(SimpleMath::Matrix * inverseInertiaTensor) const
+{
+	*inverseInertiaTensor = RigidBodyClass::inverseInertiaTensor;
+}
+
+SimpleMath::Matrix RigidBodyClass::getInverseInertiaTensor() const
+{
+	return inverseInertiaTensor;
+}
+
+void RigidBodyClass::GetInverseInertiaTensorWorld(SimpleMath::Matrix * inverseInertiaTensor) const
+{
+	*inverseInertiaTensor = inverseInertiaTensorWorld;
+}
+
+SimpleMath::Matrix RigidBodyClass::GetInverseInertiaTensorWorld() const
+{
+	return inverseInertiaTensorWorld;
+}
+
+void RigidBodyClass::SetDamping(const float linearDamping, const float angularDamping)
+{
+	RigidBodyClass::linearDamping = linearDamping;
+	RigidBodyClass::angularDamping = angularDamping;
+}
+
+void RigidBodyClass::SetLinearDamping(const float linearDamping)
+{
+	RigidBodyClass::linearDamping = linearDamping;
+}
+
+float RigidBodyClass::GetLinearDamping() const
+{
+	return linearDamping;
+}
+
+void RigidBodyClass::SetAngularDamping(const float angularDamping)
+{
+	RigidBodyClass::angularDamping = angularDamping;
+}
+
+float RigidBodyClass::GetAngularDamping() const
+{
+	return angularDamping;
+}
+
+void RigidBodyClass::SetPosition(const SimpleMath::Vector3 & position)
+{
+	RigidBodyClass::position = position;
+}
+
+void RigidBodyClass::SetPosition(const float x, const float y, const float z)
+{
+	position.x = x;
+	position.y = y;
+	position.z = z;
+}
+
+void RigidBodyClass::GetPosition(SimpleMath::Vector3 * position) const
+{
+	*position = RigidBodyClass::position;
+}
+
+SimpleMath::Vector3 RigidBodyClass::GetPosition() const
+{
+	return position;
+}
+
+void RigidBodyClass::SetOrientation(const SimpleMath::Quaternion & orientation)
+{
+	RigidBodyClass::orientation = orientation;
+	RigidBodyClass::orientation.Normalize();
+}
+
+void RigidBodyClass::SetOrientation(const float x, const float y, const float z, const float w)
+{
+	orientation.x = x;
+	orientation.y = y;
+	orientation.z = z;
+	orientation.w = w;
+	orientation.Normalize();
+}
+
+void RigidBodyClass::GetOrientation(SimpleMath::Quaternion * orientation) const
+{
+	*orientation = RigidBodyClass::orientation;
+}
+
+SimpleMath::Quaternion RigidBodyClass::GetOrientation() const
+{
+	return orientation;
+}
+
+void RigidBodyClass::GetOrientation(SimpleMath::Matrix &matrix) const
+{
+	matrix = RigidBodyClass::transformMatrix;
+}
+
+void RigidBodyClass::GetTransform(SimpleMath::Matrix & transform) const
+{
+	transform = RigidBodyClass::transformMatrix;
+}
+
+SimpleMath::Matrix RigidBodyClass::GetTransform() const
+{
+	return transformMatrix;
+}
+
+SimpleMath::Vector3 RigidBodyClass::GetPointInLocalSpace(SimpleMath::Vector3 point) const
+{
+	point = SimpleMath::Vector3::Transform(point, transformMatrix.Invert());
+	return point;
+}
+
+SimpleMath::Vector3 RigidBodyClass::GetPointInWorldSpace(const SimpleMath::Vector3 & point) const
+{
+	return SimpleMath::Vector3::Transform(point,transformMatrix);
+}
+
+
+

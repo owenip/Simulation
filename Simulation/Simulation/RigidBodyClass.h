@@ -18,19 +18,19 @@ public:
 	//Inverse mass Setter
 	//Could be zero for unmovable object
 	void SetInverseMass(const float inverseMass);
-
-	float GetInverseMass(const float InverseMass);
+	float GetInverseMass() const;
 
 	bool HasFiniteMass() const;
 
 	void SetInertiaTensor(const SimpleMath::Matrix &inertiaTensor);
 
-	void GetInertiaTensor(SimpleMath::Matrix *inertiaTensor);
+	void GetInertiaTensor(SimpleMath::Matrix &inertiaTensor) const;
 
 	SimpleMath::Matrix GetInertiaTensor() const;
 
 	//Copies the current inertia tensor of the rigid body into the given matrix.
-	void GetInertiaTensorWorld(SimpleMath::Matrix *inertiaTensor) const;
+	void GetInertiaTensorWorld(SimpleMath::Matrix &inertiaTensor) const;
+
 	//Gets a copy of the current inertia tensor of the rigid body.
 	SimpleMath::Matrix GetInertiaTensorWorld() const;
 
@@ -110,8 +110,8 @@ public:
 	* valid rotation quaternion with (0,0,0,0) mapping to
 	* (1,0,0,0).
 	*/
-	void SetOrientation(const float r, const float i,
-		const float j, const float k);
+	void SetOrientation(const float x, const float y,
+		const float z, const float w);
 
 	//Fills the given quaternion with the current value of the rigid body's orientation.
 	void GetOrientation(SimpleMath::Quaternion *orientation) const;
@@ -120,24 +120,16 @@ public:
 	SimpleMath::Quaternion GetOrientation() const;
 
 	//Fills the given matrix with a transformation representing the rigid body's orientation.
-	void GetOrientation(SimpleMath::Matrix *matrix) const;
-
-	//Fills the given matrix data structure with a transformation representing the rigid body's orientation.
-	void GetOrientation(float matrix[9]) const;
-
+	void GetOrientation(SimpleMath::Matrix & matrix) const;
+	
 	//Fills the given matrix with a transformation representing the rigid body's position and orientation.
-	void GetTransform(SimpleMath::Matrix *transform) const;
-
-	/*Fills the given matrix data structure with a
-	* transformation representing the rigid body's position and
-	* orientation.*/
-	void GetTransform(float matrix[16]) const;
-
+	void GetTransform(SimpleMath::Matrix &transform) const;
+	
 	//Gets a transformation representing the rigid body's position and orientation.
 	SimpleMath::Matrix GetTransform() const;
 
 	//Converts the given point from world space into the body's local space.
-	SimpleMath::Vector3 GetPointInLocalSpace(const SimpleMath::Vector3 &point) const;
+	SimpleMath::Vector3 GetPointInLocalSpace(SimpleMath::Vector3 point) const;
 
 	//Converts the given point from world space into the body's local space.
 	SimpleMath::Vector3 GetPointInWorldSpace(const SimpleMath::Vector3 &point) const;
