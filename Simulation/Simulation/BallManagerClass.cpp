@@ -42,63 +42,42 @@ bool BallManagerClass::Initialise(shared_ptr<D3DClass> Direct3D, shared_ptr<Conf
 	//	mBallIndex.push_back(Ball);
 	//}
 
-	auto BallsPerLap = 6;
-	auto TotalLap = mNumberOfBalls / BallsPerLap;
-	auto LapInterval = mBallRadius * 2.5f;
-	auto LeftBall = mNumberOfBalls % BallsPerLap;
-	auto CurrBallID = 0;
+	//Square generating pattern
+	auto BallCenterDistance = mBallRadius * 2 + 0.5f;
 
-	// Initialise first ball in the 1st lap
-	auto *newBall = new BallClass();
-	newBall->Initialize(CurrBallID, -1,
-		mBallRadius, 10.f,
-		SimpleMath::Vector3(0.f, mBallRadius, 0.f), SimpleMath::Vector3::Zero, SimpleMath::Vector3::Zero, 0.99f);
-	mBallIndex.push_back(newBall);
-	CurrBallID++;
+	//Direction 1:UP 2:Down 3:Left 4:Right
+	int Direction[4] = { 1,2,3,4 };
 
-	for(auto i = 1; i <= TotalLap + 1;i++)
+	//Process first three balls
+	SimpleMath::Vector3 StartPos = SimpleMath::Vector3(0.f, mBallRadius, 0.f);
+	//1st ball
+	auto *Ball = new BallClass();
+	Ball->Initialize(0, -1, mBallRadius, 10.f, StartPos,
+		SimpleMath::Vector3(0.f, -5.0f, 0.f), SimpleMath::Vector3(0.f, -2.f, 0.f), 0.99f);
+	mBallIndex.push_back(Ball);
+	//2nd&3rd ball
+	for (auto i = 0; i < 1; i++)
 	{
-		Vector3 startPos(0.f, mBallRadius, LapInterval*i);
-		SimpleMath::Quaternion qStartPos = Quaternion::Identity;
-		
-		if(!(i%2))
-		{
-			//Rotate 45 degree
-			//startPos = startPos.Transform(startPos, SimpleMath::Quaternion::CreateFromAxisAngle(Vector3::UnitY, 45.f));
-			qStartPos = qStartPos.CreateFromAxisAngle(Vector3::UnitY, 45.f);			
-		}
-		if(i == TotalLap+1 && LeftBall> 0)
-		{
-			//Deal with 1-3 balls in last lap
-			BallsPerLap = LeftBall;
-		}
-		
-		// Initialise first ball in the current lap
-		startPos = startPos.Transform(startPos, qStartPos);
-		auto *newBall = new BallClass();
-		newBall->Initialize(CurrBallID, -1,
-			mBallRadius, 10.f,
-			startPos, SimpleMath::Vector3::Zero, SimpleMath::Vector3::Zero,0.99f);
-		mBallIndex.push_back(newBall);
-		CurrBallID++;
+		SimpleMath::Vector3 newPos(StartPos.x, StartPos.y, StartPos.z + BallCenterDistance);
+		auto *Ball = new BallClass();
+		newPos.x += BallCenterDistance * i;
 
-		// Initialise remaining balls in the current lap
-		for(auto j = 1; j < BallsPerLap; j++)
-		{
-			//startPos = startPos.Transform(startPos, SimpleMath::Quaternion::CreateFromAxisAngle(Vector3::UnitY, 45.f));
-			qStartPos = qStartPos.CreateFromAxisAngle(Vector3::UnitY, 45.f);
-			startPos = startPos.Transform(startPos, qStartPos);
-
-			auto *Ball = new BallClass();
-			Ball->Initialize(CurrBallID, -1,
-				mBallRadius, 10.f,
-				startPos, 
-				SimpleMath::Vector3::Zero, SimpleMath::Vector3::Zero, 0.99f);
-			mBallIndex.push_back(Ball);
-			CurrBallID++;
-		}
-		
+		Ball->Initialize(0, -1, mBallRadius, 10.f, newPos,
+			SimpleMath::Vector3(0.f, -5.0f, 0.f), SimpleMath::Vector3(0.f, -2.f, 0.f), 0.99f);
+		mBallIndex.push_back(Ball);
 	}
+	//Remaining Balls
+	for (auto i = 3; i < mNumberOfBalls; i++)
+	{
+		auto *Ball = new BallClass();
+		//Determine Direction then adjust startPos
+		
+		Ball->Initialize(0, -1, mBallRadius, 10.f, StartPos,
+			SimpleMath::Vector3(0.f, -5.0f, 0.f), SimpleMath::Vector3(0.f, -2.f, 0.f), 0.99f);
+
+		mBallIndex.push_back(Ball);
+	}
+
 
 	return true;
 }
