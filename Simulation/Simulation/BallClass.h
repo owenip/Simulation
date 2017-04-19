@@ -8,7 +8,7 @@ public:
 	~BallClass();
 
 	void	Initialize(int BallID, int OwenerID, float Radius, float mass,
-						SimpleMath::Vector3 Position, SimpleMath::Vector3 Velocity, SimpleMath::Vector3 Accerleration, 
+						SimpleMath::Vector3 Position, SimpleMath::Vector3 Velocity, SimpleMath::Vector3 Acceleration, 
 						float damping);
 
 	void	Update(float dt);

@@ -141,6 +141,7 @@
     <ClCompile Include="ParticleContactClass.cpp" />
     <ClCompile Include="ParticleForceGenerator.cpp" />
     <ClCompile Include="pch.cpp" />
+    <ClCompile Include="RigidBodyClass.cpp" />
     <ClCompile Include="SystemClass.cpp" />
     <ClCompile Include="TimerClass.cpp" />
   </ItemGroup>
@@ -160,6 +161,7 @@
     <ClInclude Include="ParticleForceGenerator.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="RigidBodyClass.h" />
     <ClInclude Include="SystemClass.h" />
     <ClInclude Include="TimerClass.h" />
   </ItemGroup>
