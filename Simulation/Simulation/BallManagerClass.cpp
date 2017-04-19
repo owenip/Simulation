@@ -44,7 +44,7 @@ bool BallManagerClass::Initialise(shared_ptr<D3DClass> Direct3D, shared_ptr<Conf
 
 	auto BallsPerLap = 6;
 	auto TotalLap = mNumberOfBalls / BallsPerLap;
-	auto LapInterval = mBallRadius * 2.5;
+	auto LapInterval = mBallRadius * 2.5f;
 	auto LeftBall = mNumberOfBalls % BallsPerLap;
 	auto CurrBallID = 0;
 
@@ -65,8 +65,7 @@ bool BallManagerClass::Initialise(shared_ptr<D3DClass> Direct3D, shared_ptr<Conf
 		{
 			//Rotate 45 degree
 			//startPos = startPos.Transform(startPos, SimpleMath::Quaternion::CreateFromAxisAngle(Vector3::UnitY, 45.f));
-			qStartPos = qStartPos.CreateFromAxisAngle(Vector3::UnitY, 45.f);
-			startPos = startPos.Transform(startPos, qStartPos);
+			qStartPos = qStartPos.CreateFromAxisAngle(Vector3::UnitY, 45.f);			
 		}
 		if(i == TotalLap+1 && LeftBall> 0)
 		{
@@ -75,6 +74,7 @@ bool BallManagerClass::Initialise(shared_ptr<D3DClass> Direct3D, shared_ptr<Conf
 		}
 		
 		// Initialise first ball in the current lap
+		startPos = startPos.Transform(startPos, qStartPos);
 		auto *newBall = new BallClass();
 		newBall->Initialize(CurrBallID, -1,
 			mBallRadius, 10.f,
