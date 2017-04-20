@@ -93,16 +93,16 @@ public:
 	/**
 	* Sets the orientation of the rigid body by component.
 	*
-	* @param r The real component of the rigid body's orientation
+	* @param x The real component of the rigid body's orientation
 	* quaternion.
 	*
-	* @param i The first complex component of the rigid body's
+	* @param y The first complex component of the rigid body's
 	* orientation quaternion.
 	*
-	* @param j The second complex component of the rigid body's
+	* @param z The second complex component of the rigid body's
 	* orientation quaternion.
 	*
-	* @param k The third complex component of the rigid body's
+	* @param w The third complex component of the rigid body's
 	* orientation quaternion.
 	*
 	* @note The given orientation does not need to be normalised,
@@ -247,6 +247,8 @@ public:
 	//Gets the acceleration of the rigid body.
 	void GetAcceleration(SimpleMath::Vector3 *acceleration) const;
 	SimpleMath::Vector3 getAcceleration() const;
+
+
 
 protected:
 	float inverseMass;
