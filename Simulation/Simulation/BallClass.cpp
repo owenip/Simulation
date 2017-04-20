@@ -22,6 +22,8 @@ void BallClass::Initialize(int BallID, int OwenerID, float Radius, float mass, S
 	this->SetMass(mass);
 	this->SetPosition(Position);
 	this->SetVelocity(Velocity);
+	fSpeed = 0.f;
+	vVelocityBody = SimpleMath::Vector3::Zero;
 	this->SetAcceleration(Accerleration);
 
 	float Ixx, Iyy, Izz;
@@ -39,10 +41,10 @@ void BallClass::Initialize(int BallID, int OwenerID, float Radius, float mass, S
 	vAngularVelocity = SimpleMath::Vector3::Zero;
 	vAngularVelocityGlobal = SimpleMath::Vector3::Zero;
 	vEulerAngles = SimpleMath::Vector3::Zero;
-	fSpeed = 0.f;
-
 	
-
+	qOrientation = SimpleMath::Quaternion::Identity;
+	vForces = SimpleMath::Vector3::Zero;
+	vMoments = SimpleMath::Vector3::Zero;
 
 }
 

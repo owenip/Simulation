@@ -47,7 +47,6 @@ public:
 	SimpleMath::Quaternion  qOrientation;				// Orientation in earth coordinates
 	SimpleMath::Vector3		vForces;					// Total force on body
 	SimpleMath::Vector3		vMoments;					// Total moment (torque) on body
-	SimpleMath::Matrix		mIeInverse;					// Inverse of moment of inertia in earth coordinates
-	float					fRadius;					// Ball radius
+	SimpleMath::Matrix		mIeInverse;					// Inverse of moment of inertia in earth coordinates	
 };
 
