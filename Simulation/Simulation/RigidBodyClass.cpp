@@ -98,6 +98,16 @@ static inline void _transformInertiaTensor(SimpleMath::Matrix &iitWorld,
 		t62*rotmat._33;
 }
 
+/*
+* Definition of the sleep epsilon extern.
+*/
+static float sleepEpsilon = 0.03f;
+
+static inline void setSleepEpsilon(float value)
+{
+	sleepEpsilon = value;
+}
+
 void RigidBodyClass::CalculateDerivedData()
 {	
 	// Calculate the transform matrix for the body.
@@ -146,23 +156,25 @@ void RigidBodyClass::Integrate(float duration)
 
     // Normalise the orientation, and update the matrices with the new
     // position and orientation
-    calculateDerivedData();
+    CalculateDerivedData();
 
     // Clear accumulators.
-    clearAccumulators();
+    ClearAccumulators();
 
-  //  // Update the kinetic energy store, and possibly put the body to
-  //  // sleep.
-  //  if (canSleep) {
-  //      float currentMotion = velocity.Dot(velocity) +
-  //          rotation.Dot(rotation);
+    // Update the kinetic energy store, and possibly put the body to
+    // sleep.
+    if (canSleep) {
+        float currentMotion = velocity.Dot(velocity) +
+            rotation.Dot(rotation);
 
-		//float bias = pow(0.5, duration);
-  //      motion = bias*motion + (1-bias)*currentMotion;
+		float bias = pow(0.5, duration);
+        motion = bias*motion + (1-bias)*currentMotion;
 
-  //      if (motion < sleepEpsilon) setAwake(false);
-  //      else if (motion > 10 * sleepEpsilon) motion = 10 * sleepEpsilon;
-  //  }
+        if (motion < sleepEpsilon) 
+			SetAwake(false);
+        else if (motion > 10 * sleepEpsilon) 
+			motion = 10 * sleepEpsilon;
+    }
 }
 
 void RigidBodyClass::SetMass(const float mass)
@@ -348,6 +360,163 @@ SimpleMath::Vector3 RigidBodyClass::GetPointInWorldSpace(const SimpleMath::Vecto
 {
 	return SimpleMath::Vector3::Transform(point,transformMatrix);
 }
+
+SimpleMath::Vector3 RigidBodyClass::GetDirectionInLocalSpace(const SimpleMath::Vector3 & direction) const
+{
+	return SimpleMath::Vector3::Transform(direction, transformMatrix.Invert());
+}
+
+SimpleMath::Vector3 RigidBodyClass::GetDirectionInWorldSpace(const SimpleMath::Vector3 & direction) const
+{
+	return SimpleMath::Vector3::Transform(direction,transformMatrix);
+}
+
+void RigidBodyClass::SetVelocity(const SimpleMath::Vector3 & velocity)
+{
+	RigidBodyClass::velocity = velocity;
+}
+
+void RigidBodyClass::SetVelocity(const float x, const float y, const float z)
+{
+	velocity.x = x;
+	velocity.y = y;
+	velocity.z = z;
+}
+
+void RigidBodyClass::GetVelocity(SimpleMath::Vector3 * velocity) const
+{
+	*velocity = RigidBodyClass::velocity;
+}
+
+SimpleMath::Vector3 RigidBodyClass::GetVelocity() const
+{
+	return velocity;
+}
+
+void RigidBodyClass::AddVelocity(const SimpleMath::Vector3 & deltaVelocity)
+{
+	velocity += deltaVelocity;
+}
+
+void RigidBodyClass::SetRotation(const SimpleMath::Vector3 & rotation)
+{
+	RigidBodyClass::rotation = rotation;
+}
+
+void RigidBodyClass::SetRotation(const float x, const float y, const float z)
+{
+	rotation.x = x;
+	rotation.y = y;
+	rotation.z = z;
+}
+
+void RigidBodyClass::GetRotation(SimpleMath::Vector3 * rotation) const
+{
+	*rotation = RigidBodyClass::rotation;
+}
+
+SimpleMath::Vector3 RigidBodyClass::GetRotation() const
+{
+	return rotation;
+}
+
+void RigidBodyClass::AddRotation(const SimpleMath::Vector3 & deltaRotation)
+{
+	rotation += deltaRotation;
+}
+
+void RigidBodyClass::SetAwake(const bool awake)
+{
+	if (awake) {
+		isAwake = true;
+
+		// Add a bit of motion to avoid it falling asleep immediately.
+		motion = sleepEpsilon*2.0f;
+	}
+	else {
+		isAwake = false;
+		velocity = SimpleMath::Vector3::Zero;
+		rotation = SimpleMath::Vector3::Zero;
+	}
+}
+
+void RigidBodyClass::SetCanSleep(const bool canSleep)
+{
+	RigidBodyClass::canSleep = canSleep;
+
+	if (!canSleep && !isAwake) 
+		SetAwake();
+}
+
+void RigidBodyClass::GetLastFrameAcceleration(SimpleMath::Vector3 * linearAcceleration) const
+{
+	*linearAcceleration = lastFrameAcceleration;
+}
+
+SimpleMath::Vector3 RigidBodyClass::GetLastFrameAcceleration() const
+{
+	return lastFrameAcceleration;
+}
+
+void RigidBodyClass::ClearAccumulators()
+{
+	forceAccum = SimpleMath::Vector3::Zero;
+	torqueAccum = SimpleMath::Vector3::Zero;
+}
+
+void RigidBodyClass::AddForce(const SimpleMath::Vector3 & force)
+{
+	forceAccum += force;
+	isAwake = true;
+}
+
+void RigidBodyClass::AddForceAtPoint(const SimpleMath::Vector3 & force, const SimpleMath::Vector3 & point)
+{
+	// Convert to coordinates relative to center of mass.
+	SimpleMath::Vector3 pt = point;
+	pt -= position;
+
+	forceAccum += force;
+	torqueAccum += pt.Cross(force);
+
+	isAwake = true;
+}
+
+void RigidBodyClass::AddForceAtBodyPoint(const SimpleMath::Vector3 & force, const SimpleMath::Vector3 & point)
+{
+	// Convert to coordinates relative to center of mass.
+	SimpleMath::Vector3 pt = GetPointInWorldSpace(point);
+	AddForceAtPoint(force, pt);
+}
+
+void RigidBodyClass::AddTorque(const SimpleMath::Vector3 & torque)
+{
+	torqueAccum += torque;
+	isAwake = true;
+}
+
+void RigidBodyClass::SetAcceleration(const SimpleMath::Vector3 & acceleration)
+{
+	RigidBodyClass::acceleration = acceleration;
+}
+
+void RigidBodyClass::SetAcceleration(const float x, const float y, const float z)
+{
+	acceleration.x = x;
+	acceleration.y = y;
+	acceleration.z = z;
+}
+
+void RigidBodyClass::GetAcceleration(SimpleMath::Vector3 * acceleration) const
+{
+	*acceleration = RigidBodyClass::acceleration;
+}
+
+SimpleMath::Vector3 RigidBodyClass::getAcceleration() const
+{
+	return acceleration;
+}
+
 
 
 
