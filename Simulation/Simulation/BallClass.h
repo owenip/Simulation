@@ -1,7 +1,7 @@
 #pragma once
-#include "ParticleClass.h"
+#include "RigidBodyClass.h"
 
-class BallClass: public ParticleClass
+class BallClass: public RigidBodyClass
 {
 public:
 	BallClass();
@@ -23,7 +23,7 @@ public:
 	void	SetRadisu(const float radius);
 	float	GetRadius() const;
 	
-			
+		
 protected:
 	int		mBallID;
 	int		mOwenerID;

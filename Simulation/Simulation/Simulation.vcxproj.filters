@@ -39,31 +39,16 @@
     <ClCompile Include="CameraClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ParticleClass.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="BallClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="BallManagerClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ParticleForceGenerator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ParticleContactClass.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RigidBodyClass.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ForceGeneratorClass.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="PhysicsClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ContactClass.cpp">
+    <ClCompile Include="RigidBodyClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -98,31 +83,16 @@
     <ClInclude Include="CameraClass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ParticleClass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="BallClass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="BallManagerClass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ParticleForceGenerator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ParticleContactClass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RigidBodyClass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ForceGeneratorClass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="PhysicsClass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ContactClass.h">
+    <ClInclude Include="RigidBodyClass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

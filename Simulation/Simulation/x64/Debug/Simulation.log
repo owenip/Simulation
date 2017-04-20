@@ -1,10 +1,4 @@
-﻿  main.cpp
-  SystemClass.cpp
-  GraphicClass.cpp
-  BallManagerClass.cpp
-  BallClass.cpp
-  Generating Code...
-  Simulation.vcxproj -> \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\bin\Simulation.exe
+﻿  Simulation.vcxproj -> \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\bin\Simulation.exe
   Simulation.vcxproj -> \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\bin\Simulation.pdb (Partial PDB)
   \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\Resources\earth.bmp
   \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\Resources\config.txt

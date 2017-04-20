@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "ParticleClass.h"
+#include "RigidBodyClass.h"
 #include "BallClass.h"
 
 
@@ -13,7 +13,7 @@ BallClass::~BallClass()
 {
 }
 
-void BallClass::Initialize(int BallID, int OwenerID, float Radius, float mass, Vector3 Position, Vector3 Velocity, Vector3 Accerleration, float damping)
+void BallClass::Initialize(int BallID, int OwenerID, float Radius, float mass, SimpleMath::Vector3 Position, SimpleMath::Vector3 Velocity, SimpleMath::Vector3 Accerleration, float damping)
 {
 	mBallID = BallID;
 	mOwenerID = OwenerID;
@@ -23,17 +23,37 @@ void BallClass::Initialize(int BallID, int OwenerID, float Radius, float mass, V
 	this->SetPosition(Position);
 	this->SetVelocity(Velocity);
 	this->SetAcceleration(Accerleration);
-	this->SetDamping(damping);
+
+	float Ixx, Iyy, Izz;
+	Ixx = 2.0f * fMass / 5.0f * (mRadius * mRadius);
+	Izz = Iyy = Ixx;
+	
+	mInertia = SimpleMath::Matrix::Identity;
+	mInertia._11 = Ixx;
+	mInertia._22 = Iyy;
+	mInertia._33 = Izz;
+	mInertia.Invert(mInertiaInverse);
+
+	vAngularAcceleration = SimpleMath::Vector3::Zero;
+	vAngularAccelerationGlobal = SimpleMath::Vector3::Zero;
+	vAngularVelocity = SimpleMath::Vector3::Zero;
+	vAngularVelocityGlobal = SimpleMath::Vector3::Zero;
+	vEulerAngles = SimpleMath::Vector3::Zero;
+	fSpeed = 0.f;
+
+	
+
 
 }
 
 void BallClass::Update(float dt)
 {
-	this->Integrate(dt);
+	//this->Integrate(dt);
 }
 
 void BallClass::Shutdown()
 {
+
 }
 
 void BallClass::SetBallID(const int BallID)
