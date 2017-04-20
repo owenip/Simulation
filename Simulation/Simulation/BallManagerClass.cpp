@@ -156,6 +156,16 @@ void BallManagerClass::Shutdown()
 	mDirect3D.reset();
 }
 
+std::vector<BallClass*> BallManagerClass::GetBallIndex() const
+{
+	return mBallIndex;
+}
+
+void BallManagerClass::GetBallIndex(std::vector<BallClass*>& InIndex) const
+{
+	InIndex = mBallIndex;
+}
+
 void BallManagerClass::CreateTexture()
 {
 	DX::ThrowIfFailed(

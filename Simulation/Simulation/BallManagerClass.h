@@ -1,6 +1,5 @@
 #pragma once
 #include "BallClass.h"
-#include "ParticleClass.h"
 
 class BallManagerClass:public BallClass
 {
@@ -12,6 +11,9 @@ public:
 	void Update(float dt);
 	void Render(SimpleMath::Matrix View);
 	void Shutdown();
+
+	std::vector<BallClass*> GetBallIndex() const;
+	void GetBallIndex(std::vector<BallClass*> &InIndex) const;
 
 private:
 	void CreateTexture();

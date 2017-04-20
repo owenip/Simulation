@@ -123,7 +123,7 @@ bool GraphicClass::Initialize(const HWND hwnd, shared_ptr<ConfigClass> Config, s
 	mGravityWell->CreateInputLayout(m_effect.get(), mGwInputLayout.ReleaseAndGetAddressOf());
 
 	//Balls Manager Initialisation
-	mBallManager = make_unique<BallManagerClass>();
+	mBallManager = make_shared<BallManagerClass>();
 	result = mBallManager->Initialise(mDirect3D, mConfig);
 	if (!result)
 	{

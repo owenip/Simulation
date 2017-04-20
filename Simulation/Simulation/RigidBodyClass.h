@@ -28,7 +28,7 @@ public:
 	void				SetAcceleration(const SimpleMath::Vector3 &InV);
 	SimpleMath::Vector3	GetAcceleration() const;
 	void				GetAcceleration(SimpleMath::Vector3 &InV) const;
-
+	
 	float					fMass;						// Total mass (constant)
 	SimpleMath::Matrix		mInertia;					// Mass moment of inertia in body coordinates
 	SimpleMath::Matrix		mInertiaInverse;			// Inverse of mass moment of inertia matrix

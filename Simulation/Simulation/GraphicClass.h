@@ -93,6 +93,6 @@ private:
 	std::unique_ptr<DirectX::EffectFactory> mWallfxFactory;
 
 	//Balls
-	std::unique_ptr<BallManagerClass> mBallManager;
+	std::shared_ptr<BallManagerClass> mBallManager;
 };
 
