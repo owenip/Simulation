@@ -184,7 +184,7 @@ bool GraphicClass::Update(float dt)
 
 	this->CheckInput();
 
-	mBallManager->Update(mTimer->DeltaTime());
+	mBallManager->Integrate(mTimer->DeltaTime());
 	
 	mPhysics->startFrame();
 	mPhysics->runPhysics(dt);

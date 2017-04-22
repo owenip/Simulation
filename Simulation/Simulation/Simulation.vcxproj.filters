@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Particle">
+      <UniqueIdentifier>{c22d81f7-fb25-4228-b30e-547686724fd9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Particle\Header">
+      <UniqueIdentifier>{ea610398-e3c2-4d4b-ba66-02b5a14cbaf7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -39,25 +45,28 @@
     <ClCompile Include="CameraClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ParticleClass.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="BallClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="BallManagerClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ParticleForceGenerator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ParticleContactClass.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="pPhysicsClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ParticleClass.cpp">
+      <Filter>Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleContactClass.cpp">
+      <Filter>Particle</Filter>
+    </ClCompile>
     <ClCompile Include="ParticleLinkClass.cpp">
+      <Filter>Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleForceGenerator.cpp">
+      <Filter>Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -92,25 +101,28 @@
     <ClInclude Include="CameraClass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ParticleClass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="BallClass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="BallManagerClass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ParticleForceGenerator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ParticleContactClass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="pPhysicsClass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ParticleClass.h">
+      <Filter>Particle\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleContactClass.h">
+      <Filter>Particle\Header</Filter>
+    </ClInclude>
     <ClInclude Include="ParticleLinkClass.h">
+      <Filter>Particle\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleForceGenerator.h">
+      <Filter>Particle\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

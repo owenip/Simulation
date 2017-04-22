@@ -4,6 +4,7 @@
 void ParticleContactClass::Resolve(float duration)
 {
 	ResolveVelocity(duration);
+	ResolveInterpenetration(duration);
 }
 
 float ParticleContactClass::CalculateSeparatingVelocity() const
@@ -159,7 +160,6 @@ void ParticleContactResolver::ResolveContacts(ParticleContactClass * contactArra
 		SimpleMath::Vector3 *move = contactArray[maxIndex].particleMovement;
 		for(i = 0; i<numContacts;i++)
 		{
-			SimpleMath::Vector3 temp;
 			if (contactArray[i].particle[0] == contactArray[maxIndex].particle[0])
 			{
 				contactArray[i].penetration -=  contactArray[i].contactNormal.Dot(move[0]);

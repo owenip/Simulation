@@ -9,7 +9,7 @@ public:
 	~BallManagerClass();
 
 	bool Initialise(shared_ptr<D3DClass> Direct3D, shared_ptr<ConfigClass> Config);
-	void Update(float dt);
+	void Integrate(float dt);
 	void Render(SimpleMath::Matrix View);
 	void Shutdown();
 

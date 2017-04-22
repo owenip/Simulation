@@ -215,29 +215,20 @@ bool BallManagerClass::Initialise(shared_ptr<D3DClass> Direct3D, shared_ptr<Conf
 	return true;
 }
 
-void BallManagerClass::Update(float dt)
+void BallManagerClass::Integrate(float dt)
+{
+	for each (BallClass *Ball in mBallIndex)
+	{
+		Ball->Integrate(dt);	
+	}
+}
+
+void BallManagerClass::Render(SimpleMath::Matrix View)
 {
 	SimpleMath::Matrix Proj = SimpleMath::Matrix::Identity;
 	mDirect3D->GetProj(Proj);
 	m_Balleffect->SetProjection(Proj);
 
-	//for each (BallClass *Ball in mBallIndex)
-	//{
-	//	//Ball->Update(dt);
-
-	//	if (Ball->GetPosition().y < mBallRadius)
-	//	{
-	//		Ball->SetPosition(Ball->GetPosition().x, mBallRadius, Ball->GetPosition().z);
-	//		Ball->SetVelocity(SimpleMath::Vector3(0.f, 0.0f, 0.f));
-	//		Ball->SetAcceleration(SimpleMath::Vector3(0.f, 0.0f, 0.f));
-	//	}
-	//}
-
-	//May make balls sleep according to their accerlation and collision states
-}
-
-void BallManagerClass::Render(SimpleMath::Matrix View)
-{
 	SimpleMath::Matrix World = SimpleMath::Matrix::Identity;
 	m_Balleffect->SetView(View);
 
