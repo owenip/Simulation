@@ -108,11 +108,13 @@ bool BallManagerClass::Initialise(shared_ptr<D3DClass> Direct3D, shared_ptr<Conf
 
 	}
 
-	for each (BallClass *Ball in mBallIndex)
-	for (mBallIndex:: i = mBallIndex.begin(); i < mBallIndex.end(); i++)
-	{		
-		Ball->SetVelocity(SimpleMath::Vector3(0.f, 0.0f, 0.f));
-		Ball->SetAcceleration(SimpleMath::Vector3(0.f, 0.0f, 0.f));
+	for (auto i = 0; i < mBallIndex.size(); i++)
+	{
+		if (i % 2)
+		{
+			mBallIndex[i]->SetVelocity(SimpleMath::Vector3(0.5f, -2.f, 0.f));
+			mBallIndex[i]->SetAcceleration(SimpleMath::Vector3(0.5f, -2.f, 0.f));
+		}
 	}
 
 	
