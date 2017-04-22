@@ -60,11 +60,11 @@ bool BallManagerClass::Initialise(shared_ptr<D3DClass> Direct3D, shared_ptr<Conf
 			for (auto j = 0; j < CurSide; j++)
 			{
 				BallClass *Ball = new BallClass();
-				Vector3 SpawnPos(CurSpawnX, mBallRadius, CurSpawnZ);
+				Vector3 SpawnPos(CurSpawnX, mBallRadius * 10.f, CurSpawnZ);
 				Ball->Initialize(i, -1, mBallRadius, 10.f, 
 							SpawnPos,
-							SimpleMath::Vector3::Zero, //Velocity
-							SimpleMath::Vector3::Zero, //Accerlation
+					SimpleMath::Vector3(-0.5f, -2.f, 0.f), //Velocity
+					SimpleMath::Vector3(-0.5f, -2.f, 0.f), //Accerlation
 							0.99f);
 				mBallIndex.push_back(Ball);
 				ProcessedBall++;
@@ -106,6 +106,13 @@ bool BallManagerClass::Initialise(shared_ptr<D3DClass> Direct3D, shared_ptr<Conf
 		}
 		CurSide++;
 
+	}
+
+	for each (BallClass *Ball in mBallIndex)
+	for (mBallIndex:: i = mBallIndex.begin(); i < mBallIndex.end(); i++)
+	{		
+		Ball->SetVelocity(SimpleMath::Vector3(0.f, 0.0f, 0.f));
+		Ball->SetAcceleration(SimpleMath::Vector3(0.f, 0.0f, 0.f));
 	}
 
 	
@@ -212,17 +219,17 @@ void BallManagerClass::Update(float dt)
 	mDirect3D->GetProj(Proj);
 	m_Balleffect->SetProjection(Proj);
 
-	for each (BallClass *Ball in mBallIndex)
-	{
-		Ball->Update(dt);
+	//for each (BallClass *Ball in mBallIndex)
+	//{
+	//	//Ball->Update(dt);
 
-		if (Ball->GetPosition().y < mBallRadius)
-		{
-			Ball->SetPosition(Ball->GetPosition().x, mBallRadius, Ball->GetPosition().z);
-			Ball->SetVelocity(SimpleMath::Vector3(0.f, 0.0f, 0.f));
-			Ball->SetAcceleration(SimpleMath::Vector3(0.f, 0.0f, 0.f));
-		}
-	}
+	//	if (Ball->GetPosition().y < mBallRadius)
+	//	{
+	//		Ball->SetPosition(Ball->GetPosition().x, mBallRadius, Ball->GetPosition().z);
+	//		Ball->SetVelocity(SimpleMath::Vector3(0.f, 0.0f, 0.f));
+	//		Ball->SetAcceleration(SimpleMath::Vector3(0.f, 0.0f, 0.f));
+	//	}
+	//}
 
 	//May make balls sleep according to their accerlation and collision states
 }
@@ -265,6 +272,31 @@ void BallManagerClass::Shutdown()
 	mConfig.reset();
 	mDirect3D.reset();
 }
+
+std::vector<BallClass*> BallManagerClass::GetBallIndex()
+{
+	return mBallIndex;
+}
+
+void BallManagerClass::GetBallParticleIndex(std::vector<ParticleClass*>& Particles)
+{
+	Particles.clear();
+	for (int i = 0; i < mNumberOfBalls; i++)
+	{
+		Particles.push_back(static_cast<ParticleClass*>(mBallIndex[i]));
+	}
+}
+
+std::vector<ParticleClass*> BallManagerClass::GetBallParticleIndex()
+{
+	std::vector<ParticleClass*> Particles;
+	for (int i = 0; i < mNumberOfBalls; i++)
+	{
+		Particles.push_back(static_cast<ParticleClass*>(mBallIndex[i]));
+	}
+	return Particles;
+}
+
 
 void BallManagerClass::CreateTexture()
 {

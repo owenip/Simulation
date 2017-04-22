@@ -2,7 +2,7 @@
 #include "pch.h"
 #include "CameraClass.h"
 #include "BallManagerClass.h"
-
+#include  "pPhysicsClass.h"
 
 class GraphicClass
 {
@@ -50,7 +50,7 @@ private:
 	char mLastKeyPressed;
 
 	//Camera
-	unique_ptr<CameraClass> mCamera;
+	std::unique_ptr<CameraClass> mCamera;
 
 	//Ball
 	int mNumberOfBalls;
@@ -94,5 +94,9 @@ private:
 
 	//Balls
 	std::unique_ptr<BallManagerClass> mBallManager;
+	
+	//Physics
+	shared_ptr<pPhysicsClass> mPhysics;
+	GroundContacts groundContactGenerator;
 };
 

@@ -162,7 +162,6 @@ void ParticleContactResolver::ResolveContacts(ParticleContactClass * contactArra
 			SimpleMath::Vector3 temp;
 			if (contactArray[i].particle[0] == contactArray[maxIndex].particle[0])
 			{
-				temp = move[0] * contactArray[i].contactNormal;
 				contactArray[i].penetration -=  contactArray[i].contactNormal.Dot(move[0]);
 			}
 			else if (contactArray[i].particle[0] == contactArray[maxIndex].particle[1])

@@ -134,17 +134,15 @@
     <ClCompile Include="BallManagerClass.cpp" />
     <ClCompile Include="CameraClass.cpp" />
     <ClCompile Include="ConfigClass.cpp" />
-    <ClCompile Include="ContactClass.cpp" />
     <ClCompile Include="D3DClass.cpp" />
-    <ClCompile Include="ForceGeneratorClass.cpp" />
     <ClCompile Include="GraphicClass.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ParticleClass.cpp" />
     <ClCompile Include="ParticleContactClass.cpp" />
     <ClCompile Include="ParticleForceGenerator.cpp" />
+    <ClCompile Include="ParticleLinkClass.cpp" />
     <ClCompile Include="pch.cpp" />
-    <ClCompile Include="PhysicsClass.cpp" />
-    <ClCompile Include="RigidBodyClass.cpp" />
+    <ClCompile Include="pPhysicsClass.cpp" />
     <ClCompile Include="SystemClass.cpp" />
     <ClCompile Include="TimerClass.cpp" />
   </ItemGroup>
@@ -157,17 +155,15 @@
     <ClInclude Include="BallManagerClass.h" />
     <ClInclude Include="CameraClass.h" />
     <ClInclude Include="ConfigClass.h" />
-    <ClInclude Include="ContactClass.h" />
     <ClInclude Include="D3DClass.h" />
-    <ClInclude Include="ForceGeneratorClass.h" />
     <ClInclude Include="GraphicClass.h" />
     <ClInclude Include="ParticleClass.h" />
     <ClInclude Include="ParticleContactClass.h" />
     <ClInclude Include="ParticleForceGenerator.h" />
+    <ClInclude Include="ParticleLinkClass.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include="PhysicsClass.h" />
+    <ClInclude Include="pPhysicsClass.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="RigidBodyClass.h" />
     <ClInclude Include="SystemClass.h" />
     <ClInclude Include="TimerClass.h" />
   </ItemGroup>

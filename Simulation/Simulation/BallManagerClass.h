@@ -13,6 +13,12 @@ public:
 	void Render(SimpleMath::Matrix View);
 	void Shutdown();
 
+	void GetBallIndex(std::vector<BallClass*> BallIndex);
+	std::vector<BallClass*> GetBallIndex();
+
+	void GetBallParticleIndex(std::vector<ParticleClass*> &Particles);
+	std::vector<ParticleClass*> GetBallParticleIndex();
+
 private:
 	void CreateTexture();
 	

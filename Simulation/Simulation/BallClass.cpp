@@ -29,7 +29,7 @@ void BallClass::Initialize(int BallID, int OwenerID, float Radius, float mass, V
 
 void BallClass::Update(float dt)
 {
-	this->Integrate(dt);
+	//this->Integrate(dt);
 }
 
 void BallClass::Shutdown()

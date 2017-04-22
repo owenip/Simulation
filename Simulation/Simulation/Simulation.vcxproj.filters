@@ -54,16 +54,10 @@
     <ClCompile Include="ParticleContactClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RigidBodyClass.cpp">
+    <ClCompile Include="pPhysicsClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ForceGeneratorClass.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PhysicsClass.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ContactClass.cpp">
+    <ClCompile Include="ParticleLinkClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -113,16 +107,10 @@
     <ClInclude Include="ParticleContactClass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RigidBodyClass.h">
+    <ClInclude Include="pPhysicsClass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ForceGeneratorClass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PhysicsClass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ContactClass.h">
+    <ClInclude Include="ParticleLinkClass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

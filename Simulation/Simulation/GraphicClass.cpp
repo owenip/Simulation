@@ -131,6 +131,11 @@ bool GraphicClass::Initialize(const HWND hwnd, shared_ptr<ConfigClass> Config, s
 		return false;
 	}
 
+	//Physics Class
+	mPhysics = make_shared<pPhysicsClass>(mConfig->GetNumberOfBalls() * 10);
+	mPhysics->getParticles() = mBallManager->GetBallParticleIndex();
+	groundContactGenerator.init(&mPhysics->getParticles());
+	mPhysics->getContactGenerators().push_back(&groundContactGenerator);
 
 	return true;
 }
@@ -181,6 +186,9 @@ bool GraphicClass::Update(float dt)
 
 	mBallManager->Update(mTimer->DeltaTime());
 	
+	mPhysics->startFrame();
+	mPhysics->runPhysics(dt);
+
 	result = Render();
 	if (!result)
 	{
