@@ -47,7 +47,7 @@ void Simulation::RunPhysics(float dt)
 
 }
 
-shared_ptr<BallManagerClass> Simulation::GetBallManager() const
+shared_ptr<BallManagerClass> Simulation::GetBallManagerPtr() const
 {
 	return mBallManager;
 }

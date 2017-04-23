@@ -3,6 +3,7 @@
 #include "CameraClass.h"
 #include "BallManagerClass.h"
 #include  "pPhysicsClass.h"
+#include "Simulation.h"
 
 class GraphicClass
 {
@@ -19,6 +20,8 @@ public:
 
 	bool Update(float dt);
 		
+	void SetSimulationPtr(shared_ptr<Simulation> InSimulation);
+	void SetBallManagerPtr(shared_ptr<BallManagerClass> InBallManager);
 private:
 	bool Render();
 	bool InitAntTweak(const HWND hwnd);	
@@ -95,7 +98,8 @@ private:
 	//Balls
 	std::shared_ptr<BallManagerClass> mBallManager;
 	
-	//
+	//Simulation
+	std::shared_ptr<Simulation> mSimulation;
 
 	//Physics
 	shared_ptr<pPhysicsClass> mPhysics;

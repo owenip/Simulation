@@ -122,26 +122,16 @@ bool GraphicClass::Initialize(const HWND hwnd, shared_ptr<ConfigClass> Config, s
 	mGravityWell = GeometricPrimitive::CreateSphere(mDirect3D->GetDeviceContext(),1.f);
 	mGravityWell->CreateInputLayout(m_effect.get(), mGwInputLayout.ReleaseAndGetAddressOf());
 
-	//Balls Manager Initialisation
-	mBallManager = make_unique<BallManagerClass>();
-	result = mBallManager->Initialise(mDirect3D);
-	if (!result)
-	{
-		MessageBox(hwnd, L"Could not initialize BallManager.", L"Error", MB_OK);
-		return false;
-	}
-
-	//Physics Class
-	mPhysics = make_shared<pPhysicsClass>(mConfig->GetNumberOfBalls() * 10);
-	mPhysics->getParticles() = mBallManager->GetBallParticleIndex();
-	groundContactGenerator.init(&mPhysics->getParticles());
-	mPhysics->getContactGenerators().push_back(&groundContactGenerator);
 
 	return true;
 }
 
 void GraphicClass::Shutdown()
 {
+	mBallManager.reset();
+	mSimulation.reset();
+
+
 	mCup.reset();
 	mCupfxFactory.reset();
 
@@ -184,17 +174,24 @@ bool GraphicClass::Update(float dt)
 
 	this->CheckInput();
 
-	mBallManager->Integrate(mTimer->DeltaTime());
-	
-	mPhysics->startFrame();
-	mPhysics->runPhysics(dt);
-
 	result = Render();
 	if (!result)
 	{
 		return false;
 	}
 	return true;
+}
+
+void GraphicClass::SetSimulationPtr(shared_ptr<Simulation> InSimulation)
+{
+	mSimulation = InSimulation;
+}
+
+void GraphicClass::SetBallManagerPtr(shared_ptr<BallManagerClass> InBallManager)
+{
+	mBallManager = InBallManager;
+	//Balls Manager Visual Initialisation	
+	mBallManager->Initialise(mDirect3D);
 }
 
 bool GraphicClass::Render()
@@ -304,6 +301,10 @@ void GraphicClass::CheckInput()
 	else if (tracker.pressed.P)
 	{
 		//Pause the simulation loop globally (globally)
+		if (mConfig->GetIsPaused())
+			mConfig->SetIsPaused(false);
+		else
+			mConfig->SetIsPaused(true);
 	}
 	else if (tracker.pressed.O)
 	{

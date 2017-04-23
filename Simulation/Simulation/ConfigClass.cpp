@@ -2,12 +2,11 @@
 #include "ConfigClass.h"
 
 
-ConfigClass::ConfigClass():
-	mFullScreen(false),
-	mScreenWidth(0),
-	mScreenHeight(0)
+ConfigClass::ConfigClass(): mIsPaused(false),
+                            mFullScreen(false),
+                            mScreenWidth(0),
+                            mScreenHeight(0)
 {
-	
 }
 
 bool ConfigClass::Initialize()
@@ -42,6 +41,16 @@ int ConfigClass::GetNumberOfBalls() const
 float ConfigClass::GetBallRadius() const
 {
 	return mBallRadius;
+}
+
+void ConfigClass::SetIsPaused(bool InVal)
+{
+	mIsPaused = InVal;
+}
+
+bool ConfigClass::GetIsPaused() const
+{
+	return mIsPaused;
 }
 
 bool ConfigClass::ReadConfigFile()

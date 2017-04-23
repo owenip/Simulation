@@ -13,7 +13,7 @@ public:
 	void RunPhysics(float dt);
 
 	void SetBallManager(shared_ptr<BallManagerClass> InBallManager);
-	shared_ptr<BallManagerClass> GetBallManager() const;
+	shared_ptr<BallManagerClass> GetBallManagerPtr() const;
 
 private:
 	std::shared_ptr<BallManagerClass> mBallManager;

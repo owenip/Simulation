@@ -72,6 +72,9 @@ bool SystemClass::Initialize()
 	mSimulation = make_shared<Simulation>();
 	mSimulation->Initialise(mConfig);
 
+	mGraphic->SetSimulationPtr(mSimulation);
+	mGraphic->SetBallManagerPtr(mSimulation->GetBallManagerPtr());
+
 	return true;
 }
 
@@ -136,7 +139,15 @@ void SystemClass::Run()
 bool SystemClass::Update()
 {
 	bool result;
-	result = mGraphic->Update(mTimer->DeltaTime());
+	float dt = mTimer->DeltaTime();
+
+	if (!mConfig->GetIsPaused())
+	{
+		mSimulation->StartFrame();
+		mSimulation->RunPhysics(dt);
+	}
+
+	result = mGraphic->Update(dt);
 
 	return true;
 }

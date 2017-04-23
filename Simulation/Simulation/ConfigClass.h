@@ -14,6 +14,9 @@ public:
 
 	int GetNumberOfBalls() const;
 	float GetBallRadius() const;
+
+	void SetIsPaused(bool InVal);
+	bool GetIsPaused() const;
 	
 private:
 	bool ReadConfigFile();
@@ -25,6 +28,8 @@ private:
 
 private:
 	const std::string configFileName = ".\\Resources\\config.txt";
+
+	bool mIsPaused;
 
 	bool mFullScreen;
 	int mScreenWidth, mScreenHeight;
