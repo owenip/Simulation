@@ -1,7 +1,7 @@
 #pragma once
 #include "ConfigClass.h"
 #include "GraphicClass.h"
-
+#include "Simulation.h"
 class SystemClass
 {
 public:
@@ -30,11 +30,12 @@ private:
 
 	
 	//ConfigClass* mConfig;	
-	shared_ptr<ConfigClass> mConfig;
-	GraphicClass *mGraphic;
-	
 	shared_ptr<TimerClass> mTimer;
+	shared_ptr<ConfigClass> mConfig;
+	GraphicClass *mGraphic;	
+	shared_ptr<Simulation> mSimulation;
 
+	
 
 	bool      mAppPaused;
 };

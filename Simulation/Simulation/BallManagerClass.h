@@ -8,18 +8,23 @@ public:
 	BallManagerClass();
 	~BallManagerClass();
 
-	bool Initialise(shared_ptr<D3DClass> Direct3D, shared_ptr<ConfigClass> Config);
+	bool Initialise(shared_ptr<ConfigClass> Config);
+	bool Initialise(shared_ptr<D3DClass> Direct3D);
+
+
+	void ClearAccumulator();
 	void Integrate(float dt);
 	void Render(SimpleMath::Matrix View);
 	void Shutdown();
 
 	void GetBallIndex(std::vector<BallClass*> BallIndex);
-	std::vector<BallClass*> GetBallIndex();
+	std::vector<BallClass*> GetBallIndex() const;
 
 	void GetBallParticleIndex(std::vector<ParticleClass*> &Particles);
 	std::vector<ParticleClass*> GetBallParticleIndex();
 
 private:
+	void CreateBallIndex();
 	void CreateTexture();
 	
 

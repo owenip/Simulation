@@ -68,11 +68,16 @@ bool SystemClass::Initialize()
 		return false;
 	}
 
+	//Initialise Simulation Class
+	mSimulation = make_shared<Simulation>();
+	mSimulation->Initialise(mConfig);
+
 	return true;
 }
 
 void SystemClass::Shutdown()
 {
+	mSimulation.reset();
 	if (mGraphic)
 	{
 		mGraphic->Shutdown();

@@ -124,7 +124,7 @@ bool GraphicClass::Initialize(const HWND hwnd, shared_ptr<ConfigClass> Config, s
 
 	//Balls Manager Initialisation
 	mBallManager = make_unique<BallManagerClass>();
-	result = mBallManager->Initialise(mDirect3D, mConfig);
+	result = mBallManager->Initialise(mDirect3D);
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize BallManager.", L"Error", MB_OK);

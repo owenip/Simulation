@@ -111,11 +111,13 @@ void ParticleContactClass::ResolveInterpenetration(float duration)
 	}
 
 	//Apply the penetration resolution
-	auto newPos = particleMovement[0] + particle[0]->GetPosition();
+	SimpleMath::Vector3 newPos = particleMovement[0] + particle[0]->GetPosition();
 	particle[0]->SetPosition(newPos);
 	if (particle[1])
+	{
 		newPos = particle[1]->GetPosition() + particleMovement[1];
 		particle[1]->SetPosition(newPos);
+	}
 }
 
 ParticleContactResolver::ParticleContactResolver(unsigned iterations):

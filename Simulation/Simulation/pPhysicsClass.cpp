@@ -72,8 +72,10 @@ void pPhysicsClass::runPhysics(float duration)
 	// And process them
 	if (usedContacts)
 	{
-		if (calculateIterations) 
+		if (calculateIterations)
+		{
 			resolver.SetIterations(usedContacts * 2);
+		}
 		resolver.ResolveContacts(contacts, usedContacts, duration);
 	}
 }
