@@ -3,12 +3,18 @@
 
 
 GraphicClass::GraphicClass():
-	mDirect3D(nullptr),
+	mDirect3D(std::make_shared<D3DClass>()),
 	mConfig(nullptr),
 	mATBar(nullptr),
-	mTimer(nullptr)
+	mTimer(nullptr),
+	mScreenWidth(0),
+	mScreenHeight(0),
+	mLastKeyPressed(0),
+	mNumberOfBalls(0),
+	mOwnerID(0),
+	mGWMovementGain(0), mGwForce(0),
+	mGravityWellPos(SimpleMath::Vector3::Zero)
 {
-
 }
 
 
@@ -25,9 +31,10 @@ bool GraphicClass::Initialize(const HWND hwnd, shared_ptr<ConfigClass> Config, s
 	DX::ThrowIfFailed(mScreenWidth = mConfig->GetScreenWidth());
 	DX::ThrowIfFailed(mScreenHeight = mConfig->GetScreenHeight());
 	DX::ThrowIfFailed(mNumberOfBalls = mConfig->GetNumberOfBalls());
+	DX::ThrowIfFailed(mOwnerID = mConfig->GetOwnerID());
 
 	//DirectX Class initialisation
-	mDirect3D = make_unique<D3DClass>();
+	//mDirect3D = std::make_shared<D3DClass>();
 	if (!mDirect3D)
 	{
 		return false;
@@ -119,13 +126,14 @@ bool GraphicClass::Initialize(const HWND hwnd, shared_ptr<ConfigClass> Config, s
 	//mGravityWellPos = SimpleMath::Vector3::Zero;
 	mGWMovementGain = 0.01f;
 	//mGravityWell = GeometricPrimitive::CreateSphere(mDirect3D->GetDeviceContext(),1.f);
-	mGwManager->InitialiseGraphic(mDirect3D);
+	
 
 	return true;
 }
 
 void GraphicClass::Shutdown()
 {
+	mGwManager.reset();
 	mBallManager.reset();
 	mSimulation.reset();
 
@@ -171,6 +179,9 @@ bool GraphicClass::Update(float dt)
 	bool result;
 
 	this->CheckInput();
+	
+	mGravityWellPos = mGwManager->GwGetPos(mOwnerID);
+	mGwForce = mGwManager->GwGetForce(mOwnerID);
 
 	result = Render();
 	if (!result)
@@ -195,6 +206,7 @@ void GraphicClass::SetBallManagerPtr(shared_ptr<BallManagerClass> InBallManager)
 void GraphicClass::SetGwManagerPtr(shared_ptr<GravityWellManager> InGwManager)
 {
 	mGwManager = InGwManager;
+	mGwManager->InitialiseGraphic(mDirect3D);
 }
 
 bool GraphicClass::Render()
@@ -205,12 +217,10 @@ bool GraphicClass::Render()
 	mDirect3D->GetWorld(m_world);
 	mCamera->GetView(m_view);
 	mDirect3D->GetProj(m_proj);
-		
 	
 	m_effect->SetView(m_view);
 	m_effect->SetProjection(m_proj);
-	m_effect->SetWorld(m_world);
-	
+	m_effect->SetWorld(m_world);	
 
 	//Draw Model
 	//Surface	
@@ -224,14 +234,15 @@ bool GraphicClass::Render()
 	mBallManager->Render(m_view);
 
 	//GravityWell
-	mDirect3D->GetWorld(m_world);
+	/*mDirect3D->GetWorld(m_world);
 	m_world.Translation(mGravityWellPos);
 	m_effect->SetWorld(m_world);
 	m_effect->SetColorAndAlpha(SimpleMath::Color(0.f, 0.f, 0.f, 0.3f));
 	mGravityWell->Draw(m_effect.get(), mGwInputLayout.Get(), true, false, [=]
 	{
 		mDirect3D->GetDeviceContext()->RSSetState(m_states->CullNone());
-	});
+	});*/
+	mGwManager->Render(m_view);
 
 	//Wall	
 	mDirect3D->GetWorld(m_world);
@@ -271,9 +282,10 @@ bool GraphicClass::InitAntTweak(const HWND hwnd)
 	//Non-Changable variables
 	TwAddVarRW(mATBar, "No. of balls owned by this peer", TW_TYPE_INT32,&mNumberOfBalls,"min=0 max=64000 keyincr=+ keydecr=-");
 	TwAddVarRW(mATBar, "No. of balls currently contended", TW_TYPE_INT32, nullptr, "");
-	TwAddVarRW(mATBar, "Total number of balls", TW_TYPE_INT32, nullptr, "");
-	TwAddVarRW(mATBar, "Magnitude of the applying force ", TW_TYPE_FLOAT, nullptr, "");
+	TwAddVarRW(mATBar, "Total number of balls", TW_TYPE_INT32, &mNumberOfBalls, "");
+	TwAddVarRW(mATBar, "Magnitude of the applying force ", TW_TYPE_FLOAT, &mGwForce, "");
 	TwAddVarRW(mATBar, "Time step of each simulation loop per second", TW_TYPE_INT32, nullptr, "");
+
 	//Changable variables
 	TwAddVarRW(mATBar, "The time scale", TW_TYPE_FLOAT, nullptr, "");
 	TwAddVarRW(mATBar, "Magnitude of elasticity", TW_TYPE_FLOAT, nullptr, "");
@@ -401,65 +413,76 @@ void GraphicClass::CheckInput()
 	{
 		//Cancel force
 		//Force = 0
+		mGwManager->ClearForce(mOwnerID);
 	}
 	else if (mouse.leftButton)
 	{
 		//1.Clear repelling force
 		//2.Apply attractor force
+		mGwManager->ClearForce(mOwnerID);
+		mGwManager->GwAddAttractF(mOwnerID);
 	}
 	else if (mouse.rightButton)
 	{
 		//Clear Attrating force
 		//Apply repellor force
+		mGwManager->ClearForce(mOwnerID);
+		mGwManager->GwAddRepellF(mOwnerID);
 	}
 	//m_mouse->SetMode(mouse.middleButton ? Mouse::MODE_RELATIVE : Mouse::MODE_ABSOLUTE);
 }
 
 void GraphicClass::GwMove(SimpleMath::Vector3 direction)
 {
-	SimpleMath::Vector3 move = direction*mGWMovementGain;
-	mGravityWellPos += move;
+	SimpleMath::Vector3 move = direction*mGWMovementGain;		
+	mGwManager->GwAddMove(mOwnerID, move);
+	mGravityWellPos = mGwManager->GwGetPos(mOwnerID);
 	mCamera->SetLookAt(mGravityWellPos);
 	return;
 }
 
-void GraphicClass::GwMoveForward()
+void GraphicClass::GwMoveForward() 
 {
 	this->GwMove(SimpleMath::Vector3::Forward);
 	return;
 }
 
-void GraphicClass::GwMoveBackward()
+void GraphicClass::GwMoveBackward() 
 {
 	this->GwMove(SimpleMath::Vector3::Backward);
 	return;
 }
 
-void GraphicClass::GwMoveLeft()
+void GraphicClass::GwMoveLeft() 
 {
 	this->GwMove(SimpleMath::Vector3::Left);
 	return;
 }
 
-void GraphicClass::GwMoveRight()
+void GraphicClass::GwMoveRight() 
 {
 	this->GwMove(SimpleMath::Vector3::Right);
 	return;
 }
 
-void GraphicClass::GwMoveByMouse(float & mouseX, float & mouseY)
+void GraphicClass::GwMoveByMouse(float & mouseX, float & mouseY) 
 {
 	SimpleMath::Vector3 move = SimpleMath::Vector3(mouseX, 0.f, mouseY);
 	this->GwMove(move);
 	return;
 }
 
-void GraphicClass::GwMoveUp()
+void GraphicClass::GwMoveUp() 
 {
 	this->GwMove(SimpleMath::Vector3::Up);
 }
 
-void GraphicClass::GwMoveDown()
+void GraphicClass::GwMoveDown() 
 {
 	this->GwMove(SimpleMath::Vector3::Down);
+}
+
+void GraphicClass::GwSetForce(float InForce)
+{
+	
 }

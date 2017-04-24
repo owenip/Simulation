@@ -64,3 +64,13 @@ void GravityWellClass::SetPos(SimpleMath::Vector3 InPos)
 {
 	mGravityWellPos = InPos;
 }
+
+SimpleMath::Vector3 GravityWellClass::GetPos() const
+{
+	return mGravityWellPos;
+}
+
+void GravityWellClass::AddMove(SimpleMath::Vector3 move)
+{
+	mGravityWellPos += move;
+}

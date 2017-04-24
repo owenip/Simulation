@@ -19,7 +19,13 @@ public:
 	bool	GetIsPaused() const;
 
 	void	SetOwnerID(int InID);
-	int		GetOwenerID();
+	int		GetOwnerID() const;
+
+	void	SetDragForce(float InForce);
+	float	GetDragForce() const;
+
+	void	SetElasticForce(float InForce);
+	float	GetElasticForce() const;
 	
 private:
 	bool ReadConfigFile();
@@ -41,5 +47,8 @@ private:
 	float mBallRadius;
 
 	int mOwnerID;
+
+	float mDragForce;
+	float mElasticForce;
 };
 

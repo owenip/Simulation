@@ -60,13 +60,16 @@ bool SystemClass::Initialize()
 	}
 
 	//Initialise Graphic Class
-	mGraphic = new GraphicClass;
+	mGraphic = new GraphicClass();
 	result = mGraphic->Initialize(m_hwnd, mConfig, mTimer);
 	if (!result)
 	{
 		MessageBoxA(m_hwnd, "Unable to initialise the graphic class!", "Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
+
+	//Set Gw OwnerID
+	mConfig->SetOwnerID(0);
 
 	//Initialise Simulation Class
 	mSimulation = make_shared<Simulation>();
@@ -76,8 +79,7 @@ bool SystemClass::Initialize()
 	mGraphic->SetBallManagerPtr(mSimulation->GetBallManagerPtr());
 	mGraphic->SetGwManagerPtr(mSimulation->GetGwManagerPtr());
 
-	//Set Gw OwnerID
-	mConfig->SetOwnerID(0);
+	
 
 	return true;
 }

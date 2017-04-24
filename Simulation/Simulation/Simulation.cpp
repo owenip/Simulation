@@ -20,7 +20,7 @@ void Simulation::Initialise(shared_ptr<ConfigClass> InConfig)
 	mBallManager->Initialise(mConfig);
 	//Initialise Gw Manager
 	mGwManager = make_shared<GravityWellManager>();
-	mGwManager->Initialise();
+	mGwManager->Initialise(mConfig->GetOwnerID());
 
 	//Initialise Force generators and Fgen list
 		//Gravity Force Generator

@@ -2,10 +2,16 @@
 #include "ConfigClass.h"
 
 
-ConfigClass::ConfigClass(): mIsPaused(false),
-                            mFullScreen(false),
-                            mScreenWidth(0),
-                            mScreenHeight(0)
+ConfigClass::ConfigClass(): 
+mIsPaused(false),                            
+mFullScreen(false),                            
+mScreenWidth(0),                            
+mScreenHeight(0), 
+mNumberOfBalls(0), 
+mBallRadius(0), 
+mOwnerID(0),
+mDragForce(0),
+mElasticForce(0)
 {
 }
 
@@ -58,9 +64,29 @@ void ConfigClass::SetOwnerID(int InID)
 	mOwnerID = InID;
 }
 
-int ConfigClass::GetOwenerID()
+int ConfigClass::GetOwnerID() const
 {
 	return mOwnerID;
+}
+
+void ConfigClass::SetDragForce(float InForce)
+{
+	mDragForce = InForce;
+}
+
+float ConfigClass::GetDragForce() const
+{
+	return mDragForce;
+}
+
+void ConfigClass::SetElasticForce(float InForce)
+{
+	mElasticForce = InForce;
+}
+
+float ConfigClass::GetElasticForce() const
+{
+	return mElasticForce;
 }
 
 bool ConfigClass::ReadConfigFile()
@@ -157,6 +183,30 @@ void ConfigClass::StoreValue(string &key, string &value)
 			std::cerr << "Invalid argument: " << ia.what() << '\n';
 		}
 	}
+	else if(key == "Elasticity")
+	{
+		try {
+			float InElasticForce = stof(value);
+			mElasticForce = InElasticForce;
+		}
+		catch (const std::invalid_argument& ia)
+		{
+			SetDefault(key);
+			std::cerr << "Invalid argument: " << ia.what() << '\n';
+		}
+	}
+	else if (key == "FrictionalForce")
+	{
+		try {
+			float InDragForce = stof(value);
+			mDragForce = InDragForce;
+		}
+		catch (const std::invalid_argument& ia)
+		{
+			SetDefault(key);
+			std::cerr << "Invalid argument: " << ia.what() << '\n';
+		}
+	}
 	return;
 }
 
@@ -183,6 +233,15 @@ void ConfigClass::SetDefault(string & key)
 	{
 		mBallRadius = 1.f;
 	}
+	else if (key == "Elasticity")
+	{
+		mElasticForce = 1.f;
+	}
+	else if (key == "FrictionalForce")
+	{
+		mDragForce = 1.f;
+	}
+
 }
 
 void ConfigClass::SetDefaultAll()
@@ -190,6 +249,10 @@ void ConfigClass::SetDefaultAll()
 	SetDefault(string("FullScreen"));
 	SetDefault(string("ScreenWidth"));
 	SetDefault(string("ScreenHeight"));
+	SetDefault(string("NumOfBalls"));
+	SetDefault(string("BallRadius"));
+	SetDefault(string("Elasticity"));
+	SetDefault(string("FrictionalForce"));
 }
 
 

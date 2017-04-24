@@ -23,6 +23,9 @@ public:
 	void	ReduceForce(float InForce);
 
 	void	SetPos(SimpleMath::Vector3 InPos);
+	SimpleMath::Vector3 GetPos() const;
+	void	AddMove(SimpleMath::Vector3 move);
+
 protected:	
 	int mGwID;
 	SimpleMath::Vector3	mGravityWellPos;

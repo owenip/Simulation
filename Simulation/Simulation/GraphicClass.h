@@ -38,14 +38,19 @@ private:
 	void GwMoveByMouse(float &mouseX, float &mouseY);
 	void GwMoveUp();
 	void GwMoveDown();
+
+	//Gravity Force Control
+	void GwSetForce(float InForce);
+	void GwAddForce();
+	void GwReduceForce();
+
 private:
 	shared_ptr<D3DClass> mDirect3D;
 	shared_ptr<ConfigClass> mConfig;
 	TwBar *mATBar;
 
 	//Timer
-	shared_ptr<TimerClass > mTimer;
-	
+	shared_ptr<TimerClass > mTimer;	
 	unique_ptr<Keyboard> m_keyboard;
 	unique_ptr<Mouse> m_mouse;
 	Keyboard::KeyboardStateTracker tracker;
@@ -82,8 +87,11 @@ private:
 	std::unique_ptr<DirectX::EffectFactory> mCupfxFactory;
 
 	//Gravity Well	
-	DirectX::SimpleMath::Vector3 mGravityWellPos;
+	int mOwnerID;
+	SimpleMath::Vector3 mGravityWellPos;
 	float mGWMovementGain;
+	float mGwForceGain;
+	float mGwForce;
 	std::unique_ptr<DirectX::GeometricPrimitive> mGravityWell;
 	Microsoft::WRL::ComPtr<ID3D11InputLayout> mGwInputLayout;
 	std::shared_ptr<GravityWellManager> mGwManager;

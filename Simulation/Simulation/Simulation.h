@@ -21,6 +21,6 @@ public:
 private:
 	std::shared_ptr<BallManagerClass> mBallManager;
 	std::shared_ptr<GravityWellManager> mGwManager;
-	shared_ptr<ConfigClass> mConfig;
+	std::shared_ptr<ConfigClass> mConfig;
 };
 

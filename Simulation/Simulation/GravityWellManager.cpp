@@ -11,9 +11,29 @@ GravityWellManager::~GravityWellManager()
 {
 }
 
-bool GravityWellManager::Initialise()
+bool GravityWellManager::Initialise(int OwnerID)
 {
 	ForceGain = 1.f;
+	SimpleMath::Color GwColor;
+	switch(OwnerID)
+	{
+		case 0:
+		{
+			GwColor = Colors::Black;
+			break;
+		}
+		case 1:
+		{
+			GwColor = Colors::HotPink;
+			break;
+		}
+		case 2:
+		{
+			GwColor = Colors::Lime;
+			break;
+		}
+	}
+	this->AddGw(OwnerID, SimpleMath::Vector3::Zero, GwColor);
 	return false;
 }
 
@@ -54,7 +74,7 @@ void GravityWellManager::Render(SimpleMath::Matrix InView)
 		//Draw Center of Gw
 		mGwCenter->Draw(World, InView, Proj, GwColor);
 		//Change to Transparent effect
-		GwColor.w = 0.03;
+		GwColor.w = 0.03f;
 		mGwEffect->SetColorAndAlpha(GwColor);
 		//Draw the Gw
 		mGwPrimitive->Draw(mGwEffect.get(), mGwInputLayout.Get(), true, false, [=]
@@ -82,7 +102,7 @@ void GravityWellManager::Shutdown()
 	mGwIndex.clear();
 }
 
-void GravityWellManager::SetGwRadius(int InGwRadius)
+void GravityWellManager::SetGwRadius(float InGwRadius)
 {
 	mGwRadius = InGwRadius;
 }
@@ -125,6 +145,35 @@ void GravityWellManager::GwSetPos(int GwID, SimpleMath::Vector3 InGravityWellPos
 	}
 }
 
+SimpleMath::Vector3 GravityWellManager::GwGetPos(int GwID)
+{
+	for (vector<GravityWellClass*>::iterator iter = mGwIndex.begin();
+		iter != mGwIndex.end(); ++iter)
+	{
+		if ((*iter)->GetGwID() == GwID)
+		{
+			return (*iter)->GetPos();			
+		}
+		else
+		{
+			return SimpleMath::Vector3::Zero;
+		}
+	}
+}
+
+void GravityWellManager::GwAddMove(int GwID, SimpleMath::Vector3 InMove)
+{
+	for (vector<GravityWellClass*>::iterator iter = mGwIndex.begin();
+		iter != mGwIndex.end(); ++iter)
+	{
+		if ((*iter)->GetGwID() == GwID)
+		{
+			(*iter)->AddMove(InMove);
+			break;
+		}
+	}
+}
+
 void GravityWellManager::GwAddAttractF(int GwID)
 {
 	for(vector<GravityWellClass*>::iterator iter = mGwIndex.begin();
@@ -146,6 +195,32 @@ void GravityWellManager::GwAddRepellF(int GwID)
 		if ((*iter)->GetGwID() == GwID)
 		{
 			(*iter)->AddForce(-ForceGain);
+			break;
+		}
+	}
+}
+
+void GravityWellManager::ClearForce(int GwID)
+{
+	for (vector<GravityWellClass*>::iterator iter = mGwIndex.begin();
+		iter != mGwIndex.end(); ++iter)
+	{
+		if ((*iter)->GetGwID() == GwID)
+		{
+			(*iter)->SetForce(0.f);
+			break;
+		}
+	}
+}
+
+float GravityWellManager::GwGetForce(int GwID)
+{
+	for (vector<GravityWellClass*>::iterator iter = mGwIndex.begin();
+		iter != mGwIndex.end(); ++iter)
+	{
+		if ((*iter)->GetGwID() == GwID)
+		{
+			return (*iter)->GetForce();
 			break;
 		}
 	}
