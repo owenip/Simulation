@@ -2,7 +2,8 @@
 
 
 
-GravityWellManager::GravityWellManager(): mGwRadius(1)
+GravityWellManager::GravityWellManager(): 
+mGwRadius(2.f)
 {
 }
 
@@ -50,7 +51,7 @@ bool GravityWellManager::InitialiseGraphic(shared_ptr<D3DClass> InDirect3D)
 	mGwPrimitive->CreateInputLayout(mGwEffect.get(), mGwInputLayout.ReleaseAndGetAddressOf());
 
 	//Center Indication for Gw
-	mGwCenter = GeometricPrimitive::CreateSphere(mDirect3D->GetDeviceContext(), mGwRadius / 100.f);
+	mGwCenter = GeometricPrimitive::CreateSphere(mDirect3D->GetDeviceContext(), mGwRadius / 10.f);
 
 	return false;
 }
@@ -58,23 +59,23 @@ bool GravityWellManager::InitialiseGraphic(shared_ptr<D3DClass> InDirect3D)
 void GravityWellManager::Render(SimpleMath::Matrix InView)
 {
 	SimpleMath::Matrix Proj = SimpleMath::Matrix::Identity;
-	mDirect3D->GetProj(Proj);	
+	mDirect3D->GetProj(Proj);
+	mGwEffect->SetProjection(Proj);
 	mGwEffect->SetView(InView);
-
 	for (GravityWellClass* element : mGwIndex)
 	{
 		SimpleMath::Matrix World = SimpleMath::Matrix::Identity;
-		SimpleMath::Vector3 newPos;
+		SimpleMath::Vector3 newPos = element->GetPos();		
 		World = World.CreateTranslation(newPos);
 		mGwEffect->SetWorld(World);
 		
 		//Settup color for this Gw
 		SimpleMath::Color GwColor = element->GetColor();
-		mGwEffect->SetColorAndAlpha(GwColor);
+		//mGwEffect->SetColorAndAlpha(GwColor);
 		//Draw Center of Gw
 		mGwCenter->Draw(World, InView, Proj, GwColor);
 		//Change to Transparent effect
-		GwColor.w = 0.03f;
+		GwColor.w = 0.3f;
 		mGwEffect->SetColorAndAlpha(GwColor);
 		//Draw the Gw
 		mGwPrimitive->Draw(mGwEffect.get(), mGwInputLayout.Get(), true, false, [=]
@@ -130,6 +131,11 @@ void GravityWellManager::RemoveGw(int GwID)
 			break;
 		}
 	}
+}
+
+void GravityWellManager::SetLocalID(int GwID)
+{
+	mLocalID = GwID;
 }
 
 void GravityWellManager::GwSetPos(int GwID, SimpleMath::Vector3 InGravityWellPos)

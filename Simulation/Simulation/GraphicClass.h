@@ -41,8 +41,6 @@ private:
 
 	//Gravity Force Control
 	void GwSetForce(float InForce);
-	void GwAddForce();
-	void GwReduceForce();
 
 private:
 	shared_ptr<D3DClass> mDirect3D;
