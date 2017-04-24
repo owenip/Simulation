@@ -6,17 +6,20 @@ public:
 	ConfigClass(const ConfigClass&) = default;
 	~ConfigClass() = default;
 
-	bool Initialize();
+	bool	Initialize();
 
-	bool CheckFullScreen() const;
-	int GetScreenWidth() const;
-	int GetScreenHeight() const;
+	bool	CheckFullScreen() const;
+	int		GetScreenWidth() const;
+	int		GetScreenHeight() const;
 
-	int GetNumberOfBalls() const;
-	float GetBallRadius() const;
+	int		GetNumberOfBalls() const;
+	float	GetBallRadius() const;
 
-	void SetIsPaused(bool InVal);
-	bool GetIsPaused() const;
+	void	SetIsPaused(bool InVal);
+	bool	GetIsPaused() const;
+
+	void	SetOwnerID(int InID);
+	int		GetOwenerID();
 	
 private:
 	bool ReadConfigFile();
@@ -36,5 +39,7 @@ private:
 	
 	int mNumberOfBalls;
 	float mBallRadius;
+
+	int OwnerID;
 };
 
