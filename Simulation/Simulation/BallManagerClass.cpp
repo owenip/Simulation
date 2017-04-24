@@ -38,6 +38,8 @@ bool BallManagerClass::Initialise(shared_ptr<D3DClass> Direct3D)
 	mBallPrimitive->CreateInputLayout(m_Balleffect.get(),
 		m_inputLayout.ReleaseAndGetAddressOf());
 
+
+
 	return true;
 }
 

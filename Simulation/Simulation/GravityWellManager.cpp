@@ -2,8 +2,10 @@
 
 
 
-GravityWellManager::GravityWellManager(): 
-mGwRadius(2.f)
+GravityWellManager::GravityWellManager():
+mGwRadius(2.f), 
+mLocalID(0), 
+ForceGain(1.f)
 {
 }
 
@@ -14,7 +16,6 @@ GravityWellManager::~GravityWellManager()
 
 bool GravityWellManager::Initialise(int OwnerID)
 {
-	ForceGain = 1.f;
 	SimpleMath::Color GwColor;
 	switch(OwnerID)
 	{
