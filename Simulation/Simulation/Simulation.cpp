@@ -18,6 +18,9 @@ void Simulation::Initialise(shared_ptr<ConfigClass> InConfig)
 	//Initialise Ball Manager
 	mBallManager = make_shared<BallManagerClass>();
 	mBallManager->Initialise(mConfig);
+	//Initialise Gw Manager
+	mGwManager = make_shared<GravityWellManager>();
+	mGwManager->Initialise();
 
 	//Initialise Force generators and Fgen list
 		//Gravity Force Generator
@@ -27,6 +30,8 @@ void Simulation::Initialise(shared_ptr<ConfigClass> InConfig)
 void Simulation::Shutdown()
 {
 	mBallManager.reset();
+	mGwManager.reset();
+	mConfig.reset();
 }
 
 void Simulation::StartFrame()
@@ -47,7 +52,17 @@ void Simulation::RunPhysics(float dt)
 
 }
 
+void Simulation::SetBallManager(shared_ptr<BallManagerClass> InBallManager)
+{
+	mBallManager = InBallManager;
+}
+
 shared_ptr<BallManagerClass> Simulation::GetBallManagerPtr() const
 {
 	return mBallManager;
+}
+
+std::shared_ptr<GravityWellManager> Simulation::GetGwManagerPtr() const
+{
+	return mGwManager;
 }

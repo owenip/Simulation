@@ -29,20 +29,20 @@ bool SystemClass::Initialize()
 	mConfig = make_shared<ConfigClass>();
 	if (!mConfig)
 	{
-		MessageBoxA(NULL, "Unable to initialise the config class.", "Error", MB_OK | MB_ICONERROR);
+		MessageBoxA(m_hwnd, "Unable to initialise the config class.", "Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
 	result = mConfig->Initialize();
 	if (!result)
 	{
-		MessageBoxA(NULL, "Unable to initialise the config class.", "Error", MB_OK | MB_ICONERROR);
+		MessageBoxA(m_hwnd, "Unable to initialise the config class.", "Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
 	
 	//Initialse Window 
 	if (!InitializeWindow(mConfig->GetScreenWidth(), mConfig->GetScreenHeight()))
 	{
-		MessageBoxA(NULL, "Unable to initialise the window.", "Error", MB_OK | MB_ICONERROR);
+		MessageBoxA(m_hwnd, "Unable to initialise the window.", "Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
 
@@ -64,16 +64,20 @@ bool SystemClass::Initialize()
 	result = mGraphic->Initialize(m_hwnd, mConfig, mTimer);
 	if (!result)
 	{
-		MessageBoxA(NULL, "Unable to initialise the graphic class!", "Error", MB_OK | MB_ICONERROR);
+		MessageBoxA(m_hwnd, "Unable to initialise the graphic class!", "Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
 
 	//Initialise Simulation Class
 	mSimulation = make_shared<Simulation>();
 	mSimulation->Initialise(mConfig);
-
+	//Passing Models Class to graphic after being initialising in Simulation Class
 	mGraphic->SetSimulationPtr(mSimulation);
 	mGraphic->SetBallManagerPtr(mSimulation->GetBallManagerPtr());
+	mGraphic->SetGwManagerPtr(mSimulation->GetGwManagerPtr());
+
+	//Set Gw OwnerID
+	mConfig->SetOwnerID(0);
 
 	return true;
 }

@@ -1,4 +1,3 @@
-#include "pch.h"
 #include "GraphicClass.h"
 
 
@@ -117,11 +116,10 @@ bool GraphicClass::Initialize(const HWND hwnd, shared_ptr<ConfigClass> Config, s
 	});
 
 	//GravityWell
-	mGravityWellPos = SimpleMath::Vector3::Zero;
+	//mGravityWellPos = SimpleMath::Vector3::Zero;
 	mGWMovementGain = 0.01f;
-	mGravityWell = GeometricPrimitive::CreateSphere(mDirect3D->GetDeviceContext(),1.f);
-	mGravityWell->CreateInputLayout(m_effect.get(), mGwInputLayout.ReleaseAndGetAddressOf());
-
+	//mGravityWell = GeometricPrimitive::CreateSphere(mDirect3D->GetDeviceContext(),1.f);
+	mGwManager->InitialiseGraphic(mDirect3D);
 
 	return true;
 }
@@ -192,6 +190,11 @@ void GraphicClass::SetBallManagerPtr(shared_ptr<BallManagerClass> InBallManager)
 	mBallManager = InBallManager;
 	//Balls Manager Visual Initialisation	
 	mBallManager->Initialise(mDirect3D);
+}
+
+void GraphicClass::SetGwManagerPtr(shared_ptr<GravityWellManager> InGwManager)
+{
+	mGwManager = InGwManager;
 }
 
 bool GraphicClass::Render()

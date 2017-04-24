@@ -53,6 +53,16 @@ bool ConfigClass::GetIsPaused() const
 	return mIsPaused;
 }
 
+void ConfigClass::SetOwnerID(int InID)
+{
+	mOwnerID = InID;
+}
+
+int ConfigClass::GetOwenerID()
+{
+	return mOwnerID;
+}
+
 bool ConfigClass::ReadConfigFile()
 {
 	ifstream configfile(configFileName);

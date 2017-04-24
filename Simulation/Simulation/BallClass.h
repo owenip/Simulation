@@ -20,7 +20,7 @@ public:
 	void	SetOwenerID(const int owenerID);
 	int		GetOwenerID() const;
 	
-	void	SetRadisu(const float radius);
+	void	SetRadius(const float radius);
 	float	GetRadius() const;
 	
 			

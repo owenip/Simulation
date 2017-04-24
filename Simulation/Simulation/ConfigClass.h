@@ -40,6 +40,6 @@ private:
 	int mNumberOfBalls;
 	float mBallRadius;
 
-	int OwnerID;
+	int mOwnerID;
 };
 

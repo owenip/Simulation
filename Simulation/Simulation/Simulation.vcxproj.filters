@@ -19,6 +19,9 @@
     <Filter Include="Particle\Header">
       <UniqueIdentifier>{ea610398-e3c2-4d4b-ba66-02b5a14cbaf7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Gravity Well">
+      <UniqueIdentifier>{d21aa503-5206-4db9-8aef-77c540175ed4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -68,6 +71,12 @@
     </ClCompile>
     <ClCompile Include="Simulation.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GravityWellClass.cpp">
+      <Filter>Gravity Well</Filter>
+    </ClCompile>
+    <ClCompile Include="GravityWellManager.cpp">
+      <Filter>Gravity Well</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -124,6 +133,12 @@
     </ClInclude>
     <ClInclude Include="Simulation.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GravityWellClass.h">
+      <Filter>Gravity Well</Filter>
+    </ClInclude>
+    <ClInclude Include="GravityWellManager.h">
+      <Filter>Gravity Well</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

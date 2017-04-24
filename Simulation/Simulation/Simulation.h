@@ -1,5 +1,6 @@
 #pragma once
 #include "BallManagerClass.h"
+#include "GravityWellManager.h"
 
 class Simulation
 {
@@ -15,8 +16,11 @@ public:
 	void SetBallManager(shared_ptr<BallManagerClass> InBallManager);
 	shared_ptr<BallManagerClass> GetBallManagerPtr() const;
 
+	std::shared_ptr<GravityWellManager> GetGwManagerPtr() const;
+
 private:
 	std::shared_ptr<BallManagerClass> mBallManager;
+	std::shared_ptr<GravityWellManager> mGwManager;
 	shared_ptr<ConfigClass> mConfig;
 };
 

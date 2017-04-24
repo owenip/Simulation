@@ -1,15 +1,24 @@
-﻿  SystemClass.cpp
-  Simulation.vcxproj -> \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\bin\Simulation.exe
-  Simulation.vcxproj -> \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\bin\Simulation.pdb (Partial PDB)
-  \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\Resources\earth.bmp
-  \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\Resources\config.txt
-  \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\Resources\wall.cmo
-  \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\Resources\blue.dds
-  \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\Resources\wall-Nick.cmo
-  \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\Resources\wall_texture.jpg
-  \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\Resources\wall_texture.dds
-  \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\Resources\surface.cmo
-  \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\Resources\cup.cmo
-  \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\Resources\roomtexture.dds
-  \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\Resources\cup.jpg
-         11 file(s) copied.
+﻿  TimerClass.cpp
+  SystemClass.cpp
+  Simulation.cpp
+  pPhysicsClass.cpp
+  pch.cpp
+  ParticleLinkClass.cpp
+  ParticleForceGenerator.cpp
+  ParticleContactClass.cpp
+  ParticleClass.cpp
+  main.cpp
+  GravityWellManager.cpp
+g:\git temp\simulation\simulation\simulation\gravitywellmanager.cpp(26): error C2039: 'SetAlpha': is not a member of 'DirectX::IEffect'
+  g:\git temp\simulation\simulation\packages\directxtk_desktop_2015.2017.2.10.1\build\native\include\model.h(38): note: see declaration of 'DirectX::IEffect'
+g:\git temp\simulation\simulation\simulation\gravitywellmanager.cpp(54): error C2664: 'void DirectX::GeometricPrimitive::Draw(DirectX::IEffect *,ID3D11InputLayout *,bool,bool,std::function<void (void)>) const': cannot convert argument 6 from 'GravityWellManager::Render::<lambda_451de54199296b7bb716c28298390578>' to 'bool'
+  g:\git temp\simulation\simulation\simulation\gravitywellmanager.cpp(54): note: No user-defined-conversion operator available that can perform this conversion, or the operator cannot be called
+g:\git temp\simulation\simulation\simulation\gravitywellmanager.cpp(74): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+  GravityWellClass.cpp
+  GraphicClass.cpp
+  D3DClass.cpp
+  ConfigClass.cpp
+  CameraClass.cpp
+  BallManagerClass.cpp
+  BallClass.cpp
+  Generating Code...

@@ -1,0 +1,152 @@
+#include "GravityWellManager.h"
+
+
+
+GravityWellManager::GravityWellManager(): mGwRadius(1)
+{
+}
+
+
+GravityWellManager::~GravityWellManager()
+{
+}
+
+bool GravityWellManager::Initialise()
+{
+	ForceGain = 1.f;
+	return false;
+}
+
+bool GravityWellManager::InitialiseGraphic(shared_ptr<D3DClass> InDirect3D)
+{
+	assert(mDirect3D = InDirect3D);
+	mStates = std::make_unique<DirectX::CommonStates>(mDirect3D->GetDevice());
+
+	mGwEffect = make_unique<DirectX::BasicEffect>(mDirect3D->GetDevice());
+	//mGwEffect->SetAlpha(.3f);
+
+	mGwPrimitive = GeometricPrimitive::CreateSphere(mDirect3D->GetDeviceContext(), mGwRadius);
+	mGwPrimitive->CreateInputLayout(mGwEffect.get(), mGwInputLayout.ReleaseAndGetAddressOf());
+	mGwPrimitive->CreateInputLayout(mGwEffect.get(), mGwInputLayout.ReleaseAndGetAddressOf());
+
+	//Center Indication for Gw
+	mGwCenter = GeometricPrimitive::CreateSphere(mDirect3D->GetDeviceContext(), mGwRadius / 100.f);
+
+	return false;
+}
+
+void GravityWellManager::Render(SimpleMath::Matrix InView)
+{
+	SimpleMath::Matrix Proj = SimpleMath::Matrix::Identity;
+	mDirect3D->GetProj(Proj);	
+	mGwEffect->SetView(InView);
+
+	for (GravityWellClass* element : mGwIndex)
+	{
+		SimpleMath::Matrix World = SimpleMath::Matrix::Identity;
+		SimpleMath::Vector3 newPos;
+		World = World.CreateTranslation(newPos);
+		mGwEffect->SetWorld(World);
+		
+		//Settup color for this Gw
+		SimpleMath::Color GwColor = element->GetColor();
+		mGwEffect->SetColorAndAlpha(GwColor);
+		//Draw Center of Gw
+		mGwCenter->Draw(World, InView, Proj, GwColor);
+		//Change to Transparent effect
+		GwColor.w = 0.03;
+		mGwEffect->SetColorAndAlpha(GwColor);
+		//Draw the Gw
+		mGwPrimitive->Draw(mGwEffect.get(), mGwInputLayout.Get(), true, false, [=]
+		{
+			mDirect3D->GetDeviceContext()->RSSetState(mStates->CullNone());
+		});
+		
+	}
+}
+
+void GravityWellManager::Shutdown()
+{
+	mDirect3D.reset();
+
+	mStates.reset();
+	mGwPrimitive.reset();
+	mGwCenter.reset();
+	mGwEffect.reset();
+	mGwInputLayout.Reset();
+
+	for (vector<GravityWellClass*>::iterator iter = mGwIndex.begin(); iter != mGwIndex.end(); ++iter)
+	{
+		delete *iter;
+	}
+	mGwIndex.clear();
+}
+
+void GravityWellManager::SetGwRadius(int InGwRadius)
+{
+	mGwRadius = InGwRadius;
+}
+
+float GravityWellManager::GetGwRadius() const
+{
+	return mGwRadius;
+}
+
+void GravityWellManager::AddGw(int InGwID, SimpleMath::Vector3 InGravityWellPos, SimpleMath::Color InGwColor)
+{
+	GravityWellClass *newGw = new GravityWellClass();
+	newGw->Initialize(InGwID, InGravityWellPos, InGwColor);
+	mGwIndex.push_back(newGw);
+}
+
+void GravityWellManager::RemoveGw(int GwID)
+{
+	for (vector<GravityWellClass*>::iterator iter = mGwIndex.begin();
+		iter != mGwIndex.end(); ++iter)
+	{
+		if ((*iter)->GetGwID() == GwID)
+		{
+			mGwIndex.erase(iter);
+			break;
+		}
+	}
+}
+
+void GravityWellManager::GwSetPos(int GwID, SimpleMath::Vector3 InGravityWellPos)
+{
+	for (vector<GravityWellClass*>::iterator iter = mGwIndex.begin();
+		iter != mGwIndex.end(); ++iter)
+	{
+		if ((*iter)->GetGwID() == GwID)
+		{
+			(*iter)->SetPos(InGravityWellPos);
+			break;
+		}
+	}
+}
+
+void GravityWellManager::GwAddAttractF(int GwID)
+{
+	for(vector<GravityWellClass*>::iterator iter = mGwIndex.begin();
+		iter!=mGwIndex.end();++iter)
+	{
+		if((*iter)->GetGwID() == GwID)
+		{
+			(*iter)->AddForce(ForceGain);
+			break;
+		}
+	}
+}
+
+void GravityWellManager::GwAddRepellF(int GwID)
+{
+	for (vector<GravityWellClass*>::iterator iter = mGwIndex.begin();
+		iter != mGwIndex.end(); ++iter)
+	{
+		if ((*iter)->GetGwID() == GwID)
+		{
+			(*iter)->AddForce(-ForceGain);
+			break;
+		}
+	}
+}

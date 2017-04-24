@@ -30,10 +30,12 @@ void BallClass::Initialize(int BallID, int OwenerID, float Radius, float mass, V
 void BallClass::Update(float dt)
 {
 	//this->Integrate(dt);
+
 }
 
 void BallClass::Shutdown()
 {
+
 }
 
 void BallClass::SetBallID(const int BallID)
@@ -56,7 +58,7 @@ int BallClass::GetOwenerID() const
 	return mOwenerID;
 }
 
-void BallClass::SetRadisu(const float radius)
+void BallClass::SetRadius(const float radius)
 {
 	assert(radius != 0);
 	mRadius = radius;

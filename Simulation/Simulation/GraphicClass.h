@@ -22,6 +22,8 @@ public:
 		
 	void SetSimulationPtr(shared_ptr<Simulation> InSimulation);
 	void SetBallManagerPtr(shared_ptr<BallManagerClass> InBallManager);
+	void SetGwManagerPtr(shared_ptr<GravityWellManager> InGwManager);
+
 private:
 	bool Render();
 	bool InitAntTweak(const HWND hwnd);	
@@ -84,6 +86,8 @@ private:
 	float mGWMovementGain;
 	std::unique_ptr<DirectX::GeometricPrimitive> mGravityWell;
 	Microsoft::WRL::ComPtr<ID3D11InputLayout> mGwInputLayout;
+	std::shared_ptr<GravityWellManager> mGwManager;
+
 
 	//Surface
 	std::unique_ptr<DirectX::Model> mSurface;

@@ -62,13 +62,11 @@ void BallManagerClass::Render(SimpleMath::Matrix View)
 	SimpleMath::Matrix Proj = SimpleMath::Matrix::Identity;
 	mDirect3D->GetProj(Proj);
 	m_Balleffect->SetProjection(Proj);
-
-	SimpleMath::Matrix World = SimpleMath::Matrix::Identity;
 	m_Balleffect->SetView(View);
-
+		
 	for each (BallClass *Ball in mBallIndex)
 	{
-		World = SimpleMath::Matrix::Identity;
+		SimpleMath::Matrix  World = SimpleMath::Matrix::Identity;
 
 		SimpleMath::Vector3 newPos;
 		Ball->GetPosition(&newPos);
@@ -83,7 +81,7 @@ void BallManagerClass::Render(SimpleMath::Matrix View)
 
 void BallManagerClass::Shutdown()
 {	
-	for (std::vector<BallClass*>::iterator iter = mBallIndex.begin(); iter!= mBallIndex.end(); ++iter)
+	for (vector<BallClass*>::iterator iter = mBallIndex.begin(); iter!= mBallIndex.end(); ++iter)
 	{
 		delete *iter;
 	}
@@ -98,6 +96,11 @@ void BallManagerClass::Shutdown()
 
 	mConfig.reset();
 	mDirect3D.reset();
+}
+
+void BallManagerClass::GetBallIndex(std::vector<BallClass*> &BallIndex) const
+{
+	BallIndex = mBallIndex;
 }
 
 std::vector<BallClass*> BallManagerClass::GetBallIndex() const
