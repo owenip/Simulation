@@ -22,6 +22,9 @@
     <Filter Include="Gravity Well">
       <UniqueIdentifier>{d21aa503-5206-4db9-8aef-77c540175ed4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Simulation">
+      <UniqueIdentifier>{d86e7105-73ac-43db-b64f-c3bf3c0ea53c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -54,9 +57,6 @@
     <ClCompile Include="BallManagerClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="pPhysicsClass.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ParticleClass.cpp">
       <Filter>Particle</Filter>
     </ClCompile>
@@ -69,14 +69,20 @@
     <ClCompile Include="ParticleForceGenerator.cpp">
       <Filter>Particle</Filter>
     </ClCompile>
-    <ClCompile Include="Simulation.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GravityWellClass.cpp">
       <Filter>Gravity Well</Filter>
     </ClCompile>
     <ClCompile Include="GravityWellManager.cpp">
       <Filter>Gravity Well</Filter>
+    </ClCompile>
+    <ClCompile Include="pPhysicsClass.cpp">
+      <Filter>Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulation.cpp">
+      <Filter>Simulation</Filter>
+    </ClCompile>
+    <ClCompile Include="ContactClass.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -116,9 +122,6 @@
     <ClInclude Include="BallManagerClass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="pPhysicsClass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ParticleClass.h">
       <Filter>Particle\Header</Filter>
     </ClInclude>
@@ -131,14 +134,20 @@
     <ClInclude Include="ParticleForceGenerator.h">
       <Filter>Particle\Header</Filter>
     </ClInclude>
-    <ClInclude Include="Simulation.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GravityWellClass.h">
       <Filter>Gravity Well</Filter>
     </ClInclude>
     <ClInclude Include="GravityWellManager.h">
       <Filter>Gravity Well</Filter>
+    </ClInclude>
+    <ClInclude Include="pPhysicsClass.h">
+      <Filter>Particle\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation.h">
+      <Filter>Simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="ContactClass.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

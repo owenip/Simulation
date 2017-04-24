@@ -1,18 +1,14 @@
-﻿  main.cpp
-  SystemClass.cpp
-  GraphicClass.cpp
-  Generating Code...
-  Simulation.vcxproj -> G:\Git Temp\Simulation\Simulation\Simulation\bin\Simulation.exe
-  Simulation.vcxproj -> G:\Git Temp\Simulation\Simulation\Simulation\bin\Simulation.pdb (Partial PDB)
-  G:\Git Temp\Simulation\Simulation\Simulation\Resources\earth.bmp
-  G:\Git Temp\Simulation\Simulation\Simulation\Resources\config.txt
-  G:\Git Temp\Simulation\Simulation\Simulation\Resources\wall.cmo
-  G:\Git Temp\Simulation\Simulation\Simulation\Resources\blue.dds
-  G:\Git Temp\Simulation\Simulation\Simulation\Resources\wall-Nick.cmo
-  G:\Git Temp\Simulation\Simulation\Simulation\Resources\wall_texture.jpg
-  G:\Git Temp\Simulation\Simulation\Simulation\Resources\wall_texture.dds
-  G:\Git Temp\Simulation\Simulation\Simulation\Resources\surface.cmo
-  G:\Git Temp\Simulation\Simulation\Simulation\Resources\cup.cmo
-  G:\Git Temp\Simulation\Simulation\Simulation\Resources\roomtexture.dds
-  G:\Git Temp\Simulation\Simulation\Simulation\Resources\cup.jpg
+﻿  Simulation.vcxproj -> \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\bin\Simulation.exe
+  Simulation.vcxproj -> \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\bin\Simulation.pdb (Partial PDB)
+  \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\Resources\earth.bmp
+  \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\Resources\config.txt
+  \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\Resources\wall.cmo
+  \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\Resources\blue.dds
+  \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\Resources\wall-Nick.cmo
+  \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\Resources\wall_texture.jpg
+  \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\Resources\wall_texture.dds
+  \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\Resources\surface.cmo
+  \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\Resources\cup.cmo
+  \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\Resources\roomtexture.dds
+  \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\Resources\cup.jpg
          11 file(s) copied.

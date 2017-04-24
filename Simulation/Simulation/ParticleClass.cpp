@@ -75,10 +75,15 @@ float ParticleClass::GetDamping() const
 	return mDamping;
 }
 
-void ParticleClass::SetPosition(Vector3 & position)
+void ParticleClass::SetPosition(Vector3 position)
 {
 	ParticleClass::mPosition = position;
 }
+
+//void ParticleClass::SetPosition(Vector3 & position)
+//{
+//	ParticleClass::mPosition = position;
+//}
 
 void ParticleClass::SetPosition(const float x, const float y, const float z)
 {

@@ -1,5 +1,5 @@
 #pragma once
-
+#include  "pch.h"
 using namespace DirectX::SimpleMath;
 
 class ParticleClass
@@ -28,7 +28,8 @@ public:
 	void	SetDamping(const float damping);
 	float	GetDamping() const;
 
-	void	SetPosition(Vector3 &position);
+	void	SetPosition(Vector3 position);
+	//void	SetPosition(Vector3 &position);
 	void	SetPosition(const float x, const float y, const float z);
 
 	void	GetPosition(Vector3 *position);

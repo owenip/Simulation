@@ -134,6 +134,7 @@
     <ClCompile Include="BallManagerClass.cpp" />
     <ClCompile Include="CameraClass.cpp" />
     <ClCompile Include="ConfigClass.cpp" />
+    <ClCompile Include="ContactClass.cpp" />
     <ClCompile Include="D3DClass.cpp" />
     <ClCompile Include="GraphicClass.cpp" />
     <ClCompile Include="GravityWellClass.cpp" />
@@ -158,6 +159,7 @@
     <ClInclude Include="BallManagerClass.h" />
     <ClInclude Include="CameraClass.h" />
     <ClInclude Include="ConfigClass.h" />
+    <ClInclude Include="ContactClass.h" />
     <ClInclude Include="D3DClass.h" />
     <ClInclude Include="GraphicClass.h" />
     <ClInclude Include="GravityWellClass.h" />
