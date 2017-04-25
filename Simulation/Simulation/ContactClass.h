@@ -103,5 +103,16 @@ public:
 	unsigned addContact(ContactClass *contact, unsigned limit) const override;
 };
 
+class WallContacts : public ContactGenerator
+{
+private:
+	std::vector<BallClass*> balls;
+	float mSurfaceRadius;
+public:
+	virtual ~WallContacts() = default;
+	void Init(std::vector<BallClass*> InBalls, float InSurfaceRadius);
+	unsigned addContact(ContactClass *contact, unsigned limit) const override;
+};
+
 
 

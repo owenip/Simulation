@@ -7,6 +7,7 @@ mIsPaused(false),
 mFullScreen(false),                            
 mScreenWidth(0),                            
 mScreenHeight(0), 
+mSurfaceRadius(30.f),
 mNumberOfBalls(0), 
 mBallRadius(0), 
 mOwnerID(0),
@@ -37,6 +38,11 @@ int ConfigClass::GetScreenWidth() const
 int ConfigClass::GetScreenHeight() const
 {
 	return mScreenHeight;
+}
+
+float ConfigClass::GetSurfaceRadius() const
+{
+	return mSurfaceRadius;
 }
 
 int ConfigClass::GetNumberOfBalls() const

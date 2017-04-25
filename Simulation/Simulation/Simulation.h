@@ -34,6 +34,7 @@ protected:
 	//Contact generator
 	GroundContacts	groundContactGenerator;
 	BallContacts	ballContactGenerator;
+	WallContacts	wallContactGenerator;
 	//Contact Resolver
 	ContactResolver resolver;
 

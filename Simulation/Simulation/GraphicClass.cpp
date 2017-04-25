@@ -104,8 +104,8 @@ bool GraphicClass::Initialize(const HWND hwnd, shared_ptr<ConfigClass> Config, s
 	//
 
 	//Surface
-	/*mSurface = GeometricPrimitive::CreateCylinder(mDirect3D->GetDeviceContext(), 0.05f, 50.f);*/
-	mSurface = Model::CreateFromCMO(mDirect3D->GetDevice(), L".\\Resources\\surface.cmo", *m_fxFactory, true, true);
+	mSurface = GeometricPrimitive::CreateCylinder(mDirect3D->GetDeviceContext(), 0.05f, mConfig->GetSurfaceRadius()* 2);
+	//mSurface = Model::CreateFromCMO(mDirect3D->GetDevice(), L".\\Resources\\surface.cmo", *m_fxFactory, true, true);
 
 	//Wall
 	/*mWall = GeometricPrimitive::CreateCylinder(mDirect3D->GetDeviceContext(), 25.f, 50.f);
@@ -224,11 +224,11 @@ bool GraphicClass::Render()
 
 	//Draw Model
 	//Surface	
-	//mSurface->Draw(m_world, m_view, m_proj, Colors::Silver);
-	mSurface->Draw(mDirect3D->GetDeviceContext(), *m_states, m_world, m_view, m_proj, true, [=]
+	mSurface->Draw(m_world, m_view, m_proj, Colors::Silver);
+	/*mSurface->Draw(mDirect3D->GetDeviceContext(), *m_states, m_world, m_view, m_proj, true, [=]
 	{
 		mDirect3D->GetDeviceContext()->RSSetState(m_states->CullClockwise());		
-	});
+	});*/
 
 	//Balls
 	mBallManager->Render(m_view);

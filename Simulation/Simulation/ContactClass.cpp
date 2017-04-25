@@ -266,3 +266,41 @@ unsigned BallContacts::addContact(ContactClass * contact, unsigned limit) const
 	}
 	return count;
 }
+
+void WallContacts::Init(std::vector<BallClass*> InBalls, float InSurfaceRadius)
+{
+	WallContacts::balls = InBalls;
+	WallContacts::mSurfaceRadius = InSurfaceRadius;
+}
+
+unsigned WallContacts::addContact(ContactClass * contact, unsigned limit) const
+{
+	unsigned count = 0;
+	
+	for each(BallClass* element in balls)
+	{
+		Vector3 normal = element->GetVelocity();
+		normal.Normalize();
+		normal = -normal;
+		Vector3 ballPos = element->GetPosition();		
+		float ballDistance = ballPos.Length() + element->GetRadius();
+		
+		if(ballDistance >= mSurfaceRadius)
+		{
+			contact->contactNormal = normal;
+			contact->ball[0] = element;
+			contact->ball[1] = nullptr;
+			contact->penetration = ballDistance - mSurfaceRadius;
+			contact->restitution = 0.2f;
+			contact++;
+			count++;
+		}else
+		{
+			continue;
+		}
+
+		if (count >= limit)
+			return count;
+	}
+	return count;
+}

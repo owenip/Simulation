@@ -29,12 +29,15 @@ void Simulation::Initialise(shared_ptr<ConfigClass> InConfig)
 	//Balls Contact
 	ballContactGenerator.Init(mBallManager->GetBallIndex());
 	ContactGeneratorIndex.push_back(&ballContactGenerator);
+	//Wall-Ball Contact Generator
+	wallContactGenerator.Init(mBallManager->GetBallIndex(), mConfig->GetSurfaceRadius());
+	ContactGeneratorIndex.push_back(&wallContactGenerator);
 
 	//Initialise Force generators and Fgen list
 	//Gravity Force Generator
 	
 	//Frictional Forces(Drag) Generator
-	//Wall-Ball Contact Generator
+	
 	
 }
 

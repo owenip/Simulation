@@ -12,6 +12,8 @@ public:
 	int		GetScreenWidth() const;
 	int		GetScreenHeight() const;
 
+	float	GetSurfaceRadius() const;
+
 	int		GetNumberOfBalls() const;
 	float	GetBallRadius() const;
 
@@ -42,12 +44,18 @@ private:
 
 	bool mFullScreen;
 	int mScreenWidth, mScreenHeight;
+
+	//Surface properties
+	float mSurfaceRadius;
 	
+	//Ball properties
 	int mNumberOfBalls;
 	float mBallRadius;
 
+	//Local Peer ID
 	int mOwnerID;
 
+	//Forces Properties
 	float mDragForce;
 	float mElasticForce;
 };

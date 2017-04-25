@@ -95,7 +95,8 @@ private:
 
 
 	//Surface
-	std::unique_ptr<DirectX::Model> mSurface;
+	//std::unique_ptr<DirectX::Model> mSurface;
+	std::unique_ptr<DirectX::GeometricPrimitive> mSurface;
 	Microsoft::WRL::ComPtr<ID3D11InputLayout> mSurfaceInputLayout;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mSurfaceTex;
 
