@@ -1,8 +1,6 @@
 #include "Simulation.h"
 
-
-
-Simulation::Simulation()
+Simulation::Simulation(): maxContacts(0), contacts(nullptr), resolver(maxContacts * 2), calculateIterations(true)
 {
 }
 
@@ -21,11 +19,19 @@ void Simulation::Initialise(shared_ptr<ConfigClass> InConfig)
 	mGwManager = make_shared<GravityWellManager>();
 	mGwManager->Initialise(mConfig->GetOwnerID());
 
-	//Initialise Force generators and Fgen list
-		//Gravity Force Generator
-		//Friction(Drag) Generator
+	//Initialise Contact Generators
+	maxContacts = mConfig->GetNumberOfBalls();
+	resolver = maxContacts * 2;
+	contacts = new ContactClass[maxContacts];
+	groundContactGenerator.Init(mBallManager->GetBallIndex());
+	ContactGeneratorIndex.push_back(&groundContactGenerator);
 
-	maxContacts = mBallManager->GetBallIndex * 10;
+	//Initialise Force generators and Fgen list
+	//Gravity Force Generator
+	
+	//Frictional Forces(Drag) Generator
+	//Wall-Ball Contact Generator
+	
 }
 
 void Simulation::Shutdown()
@@ -48,10 +54,16 @@ void Simulation::RunPhysics(float dt)
 	mBallManager->Integrate(dt);
 
 	//Generate Contact
-	//unsigned usedContacts = generateCo
-
+	unsigned usedContacts = GenerateContacts();
 	//Resolve Contact
-
+	if(usedContacts)
+	{
+		if(calculateIterations)
+		{
+			resolver.SetIterations(usedContacts * 2);
+		}
+		resolver.ResolveContacts(contacts, usedContacts, dt);
+	}
 }
 
 unsigned Simulation::GenerateContacts()
@@ -59,7 +71,7 @@ unsigned Simulation::GenerateContacts()
 	unsigned limit = maxContacts;
 	ContactClass *nextContact = contacts;
 
-	for(std::vector<ContactGenerator*>::iterator iter = ContactGeneratorIndex .begin();
+	for(std::vector<ContactGenerator*>::iterator iter = ContactGeneratorIndex.begin();
 		iter != ContactGeneratorIndex.end();
 		iter++)
 	{

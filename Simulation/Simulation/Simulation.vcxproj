@@ -145,7 +145,6 @@
     <ClCompile Include="ParticleForceGenerator.cpp" />
     <ClCompile Include="ParticleLinkClass.cpp" />
     <ClCompile Include="pch.cpp" />
-    <ClCompile Include="pPhysicsClass.cpp" />
     <ClCompile Include="Simulation.cpp" />
     <ClCompile Include="SystemClass.cpp" />
     <ClCompile Include="TimerClass.cpp" />
@@ -169,7 +168,6 @@
     <ClInclude Include="ParticleForceGenerator.h" />
     <ClInclude Include="ParticleLinkClass.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include="pPhysicsClass.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Simulation.h" />
     <ClInclude Include="SystemClass.h" />

@@ -27,13 +27,18 @@ public:
 
 
 protected:
-	std::vector<ContactGenerator*> ContactGeneratorIndex;
-	ContactClass *contacts;
-
 	//Holds the maximum number of contacts allowed (the  size of the contacts array)
 	unsigned maxContacts;
+	std::vector<ContactGenerator*> ContactGeneratorIndex;
+	ContactClass *contacts;
+	//Contact generator
+	GroundContacts groundContactGenerator;
+	//Contact Resolver
+	ContactResolver resolver;
+
 	
-	bool calculationsIterations;
+	
+	bool calculateIterations;
 
 private:
 	std::shared_ptr<BallManagerClass> mBallManager;

@@ -199,3 +199,31 @@ void ContactResolver::ResolveContacts(ContactClass * contactArray, unsigned numC
 	}
 
 }
+
+
+void GroundContacts::Init(std::vector<BallClass*> InBalls)
+{
+	GroundContacts::balls = InBalls;
+}
+
+unsigned GroundContacts::addContact(ContactClass * contact, unsigned limit) const
+{
+	unsigned count = 0;
+	for each(BallClass* element in balls)
+	{
+		float y = element->GetPosition().y - element->GetRadius();
+		if (y < 0.0f)
+		{
+			contact->contactNormal = Vector3::Up;
+			contact->ball[0] = element;
+			contact->ball[1] = nullptr;
+			contact->penetration = -y;
+			contact->restitution = 0.2f;
+			contact++;
+			count++;
+		}
+		if (count >= limit)
+			return count;
+	}
+	return count;
+}

@@ -75,14 +75,11 @@
     <ClCompile Include="GravityWellManager.cpp">
       <Filter>Gravity Well</Filter>
     </ClCompile>
-    <ClCompile Include="pPhysicsClass.cpp">
-      <Filter>Particle</Filter>
-    </ClCompile>
     <ClCompile Include="Simulation.cpp">
       <Filter>Simulation</Filter>
     </ClCompile>
     <ClCompile Include="ContactClass.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Simulation</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -140,14 +137,11 @@
     <ClInclude Include="GravityWellManager.h">
       <Filter>Gravity Well</Filter>
     </ClInclude>
-    <ClInclude Include="pPhysicsClass.h">
-      <Filter>Particle\Header</Filter>
-    </ClInclude>
     <ClInclude Include="Simulation.h">
       <Filter>Simulation</Filter>
     </ClInclude>
     <ClInclude Include="ContactClass.h">
-      <Filter>Header Files</Filter>
+      <Filter>Simulation</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -162,7 +162,7 @@ void BallManagerClass::CreateBallIndex()
 			{
 				BallClass *Ball = new BallClass();
 				Vector3 SpawnPos(CurSpawnX, mBallRadius * 10.f, CurSpawnZ);
-				Ball->Initialize(i, -1, mBallRadius, 10.f,
+				Ball->Initialize(ProcessedBall, -1, mBallRadius, 10.f,
 					SpawnPos,
 					SimpleMath::Vector3(-0.5f, -2.f, 0.f), //Velocity
 					SimpleMath::Vector3(-0.5f, -2.f, 0.f), //Accerlation

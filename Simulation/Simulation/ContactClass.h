@@ -82,3 +82,14 @@ public:
 	virtual unsigned addContact(ContactClass *contact,
 		unsigned limit) const = 0;
 };
+
+class GroundContacts : public ContactGenerator
+{
+private:
+	std::vector<BallClass*> balls;
+public:
+	virtual ~GroundContacts() = default;
+	void Init(std::vector<BallClass*> InBalls);
+	unsigned addContact(ContactClass *contact, unsigned limit) const override;
+};
+

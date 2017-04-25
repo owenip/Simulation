@@ -2,7 +2,6 @@
 #include "pch.h"
 #include "CameraClass.h"
 #include "BallManagerClass.h"
-#include  "pPhysicsClass.h"
 #include "Simulation.h"
 
 class GraphicClass
@@ -112,7 +111,7 @@ private:
 	std::shared_ptr<Simulation> mSimulation;
 
 	//Physics
-	shared_ptr<pPhysicsClass> mPhysics;
-	GroundContacts groundContactGenerator;
+	//shared_ptr<pPhysicsClass> mPhysics;
+	//GroundContacts groundContactGenerator;
 };
 
