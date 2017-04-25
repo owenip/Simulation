@@ -227,3 +227,42 @@ unsigned GroundContacts::addContact(ContactClass * contact, unsigned limit) cons
 	}
 	return count;
 }
+
+void BallContacts::Init(std::vector<BallClass*> InBalls)
+{
+	BallContacts::balls = InBalls;
+}
+
+unsigned BallContacts::addContact(ContactClass * contact, unsigned limit) const
+{
+	unsigned count = 0;
+	for each(BallClass* b1 in balls)
+	{
+		Vector3 pos1 = b1->GetPosition();
+		for each(BallClass* b2 in balls)
+		{
+			Vector3 pos2 = b2->GetPosition();
+			Vector3 midline = pos1 - pos2;
+			float size = midline.Length();
+			if(size<= 0.0f || size >= (b1->GetRadius()+b2->GetRadius()))
+			{
+				continue;
+			}
+			else
+			{
+				Vector3 normal = midline * (1.f / size);
+				contact->contactNormal = normal;
+				contact->ball[0] = b1;
+				contact->ball[1] = b2;
+				contact->penetration = (b1->GetRadius() + b2->GetRadius() - size);
+				contact->restitution = 0.2f;
+				contact++;
+				count++;
+			}
+
+			if (count >= limit)
+				return count;
+		}		
+	}
+	return count;
+}

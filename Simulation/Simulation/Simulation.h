@@ -32,7 +32,8 @@ protected:
 	std::vector<ContactGenerator*> ContactGeneratorIndex;
 	ContactClass *contacts;
 	//Contact generator
-	GroundContacts groundContactGenerator;
+	GroundContacts	groundContactGenerator;
+	BallContacts	ballContactGenerator;
 	//Contact Resolver
 	ContactResolver resolver;
 

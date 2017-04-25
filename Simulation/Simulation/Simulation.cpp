@@ -23,8 +23,12 @@ void Simulation::Initialise(shared_ptr<ConfigClass> InConfig)
 	maxContacts = mConfig->GetNumberOfBalls();
 	resolver = maxContacts * 2;
 	contacts = new ContactClass[maxContacts];
+	//Ground Contact
 	groundContactGenerator.Init(mBallManager->GetBallIndex());
 	ContactGeneratorIndex.push_back(&groundContactGenerator);
+	//Balls Contact
+	ballContactGenerator.Init(mBallManager->GetBallIndex());
+	ContactGeneratorIndex.push_back(&ballContactGenerator);
 
 	//Initialise Force generators and Fgen list
 	//Gravity Force Generator

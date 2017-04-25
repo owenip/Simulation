@@ -93,3 +93,15 @@ public:
 	unsigned addContact(ContactClass *contact, unsigned limit) const override;
 };
 
+class BallContacts : public ContactGenerator
+{
+private:
+	std::vector<BallClass*> balls;
+public:
+	virtual ~BallContacts() = default;
+	void Init(std::vector<BallClass*> InBalls);
+	unsigned addContact(ContactClass *contact, unsigned limit) const override;
+};
+
+
+
