@@ -17,12 +17,12 @@ void ContactClass::Resolve(float duration)
 	ResolveInterpenetration(duration);
 }
 
-float ContactClass::CalculateSeparatingVelocity() const
+float ContactClass::CalculateSeparatingVelocity()
 {
-	Vector3 relativeVelocity = ball[0]->GetVelocity();
-	if(ball[1])
+	Vector3 relativeVelocity = this->ball[0]->GetVelocity();
+	if(this->ball[1])
 	{
-		relativeVelocity -= ball[1]->GetVelocity();
+		relativeVelocity -= this->ball[1]->GetVelocity();
 	}
 
 	return relativeVelocity.Dot(contactNormal);
@@ -155,7 +155,7 @@ void ContactResolver::ResolveContacts(ContactClass * contactArray, unsigned numC
 		auto maxIndex = numContacts;
 		for(i = 0; i< numContacts; i++)
 		{
-			auto sepVel = contactArray[i].CalculateSeparatingVelocity();
+			float sepVel = contactArray[i].CalculateSeparatingVelocity();
 			if(sepVel < max && 
 				(sepVel < 0 || contactArray[i].penetration > 0))
 			{
@@ -209,7 +209,8 @@ void GroundContacts::Init(std::vector<BallClass*> InBalls)
 unsigned GroundContacts::addContact(ContactClass * contact, unsigned limit) const
 {
 	unsigned count = 0;
-	for each(BallClass* element in balls)
+	//for each(BallClass* element in balls)
+	for(auto element : balls)
 	{
 		float y = element->GetPosition().y - element->GetRadius();
 		if (y < 0.0f)
@@ -236,10 +237,11 @@ void BallContacts::Init(std::vector<BallClass*> InBalls)
 unsigned BallContacts::addContact(ContactClass * contact, unsigned limit) const
 {
 	unsigned count = 0;
-	for each(BallClass* b1 in balls)
+	///for each(BallClass* b1 in balls)
+	for(auto b1: balls)
 	{
 		Vector3 pos1 = b1->GetPosition();
-		for each(BallClass* b2 in balls)
+		for (auto b2 : balls)
 		{
 			Vector3 pos2 = b2->GetPosition();
 			Vector3 midline = pos1 - pos2;
@@ -277,7 +279,8 @@ unsigned WallContacts::addContact(ContactClass * contact, unsigned limit) const
 {
 	unsigned count = 0;
 	
-	for each(BallClass* element in balls)
+	//for each(BallClass* element in balls)
+	for(auto element: balls)
 	{
 		Vector3 normal = element->GetVelocity();
 		normal.Normalize();

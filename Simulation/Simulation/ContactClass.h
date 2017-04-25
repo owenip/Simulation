@@ -33,7 +33,7 @@ protected:
 	void Resolve(float duration);
 
 	//Calculate the separating velocity at this contact
-	float CalculateSeparatingVelocity() const;
+	float CalculateSeparatingVelocity();
 
 private:
 	//Handle the impulse calculations for this collision

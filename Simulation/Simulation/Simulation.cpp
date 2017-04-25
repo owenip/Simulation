@@ -71,6 +71,9 @@ void Simulation::RunPhysics(float dt)
 		}
 		resolver.ResolveContacts(contacts, usedContacts, dt);
 	}
+
+	
+
 }
 
 unsigned Simulation::GenerateContacts()

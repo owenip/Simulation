@@ -66,7 +66,7 @@ void BallManagerClass::Render(SimpleMath::Matrix View)
 	m_Balleffect->SetProjection(Proj);
 	m_Balleffect->SetView(View);
 		
-	for each (BallClass *Ball in mBallIndex)
+	for each (auto Ball in mBallIndex)
 	{
 		SimpleMath::Matrix  World = SimpleMath::Matrix::Identity;
 
@@ -164,13 +164,13 @@ void BallManagerClass::CreateBallIndex()
 				Vector3 SpawnPos(CurSpawnX, mBallRadius * 10.f, CurSpawnZ);
 				Ball->Initialize(ProcessedBall, -1, mBallRadius, 10.f,
 					SpawnPos,
-					SimpleMath::Vector3(-20.1f, -2.f, 0.f), //Velocity
+					SimpleMath::Vector3(0.f, -1.f, 0.f), //Velocity
 					SimpleMath::Vector3(0.f, -2.f, 0.f), //Accerlation
 					0.99f);
 				mBallIndex.push_back(Ball);
 				ProcessedBall++;
 
-				if (ProcessedBall > mNumberOfBalls)
+				if (ProcessedBall >= mNumberOfBalls)
 				{
 					break;
 				}
@@ -191,7 +191,7 @@ void BallManagerClass::CreateBallIndex()
 					break;
 				}
 			}
-			if (ProcessedBall > mNumberOfBalls)
+			if (ProcessedBall >= mNumberOfBalls)
 			{
 				break;
 			}
@@ -201,7 +201,7 @@ void BallManagerClass::CreateBallIndex()
 				CurrentDir = 0;
 			}
 		}
-		if (ProcessedBall > mNumberOfBalls)
+		if (ProcessedBall >= mNumberOfBalls)
 		{
 			break;
 		}
