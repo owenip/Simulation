@@ -1,4 +1,3 @@
-
 # User-specific files
 *.suo
 *.user
@@ -114,3 +113,4 @@ Temporary Items
 *.exe
 *.out
 *.app
+*.db
