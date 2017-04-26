@@ -115,3 +115,6 @@ Temporary Items
 *.app
 *.db
 ~$08024 Mark Scheme 16-17.xlsx
+Simulation/Simulation/x64/Release/vc140.pdb
+Simulation/.vs/Simulation/v14/.suo
+Simulation/Simulation/x64/
