@@ -7,6 +7,7 @@ Simulation::Simulation(): maxContacts(0), contacts(nullptr), resolver(maxContact
 
 Simulation::~Simulation()
 {
+	this->Shutdown();
 }
 
 void Simulation::Initialise(shared_ptr<ConfigClass> InConfig)
