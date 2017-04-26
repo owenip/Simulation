@@ -220,6 +220,11 @@ void GravityWellManager::ClearForce(int GwID)
 	}
 }
 
+std::vector<GravityWellClass*> GravityWellManager::GetGwIndex()
+{
+	return mGwIndex;
+}
+
 float GravityWellManager::GwGetForce(int GwID)
 {
 	for (vector<GravityWellClass*>::iterator iter = mGwIndex.begin();

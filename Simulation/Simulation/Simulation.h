@@ -31,6 +31,7 @@ private:
 
 	//Force
 	void ApplyGravity();
+	void ApplyWellForce();
 
 protected:
 	//Holds the maximum number of contacts allowed (the  size of the contacts array)

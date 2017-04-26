@@ -429,7 +429,7 @@ void GraphicClass::CheckInput()
 		mGwManager->ClearForce(mOwnerID);
 		mGwManager->GwAddRepellF(mOwnerID);
 	}
-	//m_mouse->SetMode(mouse.middleButton ? Mouse::MODE_RELATIVE : Mouse::MODE_ABSOLUTE);
+	m_mouse->SetMode(mouse.middleButton ?  Mouse::MODE_ABSOLUTE: Mouse::MODE_RELATIVE);
 }
 
 void GraphicClass::GwMove(SimpleMath::Vector3 direction)

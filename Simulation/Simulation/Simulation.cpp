@@ -49,7 +49,7 @@ void Simulation::RunPhysics(float dt)
 	mBallManager->ClearAccumulator();
 	mManifold->Clear();
 
-	//1.Apply force Generator
+	//1.Apply force
 	ApplyGravity();
 	//2.Integrate Object physics
 	mBallManager->Integrate(dt);
@@ -162,6 +162,14 @@ void Simulation::ApplyGravity()
 				element->SetVelocity(element->GetVelocity().x, 0, element->GetVelocity().z);
 			}
 		}
+	}
+}
+
+void Simulation::ApplyWellForce()
+{
+	for (auto Gw : mGwManager->GetGwIndex())
+	{
+
 	}
 }
 

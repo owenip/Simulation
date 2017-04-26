@@ -26,13 +26,16 @@ public:
 
 	void	GwAddMove(int GwID, SimpleMath::Vector3 InMove);
 
+	//Gw Force
+	float	GwGetForce(int GwID);
 	//Increase Gravity Well Attracting Force (Will naturalise repelling force) 
 	void	GwAddAttractF(int GwID);
 	//Increase Gravity Well Repelling force (Will naturalise Attracting force)
 	void	GwAddRepellF(int GwID);
 	//Clear Gw force
 	void	ClearForce(int GwID);
-	float	GwGetForce(int GwID);
+	
+	std::vector<GravityWellClass*>	GetGwIndex();
 
 private:
 	float	mGwRadius;

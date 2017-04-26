@@ -68,12 +68,14 @@ void BallManagerClass::Render(SimpleMath::Matrix View)
 		
 	for each (auto Ball in mBallIndex)
 	{
-		SimpleMath::Matrix  World = SimpleMath::Matrix::Identity;
+	
 
 		SimpleMath::Vector3 newPos;
 		Ball->GetPosition(&newPos);
+		
+		SimpleMath::Matrix  World = SimpleMath::Matrix::CreateTranslation(newPos);
+		//World.Translation(newPos);
 
-		World = World.CreateTranslation(newPos);
 		m_Balleffect->SetWorld(World);
 
 		mBallPrimitive->Draw(m_Balleffect.get(), m_inputLayout.Get());
