@@ -125,10 +125,15 @@ void Simulation::WallBallCollision()
 {
 	for (auto element : mBallManager->GetBallIndex())
 	{
-		float ballDistance = element->GetPosition().Dot(element->GetPosition()) + element->GetRadius() * element->GetRadius();
-		if (ballDistance >= mConfig->GetSurfaceRadius() * mConfig->GetSurfaceRadius())
+		Vector3 d = element->GetPosition();
+		d.y = 0;
+		d += Vector3(element->GetRadius(), 0.f, element->GetRadius());
+		float ballDistance = d.LengthSquared();
+		//float ballDistance = element->GetPosition().LengthSquared() + element->GetRadius() * element->GetRadius();
+		if (ballDistance >= (mConfig->GetSurfaceRadius() * mConfig->GetSurfaceRadius()))
 		{			
-			Vector3 normal = element->GetPosition() + Vector3( element->GetRadius(), element->GetRadius(), element->GetRadius());
+			//Vector3 normal = element->GetPosition() + Vector3( element->GetRadius(), element->GetRadius(), element->GetRadius());
+			Vector3 normal = element->GetVelocity();
 			normal.Normalize();
 			normal = -normal;
 
