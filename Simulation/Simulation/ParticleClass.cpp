@@ -1,7 +1,8 @@
 #include "pch.h"
 #include "ParticleClass.h"
 
-ParticleClass::ParticleClass()
+ParticleClass::ParticleClass():
+mRotation(Vector3::Zero)
 {
 }
 
@@ -14,6 +15,7 @@ void ParticleClass::Integrate(float duration)
 {
 	assert(duration > 0.0);
 
+	mLastPosition = mPosition;
 	// Update linear position.
 	mPosition += mVelocity * duration;
 

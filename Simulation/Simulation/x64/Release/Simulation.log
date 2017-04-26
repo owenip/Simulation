@@ -1,8 +1,12 @@
 ﻿  BallManagerClass.cpp
+  GraphicClass.cpp
+  Simulation.cpp
+  SystemClass.cpp
+  main.cpp
   Generating code
-  68 of 1478 functions ( 4.6%) were compiled, the rest were copied from previous compilation.
-    1 functions were new in current compilation
-    38 functions had inline decision re-evaluated but remain unchanged
+  58 of 1497 functions ( 3.9%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    30 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   Simulation.vcxproj -> \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\bin\Simulation.exe
   Simulation.vcxproj -> \\adir.hull.ac.uk\home\468\468834\Desktop\GitHub\Simulation\Simulation\Simulation\bin\Simulation.pdb (Full PDB)

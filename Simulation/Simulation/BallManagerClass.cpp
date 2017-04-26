@@ -45,7 +45,7 @@ bool BallManagerClass::Initialise(shared_ptr<D3DClass> Direct3D)
 
 void BallManagerClass::ClearAccumulator()
 {
-	for each (BallClass *Ball in mBallIndex)
+	for each (BallClass *Ball in mBallIndex) 
 	{
 		Ball->ClearAccumulator();
 	}
@@ -68,14 +68,18 @@ void BallManagerClass::Render(SimpleMath::Matrix View)
 		
 	for each (auto Ball in mBallIndex)
 	{
-	
-
-		SimpleMath::Vector3 newPos;
+		SimpleMath::Vector3 newPos,newVelocity;
 		Ball->GetPosition(&newPos);
+		Ball->GetVelocity(&newVelocity);
 		
-		SimpleMath::Matrix  World = SimpleMath::Matrix::CreateTranslation(newPos);
-		//World.Translation(newPos);
 
+		//Create yaw pitch row
+		Ball->mRotation.y = atan2f(Ball->mLastPosition.x - newPos.x, Ball->mLastPosition.z - newPos.z);
+		Ball->mRotation.x -= abs(newVelocity.x * dt) + abs(newVelocity.z * dt);
+
+		SimpleMath::Matrix  World = SimpleMath::Matrix::CreateFromYawPitchRoll(Ball->mRotation.y, Ball->mRotation.x, 0.f);
+
+		World.Translation(newPos);
 		m_Balleffect->SetWorld(World);
 
 		mBallPrimitive->Draw(m_Balleffect.get(), m_inputLayout.Get());

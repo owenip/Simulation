@@ -52,10 +52,16 @@ public:
 
 	void	Shutdown();
 
+	//Rotation
+	Vector3 mRotation;
+	Vector3 mLastPosition;
+
 protected:
 	Vector3 mPosition;
 	Vector3 mVelocity;
 	Vector3 mAcceleration;
+
+	
 
 	/**
 	* Holds the accumulated force to be applied at the next
@@ -68,9 +74,7 @@ protected:
 	//This can help to create object with infinite mass
 	float mInverseMass;
 
-
-
-
+	
 	//0.995 as no drag
 	float mDamping;
 };

@@ -135,7 +135,7 @@ void Simulation::WallBallCollision() const
 			//Vector3 normal = element->GetVelocity();
 			//normal.Normalize();
 			//normal = -normal;
-			d.Normalize(d);
+			d.Normalize();
 			ManifoldPoint contact;
 			contact.contactNormal = -d;
 			contact.balls[0] = element;

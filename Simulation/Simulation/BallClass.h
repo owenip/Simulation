@@ -23,6 +23,7 @@ public:
 	void	SetRadius(const float radius);
 	float	GetRadius() const;
 	
+	void	SetRotation();
 			
 protected:
 	int		mBallID;
