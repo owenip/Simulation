@@ -13,7 +13,7 @@ ContactManifold::~ContactManifold()
 {
 }
 
-void ContactManifold::Add(ManifoldPoint point)
+void ContactManifold::Add(ManifoldPoint &point)
 {
 	mPoints.push_back(point);
 	++mNumofPoint;

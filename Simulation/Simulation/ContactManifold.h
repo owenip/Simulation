@@ -22,7 +22,7 @@ class ContactManifold
 public:
 	ContactManifold();
 	~ContactManifold();
-	void Add(ManifoldPoint point);
+	void Add(ManifoldPoint &point);
 	void Clear();
 
 	int GetNumPoints() const;

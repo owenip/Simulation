@@ -1,11 +1,9 @@
 #include "Simulation.h"
 
-Simulation::Simulation(): 
-maxContacts(0), 
-contacts(nullptr), 
-resolver(maxContacts * 2), 
-calculateIterations(true), 
-mRestitution(0.5f)
+Simulation::Simulation():
+	maxContacts(0), 
+calculateIterations(false),
+	mRestitution(0.5f)
 {
 }
 
@@ -31,7 +29,7 @@ void Simulation::Initialise(shared_ptr<ConfigClass> InConfig)
 
 	//Initialise Force generators and Fgen list
 	//Gravity Force Generator
-	
+	mGravity = Vector3(0.f, -9.81f, 0.f);
 	//Frictional Forces(Drag) Generator
 	
 	
@@ -52,7 +50,7 @@ void Simulation::RunPhysics(float dt)
 	mManifold->Clear();
 
 	//1.Apply force Generator
-
+	ApplyGravity();
 	//2.Integrate Object physics
 	mBallManager->Integrate(dt);
 
@@ -66,7 +64,7 @@ void Simulation::RunPhysics(float dt)
 
 }
 
-unsigned Simulation::GenerateContacts()
+unsigned Simulation::GenerateContacts() const
 {
 	GroundBallCollision();
 	BallBallCollision();
@@ -74,13 +72,14 @@ unsigned Simulation::GenerateContacts()
 	return mManifold->GetNumPoints();
 }
 
-void Simulation::GroundBallCollision()
+void Simulation::GroundBallCollision() const
 {	
 	for (auto element : mBallManager->GetBallIndex())
 	{
 		float y = element->GetPosition().y - element->GetRadius();
 		if (y < 0.0f)
-		{			
+		{		
+			
 			ManifoldPoint contact;
 			contact.contactNormal = Vector3::Up;
 			contact.balls[0] = element;
@@ -92,7 +91,7 @@ void Simulation::GroundBallCollision()
 	}
 }
 
-void Simulation::BallBallCollision()
+void Simulation::BallBallCollision() const
 {
 	for (auto b1 : mBallManager->GetBallIndex())
 	{		
@@ -121,29 +120,47 @@ void Simulation::BallBallCollision()
 	}
 }
 
-void Simulation::WallBallCollision()
+void Simulation::WallBallCollision() const
 {
 	for (auto element : mBallManager->GetBallIndex())
 	{
 		Vector3 d = element->GetPosition();
 		d.y = 0;
-		d += Vector3(element->GetRadius(), 0.f, element->GetRadius());
+		//d += Vector3(element->GetRadius(), 0.f, element->GetRadius());
 		float ballDistance = d.LengthSquared();
 		//float ballDistance = element->GetPosition().LengthSquared() + element->GetRadius() * element->GetRadius();
-		if (ballDistance >= (mConfig->GetSurfaceRadius() * mConfig->GetSurfaceRadius()))
+		if (ballDistance >= (mConfig->GetSurfaceRadius()-element->GetRadius()) * (mConfig->GetSurfaceRadius() - element->GetRadius()))
 		{			
 			//Vector3 normal = element->GetPosition() + Vector3( element->GetRadius(), element->GetRadius(), element->GetRadius());
-			Vector3 normal = element->GetVelocity();
-			normal.Normalize();
-			normal = -normal;
-
+			//Vector3 normal = element->GetVelocity();
+			//normal.Normalize();
+			//normal = -normal;
+			d.Normalize(d);
 			ManifoldPoint contact;
-			contact.contactNormal = normal;
+			contact.contactNormal = -d;
 			contact.balls[0] = element;
 			contact.balls[1] = nullptr;
 			contact.penetration = sqrtf(ballDistance) - mConfig->GetSurfaceRadius();
 			contact.restitution = mRestitution;
 			mManifold->Add(contact);
+		}
+	}
+}
+
+void Simulation::ApplyGravity()
+{
+	for (auto element : mBallManager->GetBallIndex())
+	{
+		if (element->GetPosition().y > element->GetRadius())
+		{
+			element->AddForce(mGravity);			
+		}
+		else
+		{
+			if (element->GetVelocity().y > 0.f)
+			{
+				element->SetVelocity(element->GetVelocity().x, 0, element->GetVelocity().z);
+			}
 		}
 	}
 }
