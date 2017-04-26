@@ -135,6 +135,8 @@
     <ClCompile Include="CameraClass.cpp" />
     <ClCompile Include="ConfigClass.cpp" />
     <ClCompile Include="ContactClass.cpp" />
+    <ClCompile Include="ContactManifold.cpp" />
+    <ClCompile Include="ContactResponser.cpp" />
     <ClCompile Include="D3DClass.cpp" />
     <ClCompile Include="GraphicClass.cpp" />
     <ClCompile Include="GravityWellClass.cpp" />
@@ -159,6 +161,8 @@
     <ClInclude Include="CameraClass.h" />
     <ClInclude Include="ConfigClass.h" />
     <ClInclude Include="ContactClass.h" />
+    <ClInclude Include="ContactManifold.h" />
+    <ClInclude Include="ContactResponser.h" />
     <ClInclude Include="D3DClass.h" />
     <ClInclude Include="GraphicClass.h" />
     <ClInclude Include="GravityWellClass.h" />

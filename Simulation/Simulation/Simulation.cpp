@@ -1,6 +1,11 @@
 #include "Simulation.h"
 
-Simulation::Simulation(): maxContacts(0), contacts(nullptr), resolver(maxContacts * 2), calculateIterations(true)
+Simulation::Simulation(): 
+maxContacts(0), 
+contacts(nullptr), 
+resolver(maxContacts * 2), 
+calculateIterations(true), 
+mRestitution(0.5f)
 {
 }
 
@@ -21,18 +26,8 @@ void Simulation::Initialise(shared_ptr<ConfigClass> InConfig)
 	mGwManager->Initialise(mConfig->GetOwnerID());
 
 	//Initialise Contact Generators
-	maxContacts = mConfig->GetNumberOfBalls();
-	resolver = maxContacts * 2;
-	contacts = new ContactClass[maxContacts];
-	//Ground Contact
-	groundContactGenerator.Init(mBallManager->GetBallIndex());
-	ContactGeneratorIndex.push_back(&groundContactGenerator);
-	//Balls Contact
-	ballContactGenerator.Init(mBallManager->GetBallIndex());
-	ContactGeneratorIndex.push_back(&ballContactGenerator);
-	//Wall-Ball Contact Generator
-	wallContactGenerator.Init(mBallManager->GetBallIndex(), mConfig->GetSurfaceRadius());
-	ContactGeneratorIndex.push_back(&wallContactGenerator);
+	maxContacts = mConfig->GetNumberOfBalls() * 10;
+	mManifold = make_unique<ContactManifold>();
 
 	//Initialise Force generators and Fgen list
 	//Gravity Force Generator
@@ -44,18 +39,18 @@ void Simulation::Initialise(shared_ptr<ConfigClass> InConfig)
 
 void Simulation::Shutdown()
 {
+	mManifold.reset();
 	mBallManager.reset();
 	mGwManager.reset();
 	mConfig.reset();
 }
 
-void Simulation::StartFrame()
-{
-	mBallManager->ClearAccumulator();
-}
 
 void Simulation::RunPhysics(float dt)
 {
+	mBallManager->ClearAccumulator();
+	mManifold->Clear();
+
 	//1.Apply force Generator
 
 	//2.Integrate Object physics
@@ -64,38 +59,88 @@ void Simulation::RunPhysics(float dt)
 	//Generate Contact
 	unsigned usedContacts = GenerateContacts();
 	//Resolve Contact
-	if(usedContacts)
+	if(usedContacts > 0)
 	{
-		if(calculateIterations)
-		{
-			resolver.SetIterations(usedContacts * 2);
-		}
-		resolver.ResolveContacts(contacts, usedContacts, dt);
+		mManifold->ResolveContact(dt);
 	}
-
-	
 
 }
 
 unsigned Simulation::GenerateContacts()
 {
-	unsigned limit = maxContacts;
-	ContactClass *nextContact = contacts;
+	GroundBallCollision();
+	BallBallCollision();
+	WallBallCollision();
+	return mManifold->GetNumPoints();
+}
 
-	for(std::vector<ContactGenerator*>::iterator iter = ContactGeneratorIndex.begin();
-		iter != ContactGeneratorIndex.end();
-		iter++)
+void Simulation::GroundBallCollision()
+{	
+	for (auto element : mBallManager->GetBallIndex())
 	{
-		unsigned used = (*iter)->addContact(nextContact, limit);
-		limit -= used;
-
-		//run out of contacts to fill.->Missing contacts
-		if (limit <= 0)
-			break;
+		float y = element->GetPosition().y - element->GetRadius();
+		if (y < 0.0f)
+		{			
+			ManifoldPoint contact;
+			contact.contactNormal = Vector3::Up;
+			contact.balls[0] = element;
+			contact.balls[1] = nullptr;
+			contact.penetration = -y;
+			contact.restitution = mRestitution;
+			mManifold->Add(contact);
+		}
 	}
+}
 
-	//Return the number of contacts used
-	return maxContacts - limit;
+void Simulation::BallBallCollision()
+{
+	for (auto b1 : mBallManager->GetBallIndex())
+	{		
+		for (auto b2 : mBallManager->GetBallIndex())
+		{			
+			Vector3 midline = b1->GetPosition() - b2->GetPosition();
+			float d = midline.LengthSquared();
+			float rSum = b1->GetRadius() + b2->GetRadius();
+			if (d> rSum* rSum)
+			{
+				continue;
+			}
+			else
+			{
+				float size = midline.Length();
+				ManifoldPoint contact;
+				Vector3 normal = midline * (1.f / size);
+				contact.contactNormal = normal;
+				contact.balls[0] = b1;
+				contact.balls[1] = b2;
+				contact.penetration = (b1->GetRadius() + b2->GetRadius() - size);
+				contact.restitution = mRestitution;
+				mManifold->Add(contact);
+			}
+		}
+	}
+}
+
+void Simulation::WallBallCollision()
+{
+	for (auto element : mBallManager->GetBallIndex())
+	{
+		float ballDistance = element->GetPosition().Dot(element->GetPosition()) + element->GetRadius() * element->GetRadius();
+		if (ballDistance >= mConfig->GetSurfaceRadius() * mConfig->GetSurfaceRadius())
+		{			
+			Vector3 normal = element->GetPosition() + Vector3( element->GetRadius(), element->GetRadius(), element->GetRadius());
+			normal.Normalize();
+			normal = -normal;
+
+			ManifoldPoint contact;
+			contact.contactNormal = normal;
+			contact.balls[0] = element;
+			contact.balls[1] = nullptr;
+			contact.penetration = sqrtf(ballDistance) - mConfig->GetSurfaceRadius();
+			contact.restitution = mRestitution;
+			mManifold->Add(contact);
+		}
+	}
 }
 
 void Simulation::SetBallManager(shared_ptr<BallManagerClass> InBallManager)
@@ -111,4 +156,14 @@ shared_ptr<BallManagerClass> Simulation::GetBallManagerPtr() const
 std::shared_ptr<GravityWellManager> Simulation::GetGwManagerPtr() const
 {
 	return mGwManager;
+}
+
+void Simulation::SetRestitution(float restitustion)
+{
+	mRestitution = restitustion;
+}
+
+float Simulation::GetRestitution() const
+{
+	return mRestitution;
 }

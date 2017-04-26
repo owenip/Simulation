@@ -2,6 +2,7 @@
 #include "BallManagerClass.h"
 #include "GravityWellManager.h"
 #include "ContactClass.h"
+#include "ContactManifold.h"
 
 class Simulation
 {
@@ -15,7 +16,6 @@ public:
 	void StartFrame();
 	void RunPhysics(float dt);
 
-	unsigned GenerateContacts();
 
 	vector<ContactGenerator*> GetContactGenIndex();
 
@@ -25,12 +25,23 @@ public:
 
 	std::shared_ptr<GravityWellManager> GetGwManagerPtr() const;
 
+	void	SetRestitution(float restitustion);
+	float	GetRestitution() const;
+
+private:
+	unsigned GenerateContacts();
+	void GroundBallCollision();
+	void BallBallCollision();
+	void WallBallCollision();
 
 protected:
 	//Holds the maximum number of contacts allowed (the  size of the contacts array)
 	unsigned maxContacts;
+	std::unique_ptr<ContactManifold> mManifold;
+
 	std::vector<ContactGenerator*> ContactGeneratorIndex;
 	ContactClass *contacts;
+	
 	//Contact generator
 	GroundContacts	groundContactGenerator;
 	BallContacts	ballContactGenerator;
@@ -46,6 +57,8 @@ private:
 	std::shared_ptr<BallManagerClass> mBallManager;
 	std::shared_ptr<GravityWellManager> mGwManager;
 	std::shared_ptr<ConfigClass> mConfig;
+
+	float mRestitution;
 
 };
 

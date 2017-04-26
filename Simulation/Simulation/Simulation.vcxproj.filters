@@ -81,6 +81,12 @@
     <ClCompile Include="ContactClass.cpp">
       <Filter>Simulation</Filter>
     </ClCompile>
+    <ClCompile Include="ContactManifold.cpp">
+      <Filter>Simulation</Filter>
+    </ClCompile>
+    <ClCompile Include="ContactResponser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -142,6 +148,12 @@
     </ClInclude>
     <ClInclude Include="ContactClass.h">
       <Filter>Simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="ContactManifold.h">
+      <Filter>Simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="ContactResponser.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

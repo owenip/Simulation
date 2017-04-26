@@ -148,8 +148,7 @@ bool SystemClass::Update()
 	float dt = mTimer->DeltaTime();
 
 	if (!mConfig->GetIsPaused())
-	{
-		mSimulation->StartFrame();
+	{		
 		mSimulation->RunPhysics(dt);
 	}
 

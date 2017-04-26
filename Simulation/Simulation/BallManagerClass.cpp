@@ -164,8 +164,8 @@ void BallManagerClass::CreateBallIndex()
 				Vector3 SpawnPos(CurSpawnX, mBallRadius * 10.f, CurSpawnZ);
 				Ball->Initialize(ProcessedBall, -1, mBallRadius, 10.f,
 					SpawnPos,
-					SimpleMath::Vector3(0.f, -1.f, 0.f), //Velocity
-					SimpleMath::Vector3(0.f, -2.f, 0.f), //Accerlation
+					SimpleMath::Vector3(03.3f * ProcessedBall, -6.f, 05.5f * ProcessedBall), //Velocity
+					SimpleMath::Vector3(0.f, 0.f, 0.f), //Accerlation
 					0.99f);
 				mBallIndex.push_back(Ball);
 				ProcessedBall++;
@@ -213,8 +213,8 @@ void BallManagerClass::CreateBallIndex()
 	{
 		if (i % 2)
 		{
-			mBallIndex[i]->SetVelocity(SimpleMath::Vector3(1.5f, -2.f, 0.f));
-			mBallIndex[i]->SetAcceleration(SimpleMath::Vector3(0.f, -2.f, 0.f));
+			mBallIndex[i]->SetVelocity(SimpleMath::Vector3(10.65f * i, -4.f, 50.3f * i));
+			mBallIndex[i]->SetAcceleration(SimpleMath::Vector3(0.f,0.f,0.f));
 		}
 	}
 }
