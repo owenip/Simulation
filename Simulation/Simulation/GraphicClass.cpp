@@ -183,8 +183,6 @@ bool GraphicClass::Update(float dt)
 	mGravityWellPos = mGwManager->GwGetPos(mOwnerID);
 	mGwForce = mGwManager->GwGetForce(mOwnerID);
 	
-	mBallManager->dt = dt;
-
 	result = Render();
 	if (!result)
 	{

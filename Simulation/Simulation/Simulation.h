@@ -24,14 +24,17 @@ public:
 	float	GetRestitution() const;
 
 private:
-	unsigned GenerateContacts() const;
-	void GroundBallCollision() const;
+	unsigned GenerateContacts();
+	void GroundBallCollision();
 	void BallBallCollision() const;
 	void WallBallCollision() const;
 
 	//Force
 	void ApplyGravity();
+	void ApplyGroundFriction(float dt);
+	void ApplyGroundFriction(BallClass* Ball);
 	void ApplyWellForce();
+
 
 protected:
 	//Holds the maximum number of contacts allowed (the  size of the contacts array)
@@ -48,5 +51,13 @@ private:
 
 	float mRestitution;
 	Vector3 mGravity;
+
+	float mGroundFriction;
+	float *mDragCoeffificent[3];
+
+	
+	
+
+
 };
 

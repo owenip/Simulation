@@ -27,12 +27,13 @@ void Simulation::Initialise(shared_ptr<ConfigClass> InConfig)
 	maxContacts = mConfig->GetNumberOfBalls() * 10;
 	mManifold = make_unique<ContactManifold>();
 
+	mRestitution = mConfig->GetElasticForce();
+
 	//Initialise Force generators and Fgen list
 	//Gravity Force Generator
 	mGravity = Vector3(0.f, -9.81f, 0.f);
 	//Frictional Forces(Drag) Generator
-	
-	
+	mGroundFriction = mConfig->GetGroundFriction();	
 }
 
 void Simulation::Shutdown()
@@ -51,7 +52,9 @@ void Simulation::RunPhysics(float dt)
 
 	//1.Apply force
 	ApplyGravity();
+	ApplyGroundFriction(dt);
 	//2.Integrate Object physics
+
 	mBallManager->Integrate(dt);
 
 	//Generate Contact
@@ -62,9 +65,11 @@ void Simulation::RunPhysics(float dt)
 		mManifold->ResolveContact(dt);
 	}
 
+	//Up Ball Rotation
+	mBallManager->Update(dt);
 }
 
-unsigned Simulation::GenerateContacts() const
+unsigned Simulation::GenerateContacts()
 {
 	GroundBallCollision();
 	BallBallCollision();
@@ -72,14 +77,13 @@ unsigned Simulation::GenerateContacts() const
 	return mManifold->GetNumPoints();
 }
 
-void Simulation::GroundBallCollision() const
+void Simulation::GroundBallCollision()
 {	
 	for (auto element : mBallManager->GetBallIndex())
 	{
 		float y = element->GetPosition().y - element->GetRadius();
 		if (y < 0.0f)
-		{		
-			
+		{	
 			ManifoldPoint contact;
 			contact.contactNormal = Vector3::Up;
 			contact.balls[0] = element;
@@ -151,15 +155,32 @@ void Simulation::ApplyGravity()
 {
 	for (auto element : mBallManager->GetBallIndex())
 	{
-		if (element->GetPosition().y > element->GetRadius())
+		//if (!element->HasFiniteMass()) continue;
+		//if (element->GetPosition().y > element->GetRadius())
 		{
 			element->AddForce(mGravity);			
-		}
-		else
-		{
-			if (element->GetVelocity().y > 0.f)
+		}	
+	}
+}
+
+void Simulation::ApplyGroundFriction(float dt)
+{
+	for (auto element : mBallManager->GetBallIndex())
+	{
+		Vector3 force = element->GetVelocity();
+
+		if (element->GetPosition().y <= element->GetRadius())
+		{			
+			element->AddForce(-mGravity);
+
+			if (force.x > 0.f || force.z > 0.f && force.y < 0.f)
 			{
-				element->SetVelocity(element->GetVelocity().x, 0, element->GetVelocity().z);
+				float dragCoeff = force.Length();
+				dragCoeff = mGroundFriction * dragCoeff;
+
+				force.Normalize();
+				force *= -dragCoeff;
+				element->AddForce(force);
 			}
 		}
 	}

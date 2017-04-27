@@ -23,11 +23,11 @@ public:
 	void	SetOwnerID(int InID);
 	int		GetOwnerID() const;
 
-	void	SetDragForce(float InForce);
-	float	GetDragForce() const;
-
 	void	SetElasticForce(float InForce);
 	float	GetElasticForce() const;
+
+	void	SetGroundFriction(float InFriction);
+	float	GetGroundFriction() const;
 	
 private:
 	bool ReadConfigFile();
@@ -56,7 +56,8 @@ private:
 	int mOwnerID;
 
 	//Forces Properties
-	float mDragForce;
+	float mGroundFriction;
+
 	float mElasticForce;
 };
 

@@ -4,5 +4,5 @@ ScreenWidth=1024
 ScreenHeight=768
 NumOfBalls=10
 BallRadius=1
-Elasticity=1
-FrictionalForce=1
+Elasticity=0.9
+GroundFriction=0.06

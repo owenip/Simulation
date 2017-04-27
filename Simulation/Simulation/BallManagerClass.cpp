@@ -59,6 +59,20 @@ void BallManagerClass::Integrate(float dt)
 	}
 }
 
+void BallManagerClass::Update(float dt)
+{
+	for each (auto Ball in mBallIndex)
+	{
+		SimpleMath::Vector3 newPos, newVelocity;
+		Ball->GetPosition(&newPos);
+		Ball->GetVelocity(&newVelocity);
+
+		//Create yaw pitch row
+		Ball->mRotation.y = atan2f(Ball->mLastPosition.x - newPos.x, Ball->mLastPosition.z - newPos.z);
+		Ball->mRotation.x -= abs(newVelocity.x * dt) + abs(newVelocity.z * dt);
+	}
+}
+
 void BallManagerClass::Render(SimpleMath::Matrix View)
 {
 	SimpleMath::Matrix Proj = SimpleMath::Matrix::Identity;
@@ -70,12 +84,7 @@ void BallManagerClass::Render(SimpleMath::Matrix View)
 	{
 		SimpleMath::Vector3 newPos,newVelocity;
 		Ball->GetPosition(&newPos);
-		Ball->GetVelocity(&newVelocity);
-		
-
-		//Create yaw pitch row
-		Ball->mRotation.y = atan2f(Ball->mLastPosition.x - newPos.x, Ball->mLastPosition.z - newPos.z);
-		Ball->mRotation.x -= abs(newVelocity.x * dt) + abs(newVelocity.z * dt);
+		Ball->GetVelocity(&newVelocity);	
 
 		SimpleMath::Matrix  World = SimpleMath::Matrix::CreateFromYawPitchRoll(Ball->mRotation.y, Ball->mRotation.x, 0.f);
 
@@ -170,9 +179,9 @@ void BallManagerClass::CreateBallIndex()
 				Vector3 SpawnPos(CurSpawnX, mBallRadius * 10.f, CurSpawnZ);
 				Ball->Initialize(ProcessedBall, -1, mBallRadius, 10.f,
 					SpawnPos,
-					SimpleMath::Vector3(03.3f * ProcessedBall, -6.f, 05.5f * ProcessedBall), //Velocity
+					SimpleMath::Vector3(0.f, 0.f, 0.f), //Velocity
 					SimpleMath::Vector3(0.f, 0.f, 0.f), //Accerlation
-					0.99f);
+					0.90f);
 				mBallIndex.push_back(Ball);
 				ProcessedBall++;
 
@@ -219,8 +228,8 @@ void BallManagerClass::CreateBallIndex()
 	{
 		if (i % 2)
 		{
-			mBallIndex[i]->SetVelocity(SimpleMath::Vector3(10.65f * i, -4.f, 50.3f * i));
-			mBallIndex[i]->SetAcceleration(SimpleMath::Vector3(0.f,0.f,0.f));
+			//mBallIndex[i]->SetVelocity(SimpleMath::Vector3(6.65f * i, -4.f, 6.3f * i));
+			//mBallIndex[i]->SetAcceleration(SimpleMath::Vector3(0.f,0.f,0.f));
 		}
 	}
 }

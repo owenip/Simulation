@@ -70,7 +70,7 @@ void ContactManifold::ResolveContact(float duration)
 			if (mPoints[i].balls[0] == mPoints[maxIndex].balls[0])
 			{
 				mPoints[i].penetration -= move[0].Dot(mPoints[i].contactNormal);
-			}
+ 			}
 			else if (mPoints[i].balls[0] == mPoints[maxIndex].balls[1])
 			{
 				mPoints[i].penetration -= move[1].Dot(mPoints[i].contactNormal);

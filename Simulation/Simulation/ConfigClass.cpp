@@ -11,7 +11,7 @@ mSurfaceRadius(30.f),
 mNumberOfBalls(0), 
 mBallRadius(0), 
 mOwnerID(0),
-mDragForce(0),
+mGroundFriction(0.5f),
 mElasticForce(0)
 {
 }
@@ -75,16 +75,6 @@ int ConfigClass::GetOwnerID() const
 	return mOwnerID;
 }
 
-void ConfigClass::SetDragForce(float InForce)
-{
-	mDragForce = InForce;
-}
-
-float ConfigClass::GetDragForce() const
-{
-	return mDragForce;
-}
-
 void ConfigClass::SetElasticForce(float InForce)
 {
 	mElasticForce = InForce;
@@ -93,6 +83,16 @@ void ConfigClass::SetElasticForce(float InForce)
 float ConfigClass::GetElasticForce() const
 {
 	return mElasticForce;
+}
+
+void ConfigClass::SetGroundFriction(float InFriction)
+{
+	mGroundFriction = InFriction;
+}
+
+float ConfigClass::GetGroundFriction() const
+{
+	return mGroundFriction;
 }
 
 bool ConfigClass::ReadConfigFile()
@@ -201,11 +201,11 @@ void ConfigClass::StoreValue(string &key, string &value)
 			std::cerr << "Invalid argument: " << ia.what() << '\n';
 		}
 	}
-	else if (key == "FrictionalForce")
+	else if (key == "GroundFriction")
 	{
 		try {
 			float InDragForce = stof(value);
-			mDragForce = InDragForce;
+			mGroundFriction = InDragForce;
 		}
 		catch (const std::invalid_argument& ia)
 		{
@@ -243,9 +243,9 @@ void ConfigClass::SetDefault(string & key)
 	{
 		mElasticForce = 1.f;
 	}
-	else if (key == "FrictionalForce")
+	else if (key == "GroundFriction")
 	{
-		mDragForce = 1.f;
+		mGroundFriction = 0.5f;
 	}
 
 }
@@ -258,7 +258,7 @@ void ConfigClass::SetDefaultAll()
 	SetDefault(string("NumOfBalls"));
 	SetDefault(string("BallRadius"));
 	SetDefault(string("Elasticity"));
-	SetDefault(string("FrictionalForce"));
+	SetDefault(string("GroundFriction"));
 }
 
 

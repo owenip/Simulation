@@ -11,12 +11,12 @@ public:
 	bool Initialise(shared_ptr<ConfigClass> Config);
 	bool Initialise(shared_ptr<D3DClass> Direct3D);
 
+	void Update(float dt);
 	void Render(SimpleMath::Matrix View);
 	void Shutdown();
 	
 	void ClearAccumulator();
 	void Integrate(float dt);
-	void Render(SimpleMath::Matrix View, float dt);
 
 	void GetBallIndex(std::vector<BallClass*>& BallIndex) const;
 	std::vector<BallClass*> GetBallIndex() const;
@@ -24,7 +24,6 @@ public:
 	void GetBallParticleIndex(std::vector<ParticleClass*> &Particles);
 	std::vector<ParticleClass*> GetBallParticleIndex();
 
-	float dt;
 private:
 	void CreateBallIndex();
 	void CreateTexture();
