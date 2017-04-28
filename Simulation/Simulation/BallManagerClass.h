@@ -1,8 +1,9 @@
 #pragma once
 #include "BallClass.h"
-#include "ParticleClass.h"
 
-class BallManagerClass:public BallClass
+//using namespace DirectX;
+
+class BallManagerClass
 {
 public:
 	BallManagerClass();
@@ -21,8 +22,7 @@ public:
 	void GetBallIndex(std::vector<BallClass*>& BallIndex) const;
 	std::vector<BallClass*> GetBallIndex() const;
 
-	void GetBallParticleIndex(std::vector<ParticleClass*> &Particles);
-	std::vector<ParticleClass*> GetBallParticleIndex();
+
 
 private:
 	void CreateBallIndex();

@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "BallManagerClass.h"
-#include "BallClass.h"
 
 
 BallManagerClass::BallManagerClass()
@@ -63,13 +62,16 @@ void BallManagerClass::Update(float dt)
 {
 	for each (auto Ball in mBallIndex)
 	{
-		SimpleMath::Vector3 newPos, newVelocity;
-		Ball->GetPosition(&newPos);
-		Ball->GetVelocity(&newVelocity);
+		SimpleMath::Vector3 newPos, newVelocity , newtotation;
+		Ball->GetPosition(newPos);
+		Ball->GetVelocity(newVelocity);
 
 		//Create yaw pitch row
-		Ball->mRotation.y = atan2f(Ball->mLastPosition.x - newPos.x, Ball->mLastPosition.z - newPos.z);
-		Ball->mRotation.x -= abs(newVelocity.x * dt) + abs(newVelocity.z * dt);
+		newtotation.y = atan2f(Ball->mLastPosition.x - newPos.x, Ball->mLastPosition.z - newPos.z);
+		newtotation.x -= abs(newVelocity.x * dt) + abs(newVelocity.z * dt);
+		newtotation.z = 0.f;
+
+		Ball->SetRotation(newtotation);
 	}
 }
 
@@ -83,10 +85,10 @@ void BallManagerClass::Render(SimpleMath::Matrix View)
 	for each (auto Ball in mBallIndex)
 	{
 		SimpleMath::Vector3 newPos,newVelocity;
-		Ball->GetPosition(&newPos);
-		Ball->GetVelocity(&newVelocity);	
+		Ball->GetPosition(newPos);
+		Ball->GetVelocity(newVelocity);	
 
-		SimpleMath::Matrix  World = SimpleMath::Matrix::CreateFromYawPitchRoll(Ball->mRotation.y, Ball->mRotation.x, 0.f);
+		SimpleMath::Matrix  World = SimpleMath::Matrix::CreateFromYawPitchRoll(Ball->GetRotation().y, Ball->GetRotation().x, 0.f);
 
 		World.Translation(newPos);
 		m_Balleffect->SetWorld(World);
@@ -125,25 +127,6 @@ std::vector<BallClass*> BallManagerClass::GetBallIndex() const
 	return mBallIndex;
 }
 
-void BallManagerClass::GetBallParticleIndex(std::vector<ParticleClass*>& Particles)
-{
-	Particles.clear();
-	for (int i = 0; i < mBallIndex.size(); i++)
-	{
-		Particles.push_back(static_cast<ParticleClass*>(mBallIndex[i]));
-	}
-}
-
-std::vector<ParticleClass*> BallManagerClass::GetBallParticleIndex()
-{
-	std::vector<ParticleClass*> Particles;
-	for (int i = 0; i < mBallIndex.size(); i++)
-	{
-		Particles.push_back(static_cast<ParticleClass*>(mBallIndex[i]));
-	}
-	return Particles;
-}
-
 
 void BallManagerClass::CreateBallIndex()
 {
@@ -176,7 +159,7 @@ void BallManagerClass::CreateBallIndex()
 			for (auto j = 0; j < CurSide; j++)
 			{
 				BallClass *Ball = new BallClass();
-				Vector3 SpawnPos(CurSpawnX, mBallRadius * 10.f, CurSpawnZ);
+				SimpleMath::Vector3 SpawnPos(CurSpawnX, mBallRadius * 10.f, CurSpawnZ);
 				Ball->Initialize(ProcessedBall, -1, mBallRadius, 10.f,
 					SpawnPos,
 					SimpleMath::Vector3(0.f, 0.f, 0.f), //Velocity

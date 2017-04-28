@@ -3,7 +3,7 @@
 
 
 GravityWellManager::GravityWellManager():
-mGwRadius(2.f), 
+mGwRadius(0.f), 
 mLocalID(0), 
 ForceGain(1.f)
 {
@@ -14,8 +14,9 @@ GravityWellManager::~GravityWellManager()
 {
 }
 
-bool GravityWellManager::Initialise(int OwnerID)
+bool GravityWellManager::Initialise(int OwnerID, float InGwRadius)
 {
+	mGwRadius = InGwRadius;
 	SimpleMath::Color GwColor;
 	switch(OwnerID)
 	{
@@ -47,7 +48,7 @@ bool GravityWellManager::InitialiseGraphic(shared_ptr<D3DClass> InDirect3D)
 	mGwEffect = make_unique<DirectX::BasicEffect>(mDirect3D->GetDevice());
 	//mGwEffect->SetAlpha(.3f);
 
-	mGwPrimitive = GeometricPrimitive::CreateSphere(mDirect3D->GetDeviceContext(), mGwRadius);
+	mGwPrimitive = GeometricPrimitive::CreateSphere(mDirect3D->GetDeviceContext(), mGwRadius * 2);
 	mGwPrimitive->CreateInputLayout(mGwEffect.get(), mGwInputLayout.ReleaseAndGetAddressOf());
 	mGwPrimitive->CreateInputLayout(mGwEffect.get(), mGwInputLayout.ReleaseAndGetAddressOf());
 

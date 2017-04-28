@@ -134,7 +134,6 @@
     <ClCompile Include="BallManagerClass.cpp" />
     <ClCompile Include="CameraClass.cpp" />
     <ClCompile Include="ConfigClass.cpp" />
-    <ClCompile Include="ContactClass.cpp" />
     <ClCompile Include="ContactManifold.cpp" />
     <ClCompile Include="ContactResponser.cpp" />
     <ClCompile Include="D3DClass.cpp" />
@@ -142,10 +141,6 @@
     <ClCompile Include="GravityWellClass.cpp" />
     <ClCompile Include="GravityWellManager.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="ParticleClass.cpp" />
-    <ClCompile Include="ParticleContactClass.cpp" />
-    <ClCompile Include="ParticleForceGenerator.cpp" />
-    <ClCompile Include="ParticleLinkClass.cpp" />
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="Simulation.cpp" />
     <ClCompile Include="SystemClass.cpp" />
@@ -160,17 +155,12 @@
     <ClInclude Include="BallManagerClass.h" />
     <ClInclude Include="CameraClass.h" />
     <ClInclude Include="ConfigClass.h" />
-    <ClInclude Include="ContactClass.h" />
     <ClInclude Include="ContactManifold.h" />
     <ClInclude Include="ContactResponser.h" />
     <ClInclude Include="D3DClass.h" />
     <ClInclude Include="GraphicClass.h" />
     <ClInclude Include="GravityWellClass.h" />
     <ClInclude Include="GravityWellManager.h" />
-    <ClInclude Include="ParticleClass.h" />
-    <ClInclude Include="ParticleContactClass.h" />
-    <ClInclude Include="ParticleForceGenerator.h" />
-    <ClInclude Include="ParticleLinkClass.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Simulation.h" />

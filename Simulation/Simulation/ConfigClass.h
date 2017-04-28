@@ -17,6 +17,8 @@ public:
 	int		GetNumberOfBalls() const;
 	float	GetBallRadius() const;
 
+	float	GetGwRadius() const;
+
 	void	SetIsPaused(bool InVal);
 	bool	GetIsPaused() const;
 
@@ -51,6 +53,7 @@ private:
 	//Ball properties
 	int mNumberOfBalls;
 	float mBallRadius;
+	float mGwRadius;
 
 	//Local Peer ID
 	int mOwnerID;

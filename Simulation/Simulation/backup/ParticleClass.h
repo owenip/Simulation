@@ -2,6 +2,7 @@
 #include  "pch.h"
 using namespace DirectX::SimpleMath;
 
+
 class ParticleClass
 {
 public:
@@ -14,7 +15,9 @@ public:
 	* linear approximation to the correct integral. For this reason it
 	* may be inaccurate in some cases.
 	*/
+	
 	void Integrate(float duration);
+
 
 	void	SetMass(const float mass);
 	float	GetMass() const;
@@ -52,6 +55,8 @@ public:
 
 	void	Shutdown();
 
+	
+
 	//Rotation
 	Vector3 mRotation;
 	Vector3 mLastPosition;
@@ -60,9 +65,7 @@ protected:
 	Vector3 mPosition;
 	Vector3 mVelocity;
 	Vector3 mAcceleration;
-
 	
-
 	/**
 	* Holds the accumulated force to be applied at the next
 	* simulation iteration only. This value is zeroed at each
@@ -77,5 +80,8 @@ protected:
 	
 	//0.995 as no drag
 	float mDamping;
+
+
+
 };
 

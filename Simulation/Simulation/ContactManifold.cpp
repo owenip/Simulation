@@ -40,7 +40,7 @@ void ContactManifold::ResolveContact(float duration)
 	mDuration = duration;
 	unsigned i;
 	auto calculatedIterations = 0;
-	while (calculatedIterations < mNumofPoint)
+	while (calculatedIterations < mNumofPoint * 2)
 	{
 		//Find the contact with the largest closing velocity
 		auto max = FLT_MAX;
@@ -64,7 +64,7 @@ void ContactManifold::ResolveContact(float duration)
 		Resolve(mPoints[maxIndex]);
 
 		// Update the interpenetrations for all particles
-		Vector3 *move = mPoints[maxIndex].BallsMovement;
+		SimpleMath::Vector3 *move = mPoints[maxIndex].BallsMovement;
 		for (i = 0; i < mNumofPoint; i++)
 		{
 			if (mPoints[i].balls[0] == mPoints[maxIndex].balls[0])
@@ -102,6 +102,7 @@ void ContactManifold::ResolveVelocity(ManifoldPoint &mp)
 {
 	// Find the velocity in the direction of the contact
 	float separatingVelocity = CalculateSeparatingVelocity(mp);
+
 	// Check if it needs to be resolved
 	if (separatingVelocity > 0)
 	{
@@ -114,7 +115,7 @@ void ContactManifold::ResolveVelocity(ManifoldPoint &mp)
 	float newSepVelocity = -separatingVelocity * mp.restitution;
 
 	// Check the velocity build-up due to acceleration only
-	Vector3 accCausedVelocity = mp.balls[0]->GetAccleration();
+	SimpleMath::Vector3 accCausedVelocity = mp.balls[0]->GetAccleration();
 	if (mp.balls[1])
 	{
 		accCausedVelocity -= mp.balls[1]->GetAccleration();
@@ -126,7 +127,7 @@ void ContactManifold::ResolveVelocity(ManifoldPoint &mp)
 	if (accCausedSepVelocity < 0)
 	{
 		newSepVelocity += mp.restitution * accCausedSepVelocity;
-		if (newSepVelocity < 0)
+		if (newSepVelocity < 0.1f)
 		{
 			newSepVelocity = 0;
 		}
@@ -147,7 +148,7 @@ void ContactManifold::ResolveVelocity(ManifoldPoint &mp)
 	auto impulse = deltaVelocity / totalInverseMass;
 
 	//Find the amount of impulse per unit of inverse mass
-	Vector3 impulsePerIMass = mp.contactNormal * impulse;
+	SimpleMath::Vector3 impulsePerIMass = mp.contactNormal * impulse;
 
 	//Apply impulse in the direction of contact and are proportional to the inverse mass
 	mp.balls[0]->SetVelocity(
@@ -179,7 +180,7 @@ void ContactManifold::ResolveInterpenetration(ManifoldPoint & mp)
 	if (totalInverseMass <= 0) return;
 
 	//Find the amount of penetration resolution per unit of inverse mass
-	Vector3 movePerIMass = mp.contactNormal * (mp.penetration / totalInverseMass);
+	SimpleMath::Vector3 movePerIMass = mp.contactNormal * (mp.penetration / totalInverseMass);
 
 	//Calculate the movement amount
 	mp.BallsMovement[0] = movePerIMass * mp.balls[0]->GetInverseMass();
@@ -189,7 +190,7 @@ void ContactManifold::ResolveInterpenetration(ManifoldPoint & mp)
 	}
 	else
 	{
-		mp.BallsMovement[1] = Vector3::Zero;
+		mp.BallsMovement[1] = SimpleMath::Vector3::Zero;
 	}
 
 	//Apply the peneration resolution
@@ -202,7 +203,7 @@ void ContactManifold::ResolveInterpenetration(ManifoldPoint & mp)
 
 float ContactManifold::CalculateSeparatingVelocity(ManifoldPoint & mp) const
 {
-	Vector3 relativeVelocity = mp.balls[0]->GetVelocity();
+	SimpleMath::Vector3 relativeVelocity = mp.balls[0]->GetVelocity();
 	if(mp.balls[1])
 	{
 		relativeVelocity -= mp.balls[1]->GetVelocity();

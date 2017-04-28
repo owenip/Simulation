@@ -25,6 +25,9 @@
     <Filter Include="Simulation">
       <UniqueIdentifier>{d86e7105-73ac-43db-b64f-c3bf3c0ea53c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Simulation\BAll">
+      <UniqueIdentifier>{d09ee0f5-5d8e-4d22-901f-d341722482f8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -51,24 +54,6 @@
     <ClCompile Include="CameraClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="BallClass.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="BallManagerClass.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ParticleClass.cpp">
-      <Filter>Particle</Filter>
-    </ClCompile>
-    <ClCompile Include="ParticleContactClass.cpp">
-      <Filter>Particle</Filter>
-    </ClCompile>
-    <ClCompile Include="ParticleLinkClass.cpp">
-      <Filter>Particle</Filter>
-    </ClCompile>
-    <ClCompile Include="ParticleForceGenerator.cpp">
-      <Filter>Particle</Filter>
-    </ClCompile>
     <ClCompile Include="GravityWellClass.cpp">
       <Filter>Gravity Well</Filter>
     </ClCompile>
@@ -78,14 +63,17 @@
     <ClCompile Include="Simulation.cpp">
       <Filter>Simulation</Filter>
     </ClCompile>
-    <ClCompile Include="ContactClass.cpp">
-      <Filter>Simulation</Filter>
-    </ClCompile>
     <ClCompile Include="ContactManifold.cpp">
       <Filter>Simulation</Filter>
     </ClCompile>
     <ClCompile Include="ContactResponser.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BallClass.cpp">
+      <Filter>Simulation\BAll</Filter>
+    </ClCompile>
+    <ClCompile Include="BallManagerClass.cpp">
+      <Filter>Simulation\BAll</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -119,24 +107,6 @@
     <ClInclude Include="CameraClass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="BallClass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BallManagerClass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ParticleClass.h">
-      <Filter>Particle\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="ParticleContactClass.h">
-      <Filter>Particle\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="ParticleLinkClass.h">
-      <Filter>Particle\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="ParticleForceGenerator.h">
-      <Filter>Particle\Header</Filter>
-    </ClInclude>
     <ClInclude Include="GravityWellClass.h">
       <Filter>Gravity Well</Filter>
     </ClInclude>
@@ -146,14 +116,17 @@
     <ClInclude Include="Simulation.h">
       <Filter>Simulation</Filter>
     </ClInclude>
-    <ClInclude Include="ContactClass.h">
-      <Filter>Simulation</Filter>
-    </ClInclude>
     <ClInclude Include="ContactManifold.h">
       <Filter>Simulation</Filter>
     </ClInclude>
     <ClInclude Include="ContactResponser.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BallClass.h">
+      <Filter>Simulation\BAll</Filter>
+    </ClInclude>
+    <ClInclude Include="BallManagerClass.h">
+      <Filter>Simulation\BAll</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

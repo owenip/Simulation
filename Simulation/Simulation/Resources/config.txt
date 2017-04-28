@@ -2,7 +2,7 @@
 FullScreen=false
 ScreenWidth=1024
 ScreenHeight=768
-NumOfBalls=10
-BallRadius=1
-Elasticity=0.9
+NumOfBalls=20
+BallRadius=1.5
+Elasticity=0.8
 GroundFriction=0.06

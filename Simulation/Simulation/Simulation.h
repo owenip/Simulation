@@ -50,7 +50,7 @@ private:
 	std::shared_ptr<ConfigClass> mConfig;
 
 	float mRestitution;
-	Vector3 mGravity;
+	SimpleMath::Vector3 mGravity;
 
 	float mGroundFriction;
 	float *mDragCoeffificent[3];

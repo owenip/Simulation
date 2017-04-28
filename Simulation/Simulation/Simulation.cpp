@@ -21,7 +21,7 @@ void Simulation::Initialise(shared_ptr<ConfigClass> InConfig)
 	mBallManager->Initialise(mConfig);
 	//Initialise Gw Manager
 	mGwManager = make_shared<GravityWellManager>();
-	mGwManager->Initialise(mConfig->GetOwnerID());
+	mGwManager->Initialise(mConfig->GetOwnerID(), mConfig->GetGwRadius());
 
 	//Initialise Contact Generators
 	maxContacts = mConfig->GetNumberOfBalls() * 10;
@@ -31,7 +31,7 @@ void Simulation::Initialise(shared_ptr<ConfigClass> InConfig)
 
 	//Initialise Force generators and Fgen list
 	//Gravity Force Generator
-	mGravity = Vector3(0.f, -9.81f, 0.f);
+	mGravity = SimpleMath::Vector3(0.f, -9.81f, 0.f);
 	//Frictional Forces(Drag) Generator
 	mGroundFriction = mConfig->GetGroundFriction();	
 }
@@ -52,7 +52,7 @@ void Simulation::RunPhysics(float dt)
 
 	//1.Apply force
 	ApplyGravity();
-	ApplyGroundFriction(dt);
+	//ApplyGroundFriction(dt);
 	//2.Integrate Object physics
 
 	mBallManager->Integrate(dt);
@@ -85,7 +85,7 @@ void Simulation::GroundBallCollision()
 		if (y < 0.0f)
 		{	
 			ManifoldPoint contact;
-			contact.contactNormal = Vector3::Up;
+			contact.contactNormal = SimpleMath::Vector3::Up;
 			contact.balls[0] = element;
 			contact.balls[1] = nullptr;
 			contact.penetration = -y;
@@ -100,8 +100,8 @@ void Simulation::BallBallCollision() const
 	for (auto b1 : mBallManager->GetBallIndex())
 	{		
 		for (auto b2 : mBallManager->GetBallIndex())
-		{			
-			Vector3 midline = b1->GetPosition() - b2->GetPosition();
+		{
+			SimpleMath::Vector3 midline = b1->GetPosition() - b2->GetPosition();
 			float d = midline.LengthSquared();
 			float rSum = b1->GetRadius() + b2->GetRadius();
 			if (d> rSum* rSum)
@@ -112,7 +112,7 @@ void Simulation::BallBallCollision() const
 			{
 				float size = midline.Length();
 				ManifoldPoint contact;
-				Vector3 normal = midline * (1.f / size);
+				SimpleMath::Vector3 normal = midline * (1.f / size);
 				contact.contactNormal = normal;
 				contact.balls[0] = b1;
 				contact.balls[1] = b2;
@@ -128,7 +128,7 @@ void Simulation::WallBallCollision() const
 {
 	for (auto element : mBallManager->GetBallIndex())
 	{
-		Vector3 d = element->GetPosition();
+		SimpleMath::Vector3 d = element->GetPosition();
 		d.y = 0;
 		//d += Vector3(element->GetRadius(), 0.f, element->GetRadius());
 		float ballDistance = d.LengthSquared();
@@ -155,8 +155,9 @@ void Simulation::ApplyGravity()
 {
 	for (auto element : mBallManager->GetBallIndex())
 	{
+		SimpleMath::Vector3 force = element->GetForce();
 		//if (!element->HasFiniteMass()) continue;
-		//if (element->GetPosition().y > element->GetRadius())
+		if (element->GetPosition().y >= element->GetRadius() || (force.x != 0.f || force.z != 0.f))
 		{
 			element->AddForce(mGravity);			
 		}	
@@ -167,13 +168,13 @@ void Simulation::ApplyGroundFriction(float dt)
 {
 	for (auto element : mBallManager->GetBallIndex())
 	{
-		Vector3 force = element->GetVelocity();
+		SimpleMath::Vector3 force = element->GetVelocity();
 
 		if (element->GetPosition().y <= element->GetRadius())
-		{			
-			element->AddForce(-mGravity);
+		{
+			//element->AddForce(-mGravity);
 
-			if (force.x > 0.f || force.z > 0.f && force.y < 0.f)
+			if (force.x > 0.f || force.z > 0.f && force.y <= 0.f)
 			{
 				float dragCoeff = force.Length();
 				dragCoeff = mGroundFriction * dragCoeff;

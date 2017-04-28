@@ -7,6 +7,7 @@ public:
 	GravityWellManager();
 	~GravityWellManager();
 
+	bool	Initialise(int OwnerID, float InGwRadius);
 	bool	Initialise(int OwnerID);
 	bool	InitialiseGraphic(shared_ptr<D3DClass> InDirect3D);
 

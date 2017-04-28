@@ -2,17 +2,18 @@
 #include "ConfigClass.h"
 
 
-ConfigClass::ConfigClass(): 
-mIsPaused(false),                            
-mFullScreen(false),                            
-mScreenWidth(0),                            
-mScreenHeight(0), 
-mSurfaceRadius(30.f),
-mNumberOfBalls(0), 
-mBallRadius(0), 
-mOwnerID(0),
-mGroundFriction(0.5f),
-mElasticForce(0)
+ConfigClass::ConfigClass():
+	mIsPaused(false),
+	mFullScreen(false),
+	mScreenWidth(0),
+	mScreenHeight(0),
+	mSurfaceRadius(30.f),
+	mNumberOfBalls(0),
+	mBallRadius(0), 
+	mGwRadius(2.f),
+	mOwnerID(0),
+	mGroundFriction(0.5f),
+	mElasticForce(0)
 {
 }
 
@@ -53,6 +54,11 @@ int ConfigClass::GetNumberOfBalls() const
 float ConfigClass::GetBallRadius() const
 {
 	return mBallRadius;
+}
+
+float ConfigClass::GetGwRadius() const
+{
+	return mGwRadius;
 }
 
 void ConfigClass::SetIsPaused(bool InVal)
