@@ -73,7 +73,7 @@ void SystemClass::Shutdown()
 	mBallManger.reset();
 	mGwManager.reset();
 	//mSimulation.reset();
-	mGraphic;
+	//mGraphic;
 	mConfig.reset();
 }
 
@@ -87,7 +87,11 @@ void SystemClass::Run()
 
 	// Loop until there is a quit message from the window or the user.
 	done = false;
+
+	std::thread thread2(&Simulation::Tick, &mSimulation);
+	SetThreadAffinityMask(thread2.native_handle(), 4);
 	
+
 	while (!done)
 	{
 		// Handle the windows messages.
@@ -107,6 +111,7 @@ void SystemClass::Run()
 			if (!result)
 			{
 				done = true;
+				thread2.join();
 			}
 		}
 	}
@@ -117,17 +122,15 @@ void SystemClass::Run()
 
 bool SystemClass::Update()
 {
-	//mGraphic.Tick();	
+	mGraphic.Tick();
 	//mSimulation.Tick();
 
-	std::thread thread1(&GraphicClass::Tick, &mGraphic);
-	thread1.native_handle();
-	SetThreadAffinityMask(thread1.native_handle(), 1);	
-	std::thread thread2(&Simulation::Tick, &mSimulation);
-	SetThreadAffinityMask(thread2.native_handle(), 4);
-
-	thread1.join();
-	thread2.join();
+	//std::thread thread1(&GraphicClass::Tick, &mGraphic);
+	//SetThreadAffinityMask(thread1.native_handle(), 1);	
+	//thread1.detach();
+	if (mConfig->GetIsEscaped())
+		return false;
+	
 	return true;
 }
 
@@ -238,36 +241,6 @@ void SystemClass::ShutdownWindows()
 	return;
 }
 
-void SystemClass::CalculateFrameStats()
-{
-	//// Code computes the average frames per second, and also the 
-	//// average time it takes to render one frame.  These stats 
-	//// are appended to the window caption bar.
-
-	//static int frameCnt = 0;
-	//static float timeElapsed = 0.0f;
-
-	//frameCnt++;
-
-	//// Compute averages over one second period.
-	//if ((mTimer->TotalTime() - timeElapsed) >= 1.0f)
-	//{
-	//	float fps = static_cast<float>(frameCnt); // fps = frameCnt / 1
-	//	float mspf = 1000.0f / fps;
-
-	//	std::wostringstream outs;
-	//	outs.precision(6);
-	//	outs << mMainWndCaption << L"    "
-	//		<< L"FPS: " << fps << L"    "
-	//		<< L"Frame Time: " << mspf << L" (ms)";
-	//	SetWindowText(m_hwnd, outs.str().c_str());
-
-	//	// Reset for next average.
-	//	frameCnt = 0;
-	//	timeElapsed += 1.0f;
-	//}
-}
-
 
 LRESULT CALLBACK SystemClass::MessageHandler(const HWND  hwnd, const UINT umsg, const WPARAM wparam, const LPARAM lparam)
 {
@@ -278,7 +251,7 @@ LRESULT CALLBACK SystemClass::MessageHandler(const HWND  hwnd, const UINT umsg, 
 		if (LOWORD(wparam) == WA_INACTIVE)
 		{
 			//Check window is losing focus				
-			
+
 			mGraphic.OnPause();
 		}
 		else

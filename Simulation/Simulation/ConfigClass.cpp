@@ -4,6 +4,7 @@
 
 ConfigClass::ConfigClass() :
 	mIsPaused(false),
+	mIsEscaped(false),
 	mFullScreen(false),
 	mScreenWidth(0),
 	mScreenHeight(0),
@@ -15,9 +16,9 @@ ConfigClass::ConfigClass() :
 	mPeerID(0),
 	mFriction(0.5f),
 	mElasticity(0),
-	mTarPhysicsFreq(2000.f),
-	mTarGraphicFreq(120.f),
-	mTarNetworkFreq(2000.f),
+	mTarPhysicsFreq(60.f),
+	mTarGraphicFreq(60.f),
+	mTarNetworkFreq(120.f),
 	mTimeScale(1.f)
 {
 	if (!ReadConfigFile())
@@ -78,6 +79,16 @@ void ConfigClass::SetIsPaused(bool InVal)
 bool ConfigClass::GetIsPaused() const
 {
 	return mIsPaused;
+}
+
+void ConfigClass::SetIsEscaped(bool InVal)
+{
+	mIsEscaped = InVal;
+}
+
+bool ConfigClass::GetIsEscaped()
+{
+	return mIsEscaped;
 }
 
 void ConfigClass::SetDisplayAll(bool InVal)

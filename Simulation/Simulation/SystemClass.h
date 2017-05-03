@@ -23,7 +23,6 @@ private:
 	bool Update();
 	bool InitializeWindow(int screenWidth, int screenHeight);
 	void ShutdownWindows();
-	void CalculateFrameStats();
 
 private:
 	LPCWSTR m_applicationName;

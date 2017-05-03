@@ -31,6 +31,7 @@ private:
 	
 
 private:
+	bool mIsEscaped;
 	shared_ptr<D3DClass> mDirect3D;
 	shared_ptr<ConfigClass> mConfig;
 	TwBar *mATBar;

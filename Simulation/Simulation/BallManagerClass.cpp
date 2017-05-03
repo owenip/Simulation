@@ -10,8 +10,8 @@ BallManagerClass::BallManagerClass()
 
 BallManagerClass::~BallManagerClass()
 {
-	mDirect3D.reset();
-	mConfig.reset();
+	//mDirect3D.reset();
+	//mConfig.reset();
 }
 
 bool BallManagerClass::Initialise(shared_ptr<ConfigClass> Config)

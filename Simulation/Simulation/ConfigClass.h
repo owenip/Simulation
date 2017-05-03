@@ -22,6 +22,9 @@ public:
 	void	SetIsPaused(bool InVal);
 	bool	GetIsPaused() const;
 
+	void	SetIsEscaped(bool InVal);
+	bool	GetIsEscaped();
+
 	void	SetDisplayAll(bool InVal);
 	bool	GetDisplayAll() const;
 
@@ -59,6 +62,7 @@ private:
 private:
 	const std::string configFileName = ".\\Resources\\config.txt";
 
+	bool mIsEscaped;
 	bool mIsPaused;
 
 	bool mFullScreen;

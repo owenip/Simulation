@@ -6,8 +6,8 @@
 GravityWellManager::GravityWellManager() :
 	mGwRadius(0.f),
 	mLocalPeerID(0),
-	mGWMovementGain(0.01f),
-	mGwForceGain(0.05f)
+	mGWMovementGain(0.0001f),
+	mGwForceGain(0.0005f)
 {
 }
 

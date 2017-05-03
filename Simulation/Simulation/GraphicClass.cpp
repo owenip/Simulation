@@ -43,7 +43,7 @@ bool GraphicClass::Initialize(const HWND hwnd, shared_ptr<ConfigClass> Config)
 	mTarPhysicsFreq = mConfig->GetTarPhyFreq();
 	mTarNetowrkFreq = mConfig->GetTarNetworkFreq();
 	mGraphicTimer.SetFixedTimeStep(true);
-	mGraphicTimer.SetTargetElapsedSeconds(2/(mTarGraphicFreq));
+	mGraphicTimer.SetTargetElapsedSeconds(1/(mTarGraphicFreq));
 	
 	//Changable force
 	mFriction = mConfig->GetFriction();
@@ -143,26 +143,32 @@ void GraphicClass::OnResume()
 
 void GraphicClass::Tick()
 {
-	CheckInput();
-	mGraphicTimer.Tick([&]()
+	mIsEscaped = false;
+	//while (true)
 	{
 		Update(mGraphicTimer);
-	});
+		mGraphicTimer.Tick([&]()
+		{			
+			Render();
+		});
+		/*if (mIsEscaped)
+			break;*/
+	}
+}
+
+bool GraphicClass::Update(DX::StepTimer const& timer)
+{
+	CheckInput();
+	//float dt = float(mGraphicTimer.GetElapsedSeconds());
+	mCamera->SetLookAt(mGwManager->GwGetPos(mPeerID));
+	//mBallManager->Integrate(dt);
+	//CheckInput();
+	
 	mActualFPS = mGraphicTimer.GetFramesPerSecond();
 	mTarGraphicFreq = mConfig->GetTarGraphicFreq();
 	mTarPhysicsFreq = mConfig->GetTarPhyFreq();
 	mTarNetowrkFreq = mConfig->GetTarNetworkFreq();
 	mGwForce = mGwManager->GwGetForce(mPeerID);
-	Render();
-}
-
-bool GraphicClass::Update(DX::StepTimer const& timer)
-{
-	float dt = float(mGraphicTimer.GetElapsedSeconds());
-	mCamera->SetLookAt(mGwManager->GwGetPos(mPeerID));
-	//mBallManager->Integrate(dt);
-	//CheckInput();
-
 
 	return true;
 }
@@ -261,8 +267,12 @@ void GraphicClass::CheckInput()
 	auto kbState = m_keyboard->GetState();
 	tracker.Update(kbState);
 
-	if (tracker.pressed.Escape || tracker.pressed.LeftShift)
+	if (tracker.pressed.Escape)
+	{
+		mIsEscaped = true;
+		mConfig->SetIsEscaped(true);
 		PostQuitMessage(0);
+	}		
 	else if (tracker.pressed.R)
 	{
 		//Reset		
@@ -296,14 +306,14 @@ void GraphicClass::CheckInput()
 		//Increase frequency of graphics
 		mTarGraphicFreq+=10;
 		mConfig->SetTarGraphicFreq(mTarGraphicFreq);
-		mGraphicTimer.SetTargetElapsedSeconds(2 / (mTarGraphicFreq));
+		mGraphicTimer.SetTargetElapsedSeconds(1 / (mTarGraphicFreq));
 	}
 	else if (tracker.pressed.K)
 	{
 		//Decrease frequency of graphics
 		(mTarGraphicFreq < 1) ? mTarGraphicFreq = 1 : mTarGraphicFreq-=10;
 		mConfig->SetTarGraphicFreq(mTarGraphicFreq);
-		mGraphicTimer.SetTargetElapsedSeconds(2 / (mTarGraphicFreq));
+		mGraphicTimer.SetTargetElapsedSeconds(1 / (mTarGraphicFreq));
 	}
 	else if (tracker.pressed.U)
 	{
@@ -420,7 +430,7 @@ void GraphicClass::CheckInput()
 	{
 		float mouseX = static_cast<float>(mouse.x);
 		float mouseY = static_cast<float>(mouse.y);
-		mGwManager->GwMoveByMouse(mouseX, mouseY);
+		mGwManager->GwMoveByMouse(mouseX * 100 , mouseY* 100);
 	}
 	if (mouse.leftButton && mouse.rightButton)
 	{

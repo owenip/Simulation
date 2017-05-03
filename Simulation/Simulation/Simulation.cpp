@@ -33,13 +33,20 @@ void Simulation::Shutdown()
 
 void Simulation::Tick()
 {
-	mPhyTimer.Tick([&]()
+	while (true)
 	{
-		if (!mConfig->GetIsPaused())
+		mPhyTimer.Tick([&]()
 		{
-			RunPhysics(mPhyTimer);			
+			if (!mConfig->GetIsPaused())
+			{
+				RunPhysics(mPhyTimer);
+			}
+		});
+		if (mConfig->GetIsEscaped())
+		{			
+			break;
 		}
-	});
+	}
 }
 
 void Simulation::RunPhysics(DX::StepTimer const& timer)
@@ -48,7 +55,9 @@ void Simulation::RunPhysics(DX::StepTimer const& timer)
 	mFriction = mConfig->GetFriction();
 	mElasticity = mConfig->GetElasticForce();
 	
+	
 	float dt = float(mPhyTimer.GetElapsedSeconds()) * timescale;
+	
 
 	mManifold->Clear();
 	mBallManager->ClearAccumulator();
@@ -71,7 +80,7 @@ void Simulation::ModifyPhyFreq()
 {
 	mPhyTimer.SetFixedTimeStep(true);
 	TarPhyFreq = mConfig->GetTarPhyFreq();	
-	mPhyTimer.SetTargetElapsedSeconds(TarPhyFreq);
+	mPhyTimer.SetTargetElapsedSeconds(1/TarPhyFreq);
 }
 
 void Simulation::SetBallManagerPtr(shared_ptr<BallManagerClass> InBallManager)
