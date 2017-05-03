@@ -135,7 +135,6 @@
     <ClCompile Include="CameraClass.cpp" />
     <ClCompile Include="ConfigClass.cpp" />
     <ClCompile Include="ContactManifold.cpp" />
-    <ClCompile Include="ContactResponser.cpp" />
     <ClCompile Include="D3DClass.cpp" />
     <ClCompile Include="GraphicClass.cpp" />
     <ClCompile Include="GravityWellClass.cpp" />
@@ -144,11 +143,9 @@
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="Simulation.cpp" />
     <ClCompile Include="SystemClass.cpp" />
-    <ClCompile Include="TimerClass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="Resources\cup.cmo" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BallClass.h" />
@@ -156,7 +153,6 @@
     <ClInclude Include="CameraClass.h" />
     <ClInclude Include="ConfigClass.h" />
     <ClInclude Include="ContactManifold.h" />
-    <ClInclude Include="ContactResponser.h" />
     <ClInclude Include="D3DClass.h" />
     <ClInclude Include="GraphicClass.h" />
     <ClInclude Include="GravityWellClass.h" />
@@ -164,15 +160,8 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Simulation.h" />
+    <ClInclude Include="StepTimer.h" />
     <ClInclude Include="SystemClass.h" />
-    <ClInclude Include="TimerClass.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="Simulation.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="earth.bmp" />
-    <Image Include="Resources\cup.jpg" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Resources\config.txt" />

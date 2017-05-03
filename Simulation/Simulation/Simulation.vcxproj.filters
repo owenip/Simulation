@@ -13,12 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Particle">
-      <UniqueIdentifier>{c22d81f7-fb25-4228-b30e-547686724fd9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Particle\Header">
-      <UniqueIdentifier>{ea610398-e3c2-4d4b-ba66-02b5a14cbaf7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Gravity Well">
       <UniqueIdentifier>{d21aa503-5206-4db9-8aef-77c540175ed4}</UniqueIdentifier>
     </Filter>
@@ -48,9 +42,6 @@
     <ClCompile Include="D3DClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TimerClass.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CameraClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -66,9 +57,6 @@
     <ClCompile Include="ContactManifold.cpp">
       <Filter>Simulation</Filter>
     </ClCompile>
-    <ClCompile Include="ContactResponser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="BallClass.cpp">
       <Filter>Simulation\BAll</Filter>
     </ClCompile>
@@ -78,9 +66,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="Resources\cup.cmo">
-      <Filter>Resource Files</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -101,9 +86,6 @@
     <ClInclude Include="D3DClass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TimerClass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="CameraClass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -119,28 +101,15 @@
     <ClInclude Include="ContactManifold.h">
       <Filter>Simulation</Filter>
     </ClInclude>
-    <ClInclude Include="ContactResponser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="BallClass.h">
       <Filter>Simulation\BAll</Filter>
     </ClInclude>
     <ClInclude Include="BallManagerClass.h">
       <Filter>Simulation\BAll</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="Simulation.rc">
-      <Filter>Resource Files</Filter>
-    </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="earth.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Resources\cup.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
+    <ClInclude Include="StepTimer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Resources\config.txt">
