@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "BallManagerClass.h"
+#include "BallClass.h"
 
 
 BallManagerClass::BallManagerClass()
@@ -69,7 +70,7 @@ void BallManagerClass::Update(float dt)
 		//Create yaw pitch row
 		newtotation.y = atan2f(Ball->mLastPosition.x - newPos.x, Ball->mLastPosition.z - newPos.z);
 		newtotation.x -= abs(newVelocity.x * dt) + abs(newVelocity.z * dt);
-		newtotation.z = 0.f;
+		//newtotation.z = 0.f;
 
 		Ball->SetRotation(newtotation);
 	}
@@ -162,8 +163,8 @@ void BallManagerClass::CreateBallIndex()
 				SimpleMath::Vector3 SpawnPos(CurSpawnX, mBallRadius * 10.f, CurSpawnZ);
 				Ball->Initialize(ProcessedBall, -1, mBallRadius, 10.f,
 					SpawnPos,
-					SimpleMath::Vector3(0.f, 0.f, 0.f), //Velocity
-					SimpleMath::Vector3(0.f, 0.f, 0.f), //Accerlation
+					SimpleMath::Vector3(05.f, 0.f, 1.f), //Velocity
+					SimpleMath::Vector3(0.f, 0.f, -0.1f), //Accerlation
 					0.90f);
 				mBallIndex.push_back(Ball);
 				ProcessedBall++;
@@ -211,8 +212,8 @@ void BallManagerClass::CreateBallIndex()
 	{
 		if (i % 2)
 		{
-			//mBallIndex[i]->SetVelocity(SimpleMath::Vector3(6.65f * i, -4.f, 6.3f * i));
-			//mBallIndex[i]->SetAcceleration(SimpleMath::Vector3(0.f,0.f,0.f));
+			mBallIndex[i]->SetVelocity(SimpleMath::Vector3(6.65f * i, -4.f, 6.3f * i));
+			mBallIndex[i]->SetAcceleration(SimpleMath::Vector3(0.f,0.f,0.f));
 		}
 	}
 }

@@ -157,7 +157,7 @@ void Simulation::ApplyGravity()
 	{
 		SimpleMath::Vector3 force = element->GetForce();
 		//if (!element->HasFiniteMass()) continue;
-		if (element->GetPosition().y >= element->GetRadius() || (force.x != 0.f || force.z != 0.f))
+		if (element->GetPosition().y >= element->GetRadius() )
 		{
 			element->AddForce(mGravity);			
 		}	
@@ -172,7 +172,7 @@ void Simulation::ApplyGroundFriction(float dt)
 
 		if (element->GetPosition().y <= element->GetRadius())
 		{
-			//element->AddForce(-mGravity);
+			element->AddForce(-mGravity);
 
 			if (force.x > 0.f || force.z > 0.f && force.y <= 0.f)
 			{
@@ -181,7 +181,7 @@ void Simulation::ApplyGroundFriction(float dt)
 
 				force.Normalize();
 				force *= -dragCoeff;
-				element->AddForce(force);
+				//element->AddForce(force);
 			}
 		}
 	}

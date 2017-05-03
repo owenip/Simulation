@@ -247,7 +247,7 @@ void BallClass::ClearAccumulator()
 
 void BallClass::AddForce(const SimpleMath::Vector3 & force)
 {
-	mAcceleration += force;
+	mForceAccum += force;
 }
 
 void BallClass::SetForce(const SimpleMath::Vector3 & force)
