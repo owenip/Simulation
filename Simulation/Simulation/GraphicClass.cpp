@@ -151,6 +151,11 @@ void GraphicClass::Tick()
 		{			
 			Render();
 		});
+		mActualFPS = mGraphicTimer.GetFramesPerSecond();
+		mTarGraphicFreq = mConfig->GetTarGraphicFreq();
+		mTarPhysicsFreq = mConfig->GetTarPhyFreq();
+		mTarNetowrkFreq = mConfig->GetTarNetworkFreq();
+		mGwForce = mGwManager->GwGetForce(mPeerID);
 		/*if (mIsEscaped)
 			break;*/
 	}
@@ -164,11 +169,7 @@ bool GraphicClass::Update(DX::StepTimer const& timer)
 	//mBallManager->Integrate(dt);
 	//CheckInput();
 	
-	mActualFPS = mGraphicTimer.GetFramesPerSecond();
-	mTarGraphicFreq = mConfig->GetTarGraphicFreq();
-	mTarPhysicsFreq = mConfig->GetTarPhyFreq();
-	mTarNetowrkFreq = mConfig->GetTarNetworkFreq();
-	mGwForce = mGwManager->GwGetForce(mPeerID);
+	
 
 	return true;
 }

@@ -26,8 +26,19 @@ void ContactManifold::Clear()
 	mNumofPoint = 0;
 }
 
-int ContactManifold::GetNumPoints() const
+std::vector<ManifoldPoint>* ContactManifold::GetPoints()
 {
+	return &mPoints;
+}
+
+void ContactManifold::GetPoints(std::vector<ManifoldPoint>* pt)
+{
+	pt = &mPoints;
+}
+
+int ContactManifold::GetNumPoints()
+{
+	mNumofPoint = mPoints.size();
 	return mNumofPoint;
 }
 

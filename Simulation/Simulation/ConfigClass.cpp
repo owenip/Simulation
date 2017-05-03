@@ -12,7 +12,7 @@ ConfigClass::ConfigClass() :
 	mNumberOfBalls(0),
 	mBallRadius(0),
 	mDisplayAll(false),
-	mGwRadius(5.f),
+	mGwRadius(10.f),
 	mPeerID(0),
 	mFriction(0.5f),
 	mElasticity(0),

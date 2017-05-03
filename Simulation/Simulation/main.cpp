@@ -3,6 +3,13 @@
 
 int WINAPI WinMain(const HINSTANCE, const HINSTANCE, const PSTR, const int)
 {	
+
+#ifdef 	_OPENMP
+	cout <<  "OpenMP enabled"  << endl;
+#endif
+
+
+	SetThreadAffinityMask(GetCurrentThread(),0b1);
 	bool result;
 
 	std::unique_ptr<SystemClass> mSystem;

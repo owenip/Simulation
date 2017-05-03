@@ -89,7 +89,7 @@ void SystemClass::Run()
 	done = false;
 
 	std::thread thread2(&Simulation::Tick, &mSimulation);
-	SetThreadAffinityMask(thread2.native_handle(), 4);
+	SetThreadAffinityMask(thread2.native_handle(), 0b0100);
 	
 
 	while (!done)

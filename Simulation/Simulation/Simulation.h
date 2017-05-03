@@ -3,6 +3,7 @@
 #include "GravityWellManager.h"
 #include "ContactManifold.h"
 
+
 class Simulation
 {
 public:
@@ -41,7 +42,7 @@ private:
 	float TarPhyFreq;
 	float timescale;
 
-	std::unique_ptr<ContactManifold> mManifold;
+	ContactManifold mManifold;
 
 
 	//Forces Properties

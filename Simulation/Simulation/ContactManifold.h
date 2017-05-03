@@ -28,7 +28,10 @@ public:
 	void Add(ManifoldPoint &point);
 	void Clear();
 
-	int GetNumPoints() const;
+	std::vector<ManifoldPoint>* GetPoints();
+	void	GetPoints(std::vector<ManifoldPoint>* pt);
+
+	int GetNumPoints();
 	ManifoldPoint& GeTPoint(int index);
 
 	void ResolveContact(float duration);
