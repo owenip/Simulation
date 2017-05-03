@@ -266,7 +266,8 @@ void GraphicClass::CheckInput()
 	else if (tracker.pressed.R)
 	{
 		//Reset		
-		//mBallManager->Initialise(mConfig);
+		//mConfig->Reset();
+		mBallManager->ReSetBallPosition();		
 	}
 	else if (tracker.pressed.P)
 	{

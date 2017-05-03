@@ -20,10 +20,12 @@ public:
 	void ClearAccumulator();
 	void Integrate(float dt);
 
+	void ReSetBallPosition();
+
 	void GetBallIndex(std::vector<BallClass*>& BallIndex);
 	std::vector<BallClass*> GetBallIndex();
 
-	
+	void GetSimIndex(std::vector<BallClass*>& SimIndex);
 
 private:
 	void CreateBallIndex();

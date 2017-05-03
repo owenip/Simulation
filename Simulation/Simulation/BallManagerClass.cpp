@@ -87,6 +87,71 @@ void BallManagerClass::Integrate(float dt)
 	}
 }
 
+void BallManagerClass::ReSetBallPosition()
+{
+	auto BallCenterDistance = mBallRadius * 2 + 0.5f;
+	auto ProcessedBall = 0;
+	auto CurrentDir = 1;
+	auto CurSide = 1;
+	auto CurSpawnX = 0.f;
+	auto CurSpawnZ = 0.f;
+
+	while (ProcessedBall <= mNumberOfBalls)
+	{
+		//Direction 1:UP 2:Down 3:Left 4:Right
+		for (auto i = 0; i < 2; i++)
+		{
+			for (auto j = 0; j < CurSide; j++)
+			{
+
+				SimpleMath::Vector3 SpawnPos(CurSpawnX, mBallRadius * 10.f, CurSpawnZ);
+				SimpleMath::Vector3 Zero(SimpleMath::Vector3::Zero);
+				mBallIndex[ProcessedBall]->SetPosition(SpawnPos);
+				mBallIndex[ProcessedBall]->SetRotation(Zero);
+				mBallIndex[ProcessedBall]->SetVelocity(Zero);
+				mBallIndex[ProcessedBall]->SetAcceleration(Zero);
+				ProcessedBall++;
+
+				if (ProcessedBall >= mNumberOfBalls)
+				{
+					break;
+				}
+
+				switch (CurrentDir)
+				{
+				case 0:
+					CurSpawnZ += BallCenterDistance;
+					break;
+				case 1:
+					CurSpawnX -= BallCenterDistance;
+					break;
+				case 2:
+					CurSpawnZ -= BallCenterDistance;
+					break;
+				case 3:
+					CurSpawnX += BallCenterDistance;
+					break;
+				}
+			}
+			if (ProcessedBall >= mNumberOfBalls)
+			{
+				break;
+			}
+			CurrentDir++;
+			if (CurrentDir >= 4)
+			{
+				CurrentDir = 0;
+			}
+		}
+		if (ProcessedBall >= mNumberOfBalls)
+		{
+			break;
+		}
+		CurSide++;
+
+	}
+}
+
 void BallManagerClass::Update(float dt)
 {
 	for (auto Ball: mBallIndex)
@@ -220,6 +285,11 @@ std::vector<BallClass*> BallManagerClass::GetBallIndex()
 	return mBallIndex;
 }
 
+void BallManagerClass::GetSimIndex(std::vector<BallClass*>& SimIndex)
+{
+	mSimBallIndex = SimIndex;
+}
+
 void BallManagerClass::CreateBallIndex()
 {
 	mBallIndex.clear();
@@ -259,7 +329,7 @@ void BallManagerClass::CreateBallIndex()
 				//	SimpleMath::Vector3(05.f, 0.f, 1.f), //Velocity
 				//	SimpleMath::Vector3(0.f, 0.f, -0.1f), //Accerlation
 				//	0.90f);
-				Ball->AddForce(SimpleMath::Vector3(-010.f * i, -9.81f, 15.f));
+				//Ball->AddForce(SimpleMath::Vector3(-010.f * i, -9.81f, 15.f));
 				
 				mBallIndex.push_back(Ball);
 

@@ -163,6 +163,18 @@ float ConfigClass::GettimeScale() const
 	return mTimeScale;
 }
 
+void ConfigClass::Reset()
+{
+	mIsPaused = false;
+	mDisplayAll = false;
+	mFriction = 0.995f;
+	mElasticity = 0.9;
+	mTimeScale = 1.f;
+	mTarPhysicsFreq = 2000.f;
+	mTarGraphicFreq = 120.f;
+	mTarNetworkFreq = 2000.f;
+}
+
 bool ConfigClass::ReadConfigFile()
 {
 	ifstream configfile(configFileName);
@@ -313,7 +325,7 @@ void ConfigClass::SetDefault(string & key)
 	}
 	else if (key == "NumOfBalls")
 	{
-		mNumberOfBalls = 5;
+		mNumberOfBalls = 50;
 	}
 	else if (key == "BallRadius")
 	{

@@ -46,13 +46,15 @@ public:
 	void	SetTimeScale(float &InTimeScale);
 	float	GettimeScale() const;
 
+	void	Reset();
+
 private:
 	bool ReadConfigFile();
 	void StoreValue(string &key, string &value);
 
 	//Set Default Value
 	void SetDefault(string &key);
-	void SetDefaultAll(); 
+	void SetDefaultAll();
 
 private:
 	const std::string configFileName = ".\\Resources\\config.txt";
