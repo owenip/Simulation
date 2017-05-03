@@ -2,19 +2,28 @@
 #include "ConfigClass.h"
 
 
-ConfigClass::ConfigClass():
+ConfigClass::ConfigClass() :
 	mIsPaused(false),
 	mFullScreen(false),
 	mScreenWidth(0),
 	mScreenHeight(0),
 	mSurfaceRadius(30.f),
 	mNumberOfBalls(0),
-	mBallRadius(0), 
-	mGwRadius(2.f),
-	mOwnerID(0),
-	mGroundFriction(0.5f),
-	mElasticForce(0)
+	mBallRadius(0),
+	mDisplayAll(false),
+	mGwRadius(5.f),
+	mPeerID(0),
+	mFriction(0.5f),
+	mElasticity(0),
+	mTarPhysicsFreq(2000.f),
+	mTarGraphicFreq(120.f),
+	mTarNetworkFreq(2000.f),
+	mTimeScale(1.f)
 {
+	if (!ReadConfigFile())
+	{
+		SetDefaultAll();
+	}
 }
 
 bool ConfigClass::Initialize()
@@ -71,40 +80,93 @@ bool ConfigClass::GetIsPaused() const
 	return mIsPaused;
 }
 
-void ConfigClass::SetOwnerID(int InID)
+void ConfigClass::SetDisplayAll(bool InVal)
 {
-	mOwnerID = InID;
+	mDisplayAll = InVal;
 }
 
-int ConfigClass::GetOwnerID() const
+bool ConfigClass::GetDisplayAll() const
 {
-	return mOwnerID;
+	return mDisplayAll;
 }
 
-void ConfigClass::SetElasticForce(float InForce)
+void ConfigClass::SetPeerID(int &InID)
 {
-	mElasticForce = InForce;
+	mPeerID = InID;
+}
+
+int ConfigClass::GetPeerID() const
+{
+	return mPeerID;
+}
+
+void ConfigClass::SetElasticForce(float &InForce)
+{
+	mElasticity = InForce;
 }
 
 float ConfigClass::GetElasticForce() const
 {
-	return mElasticForce;
+	return mElasticity;
 }
 
-void ConfigClass::SetGroundFriction(float InFriction)
+void ConfigClass::SetFriction(float &InFriction)
 {
-	mGroundFriction = InFriction;
+	mFriction = InFriction;
 }
 
-float ConfigClass::GetGroundFriction() const
+float ConfigClass::GetFriction() const
 {
-	return mGroundFriction;
+	return mFriction;
+}
+
+void ConfigClass::SetTarPhyFreq(float &InVal)
+{
+	if(InVal > 0)
+		mTarPhysicsFreq = InVal;
+}
+
+float ConfigClass::GetTarPhyFreq() const
+{
+	return mTarPhysicsFreq;
+}
+
+void ConfigClass::SetTarGraphicFreq(float &InVal)
+{
+	if (InVal > 0)
+		mTarGraphicFreq = InVal;
+}
+
+float ConfigClass::GetTarGraphicFreq() const
+{
+	return mTarGraphicFreq;
+}
+
+void ConfigClass::SetTarNetworkFreq(float &InVal)
+{
+	if (InVal > 0)
+		mTarNetworkFreq = InVal;
+}
+
+float ConfigClass::GetTarNetworkFreq() const
+{
+	return mTarNetworkFreq;
+}
+
+void ConfigClass::SetTimeScale(float & InTimeScale)
+{
+	mTimeScale = InTimeScale;
+}
+
+float ConfigClass::GettimeScale() const
+{
+	return mTimeScale;
 }
 
 bool ConfigClass::ReadConfigFile()
 {
 	ifstream configfile(configFileName);
-	
+
 	if (!configfile.good())
 	{
 		throw MessageBoxA(NULL, "Unable to read config file.", "Error", MB_OK | MB_ICONERROR);;
@@ -124,10 +186,10 @@ bool ConfigClass::ReadConfigFile()
 				//Get Value from line
 				string value;
 				if (getline(is_line, value))
-				{					
+				{
 					StoreValue(key, value);
 				}
-			}			
+			}
 		}
 		configfile.close();
 		return true;
@@ -195,11 +257,11 @@ void ConfigClass::StoreValue(string &key, string &value)
 			std::cerr << "Invalid argument: " << ia.what() << '\n';
 		}
 	}
-	else if(key == "Elasticity")
+	else if (key == "Elasticity")
 	{
 		try {
 			float InElasticForce = stof(value);
-			mElasticForce = InElasticForce;
+			mElasticity = InElasticForce;
 		}
 		catch (const std::invalid_argument& ia)
 		{
@@ -207,11 +269,23 @@ void ConfigClass::StoreValue(string &key, string &value)
 			std::cerr << "Invalid argument: " << ia.what() << '\n';
 		}
 	}
-	else if (key == "GroundFriction")
+	else if (key == "Friction")
 	{
 		try {
 			float InDragForce = stof(value);
-			mGroundFriction = InDragForce;
+			mFriction = InDragForce;
+		}
+		catch (const std::invalid_argument& ia)
+		{
+			SetDefault(key);
+			std::cerr << "Invalid argument: " << ia.what() << '\n';
+		}
+	}
+	else if (key == "PeerID")
+	{
+		try {
+			int InPeerID = stoi(value);
+			mPeerID = InPeerID;
 		}
 		catch (const std::invalid_argument& ia)
 		{
@@ -227,15 +301,15 @@ void ConfigClass::SetDefault(string & key)
 {
 	if (key == "FullScreen")
 	{
-		mFullScreen = false;		
+		mFullScreen = false;
 	}
 	else if (key == "ScreenWidth")
 	{
 		mScreenWidth = 800;
 	}
 	else if (key == "ScreenHeight")
-	{	
-		mScreenHeight = 600;		
+	{
+		mScreenHeight = 600;
 	}
 	else if (key == "NumOfBalls")
 	{
@@ -247,13 +321,16 @@ void ConfigClass::SetDefault(string & key)
 	}
 	else if (key == "Elasticity")
 	{
-		mElasticForce = 1.f;
+		mElasticity = 0.99f;
 	}
-	else if (key == "GroundFriction")
+	else if (key == "Friction")
 	{
-		mGroundFriction = 0.5f;
+		mFriction = 0.5f;
 	}
-
+	else if (key == "PeerID")
+	{
+		mPeerID = 0;
+	}
 }
 
 void ConfigClass::SetDefaultAll()
@@ -264,7 +341,8 @@ void ConfigClass::SetDefaultAll()
 	SetDefault(string("NumOfBalls"));
 	SetDefault(string("BallRadius"));
 	SetDefault(string("Elasticity"));
-	SetDefault(string("GroundFriction"));
+	SetDefault(string("Friction"));
+	SetDefault(string("PeerID"));
 }
 
 

@@ -11,6 +11,7 @@ BallClass::BallClass(int BallID, int OwenerID, float Radius, float mass, SimpleM
 	mBallID = BallID;
 	mOwenerID = OwenerID;
 	mRadius = Radius;
+	mContended = false;
 
 	this->SetMass(mass);
 	this->SetPosition(Position);
@@ -24,14 +25,14 @@ BallClass::BallClass(int BallID, int OwenerID, float Radius, float mass, SimpleM
 	mBallID = BallID;
 	mOwenerID = OwenerID;
 	mRadius = Radius;
+	mContended = false;
 	this->SetMass(mass);
-	this->SetPosition(Position);
-	mMomentum = SimpleMath::Vector3::Zero;
-	mOrientation = SimpleMath::Quaternion::Identity;
-	mAngularMomentum = SimpleMath::Vector3::Zero;
-	mInertiaTensor = this->GetMass() * mRadius * mRadius * 2 / 3;
-	mInverseInertiaTensor = 1.0f / mInertiaTensor;
-	this->recalculate();
+	this->SetPosition(Position);	
+	mAcceleration = SimpleMath::Vector3::Zero;
+	mForceAccum = SimpleMath::Vector3::Zero;
+	mVelocity = SimpleMath::Vector3::Zero;
+	mDamping = 0.995f;
+	mTransferable = false;
 }
 
 
@@ -44,12 +45,17 @@ void BallClass::Initialize(int BallID, int OwenerID, float Radius, float mass, S
 	mBallID = BallID;
 	mOwenerID = OwenerID;
 	mRadius = Radius;
-	
+
 	this->SetMass(mass);
 	this->SetPosition(Position);
 	this->SetVelocity(Velocity);
 	this->SetAcceleration(Accerleration);
 	this->SetDamping(damping);
+}
+
+void BallClass::recalculate()
+{
+	mVelocity = mForceAccum * mInverseMass;
 }
 
 
@@ -58,43 +64,39 @@ void BallClass::Integrate(float duration)
 {
 	assert(duration > 0.0);
 
-	mLastPosition = mPosition;
+	this->mLastPosition = this->mPosition;
 	// Update linear position.
-	mPosition += mVelocity * duration;
+	this->mPosition += this->mVelocity * duration;
 
 	// Work out the acceleration from the force.
-	SimpleMath::Vector3 resultingAcc = mAcceleration;
-	resultingAcc += mForceAccum * mInverseMass;
+	SimpleMath::Vector3 resultingAcc = this->mAcceleration;
+	resultingAcc += this->mForceAccum *this->mInverseMass;
 
 	//Update linear velocity from the acceleration
-	mVelocity += resultingAcc * duration;
+	this->mVelocity += resultingAcc * duration;
 
 	//Impose drag
-	mVelocity *= powf(mDamping, duration);
+	this->mVelocity *= powf(this->mDamping, duration);
 	//mVelocity *= mDamping;
 
 	//Clear the forces
 	ClearAccumulator();
 }
 
-void BallClass::IntegrateRK(float dt)
+void BallClass::IntegrateRK(float duration)
 {
+	Derivative a = evaluate(*this, 0.0f, Derivative());
+	Derivative b = evaluate(*this, duration*0.5f, a);
+	Derivative c = evaluate(*this, duration*0.5f, b);
+	Derivative d = evaluate(*this, duration, c);
 
+	mPosition += 1.0f / 6.0f * duration * (a.velocity + 2.0f*(b.velocity + c.velocity) + d.velocity);
+	mVelocity += 1.0f / 6.0f * duration * (a.acceleration + 2.0f*(b.acceleration + c.acceleration) + d.acceleration);
+	mVelocity *= mDamping;
+	//recalculate();
+	//ClearAccumulator();
 }
 
-
-
-void BallClass::recalculate()
-{
-	mVelocity = mForceAccum * mInverseMass;
-	mAngularVelocity = mAngularMomentum * mInverseInertiaTensor;
-	mOrientation.Normalize();
-	mSpin = 0.5 * SimpleMath::Quaternion(mAngularVelocity, 0) * mOrientation;
-	SimpleMath::Matrix translation;
-	translation.Translation(mPosition);
-	translation.Transform(translation, mOrientation, bodyToWorld);
-	worldToBody = bodyToWorld.Invert();
-}
 
 
 
@@ -106,176 +108,182 @@ void BallClass::Update(float dt)
 
 void BallClass::SetBallID(const int BallID)
 {
-	mBallID = BallID;
+	this->mBallID = BallID;
 }
 
 int BallClass::GetBallId() const
 {
-	return mBallID;
+	return this->mBallID;
 }
 
 void BallClass::SetOwenerID(const int owenerID)
 {
-	mOwenerID = owenerID;
+	this->mOwenerID = owenerID;
 }
 
 int BallClass::GetOwenerID() const
 {
-	return mOwenerID;
+	return this->mOwenerID;
 }
 
 void BallClass::SetRadius(const float radius)
 {
 	assert(radius != 0);
-	mRadius = radius;
+	this->mRadius = radius;
 }
 
 float BallClass::GetRadius() const
 {
-	return mRadius;
+	return this->mRadius;
 }
 
 void BallClass::SetMass(const float mass)
 {
 	assert(mass != 0);
-	mInverseMass = 1.0f / mass;
+	this->mInverseMass = 1.0f / mass;
 }
 
 float BallClass::GetMass() const
 {
-	if (mInverseMass == 0)
+	if (this->mInverseMass == 0)
 	{
 		return FLT_MAX;
 	}
 	else
 	{
-		return 1.0f / mInverseMass;
+		return 1.0f / this->mInverseMass;
 	}
 }
 
 void BallClass::SetInverseMass(const float inverseMass)
 {
-	mInverseMass = inverseMass;
+	this->mInverseMass = inverseMass;
 }
 
 float BallClass::GetInverseMass() const
 {
-	return mInverseMass;
+	return this->mInverseMass;
 }
 
 void BallClass::SetDamping(const float damping)
 {
-	mDamping = damping;
+	this->mDamping = damping;
 }
 
 float BallClass::GetDamping() const
 {
-	return mDamping;
+	return this->mDamping;
 }
 
 void BallClass::SetPosition(SimpleMath::Vector3 & position)
 {
-	mPosition = position;
+	this->mPosition = position;
 }
 
 void BallClass::SetPosition(const float x, const float y, const float z)
 {
-	mPosition.x = x;
-	mPosition.y = y;
-	mPosition.z = z;
+	this->mPosition.x = x;
+	this->mPosition.y = y;
+	this->mPosition.z = z;
 }
 
 void BallClass::GetPosition(SimpleMath::Vector3 &position)
 {
-	position = mPosition;
+	position = this->mPosition;
 }
 
 SimpleMath::Vector3 BallClass::GetPosition() const
 {
-	return mPosition;
+	return this->mPosition;
 }
 
 void BallClass::SetVelocity(const SimpleMath::Vector3 &velocity)
 {
-	mVelocity = velocity;
+	this->mVelocity = velocity;
 }
 
 
 void BallClass::SetVelocity(const float x, const float y, const float z)
 {
-	mVelocity.x = x;
-	mVelocity.y = y;
-	mVelocity.z = z;
+	this->mVelocity.x = x;
+	this->mVelocity.y = y;
+	this->mVelocity.z = z;
 }
 
 void BallClass::GetVelocity(SimpleMath::Vector3 &velocity) const
 {
-	velocity = mVelocity;
+	velocity = this->mVelocity;
 }
 
 SimpleMath::Vector3 BallClass::GetVelocity() const
 {
-	return mVelocity;
+	return this->mVelocity;
 }
 
 void BallClass::SetAcceleration(const SimpleMath::Vector3 & acceleration)
 {
-	mAcceleration = acceleration;
+	this->mAcceleration = acceleration;
 }
 
 void BallClass::SetAcceleration(const float x, const float y, const float z)
 {
-	mAcceleration.x = x;
-	mAcceleration.y = y;
-	mAcceleration.z = z;
+	this->mAcceleration.x = x;
+	this->mAcceleration.y = y;
+	this->mAcceleration.z = z;
 }
 
 void BallClass::GetAccleration(SimpleMath::Vector3 & acceleration)
 {
-	acceleration = mAcceleration;
+	acceleration = this->mAcceleration;
 }
 
 SimpleMath::Vector3 BallClass::GetAccleration() const
 {
-	return mAcceleration;
+	return this->mAcceleration;
+}
+
+void BallClass::AddAcceleration(const SimpleMath::Vector3 & acce)
+{
+	this->mAcceleration += acce;
 }
 
 void BallClass::ClearAccumulator()
 {
-	mForceAccum = SimpleMath::Vector3::Zero;
+	this->mForceAccum = SimpleMath::Vector3::Zero;
 }
 
 void BallClass::AddForce(const SimpleMath::Vector3 & force)
 {
-	mForceAccum += force;
+	this->mForceAccum += force;
 }
 
 void BallClass::SetForce(const SimpleMath::Vector3 & force)
 {
-	mForceAccum = force;
+	this->mForceAccum = force;
 }
 
 void BallClass::GetForce(SimpleMath::Vector3 & force)
 {
-	force = mForceAccum;
+	force = this->mForceAccum;
 }
 
 SimpleMath::Vector3 BallClass::GetForce()
 {
-	return mForceAccum;
+	return this->mForceAccum;
 }
 
 void BallClass::SetRotation(SimpleMath::Vector3 &Rotation)
 {
-	mRotation = Rotation;
+	this->mRotation = Rotation;
 }
 
 void BallClass::GetRotation(SimpleMath::Vector3 &Rotation)
 {
-	Rotation = mRotation;
+	Rotation = this->mRotation;
 }
 
 SimpleMath::Vector3 BallClass::GetRotation() const
 {
-	return mRotation;
+	return this->mRotation;
 }
+

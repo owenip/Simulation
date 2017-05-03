@@ -7,7 +7,7 @@ public:
 	GravityWellManager();
 	~GravityWellManager();
 
-	bool	Initialise(int OwnerID, float InGwRadius);
+	bool	Initialise(shared_ptr<ConfigClass> Config);
 	bool	Initialise(int OwnerID);
 	bool	InitialiseGraphic(shared_ptr<D3DClass> InDirect3D);
 
@@ -25,25 +25,34 @@ public:
 	void	GwSetPos(int GwID, SimpleMath::Vector3 InGravityWellPos);
 	SimpleMath::Vector3	GwGetPos(int GwID);
 
-	void	GwAddMove(int GwID, SimpleMath::Vector3 InMove);
+	void	GwAddMove(SimpleMath::Vector3 InMove);
+	void	GwMoveForward();
+	void	GwMoveBackward();
+	void	GwMoveLeft();
+	void	GwMoveRight();
+	void	GwMoveByMouse(float mouseX, float mouseY);
+	void	GwMoveUp();
+	void	GwMoveDown();
 
-	//Gw Force
+	//Gw Force(Local)
 	float	GwGetForce(int GwID);
 	//Increase Gravity Well Attracting Force (Will naturalise repelling force) 
-	void	GwAddAttractF(int GwID);
+	void	GwAddAttractF();
 	//Increase Gravity Well Repelling force (Will naturalise Attracting force)
-	void	GwAddRepellF(int GwID);
+	void	GwAddRepellF();
 	//Clear Gw force
-	void	ClearForce(int GwID);
+	void	ClearForce();
+
+	std::vector<GravityWellClass*>	GetGwIndex() const;
+	int	GetNumofGw() const;
 	
-	std::vector<GravityWellClass*>	GetGwIndex();
 
 private:
 	float	mGwRadius;
-	int		mLocalID;
+	int		mLocalPeerID;
 
 	shared_ptr<D3DClass> mDirect3D;
-
+	shared_ptr<ConfigClass> mConfig;
 	std::unique_ptr<DirectX::CommonStates> mStates;
 	std::unique_ptr<DirectX::GeometricPrimitive> mGwPrimitive;
 	std::unique_ptr<DirectX::GeometricPrimitive> mGwCenter;
@@ -51,7 +60,8 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11InputLayout> mGwInputLayout;
 
 	std::vector<GravityWellClass*> mGwIndex;
-
-	float ForceGain;
+		
+	float mGWMovementGain;
+	float mGwForceGain;
 };
 

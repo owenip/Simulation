@@ -22,22 +22,37 @@ public:
 	void	SetIsPaused(bool InVal);
 	bool	GetIsPaused() const;
 
-	void	SetOwnerID(int InID);
-	int		GetOwnerID() const;
+	void	SetDisplayAll(bool InVal);
+	bool	GetDisplayAll() const;
 
-	void	SetElasticForce(float InForce);
+	void	SetPeerID(int &InID);
+	int		GetPeerID() const;
+
+	void	SetElasticForce(float &InForce);
 	float	GetElasticForce() const;
 
-	void	SetGroundFriction(float InFriction);
-	float	GetGroundFriction() const;
-	
+	void	SetFriction(float &InFriction);
+	float	GetFriction() const;
+
+	void	SetTarPhyFreq(float &InVal);
+	float	GetTarPhyFreq() const;
+
+	void	SetTarGraphicFreq(float &InVal);
+	float	GetTarGraphicFreq() const;
+	 
+	void	SetTarNetworkFreq(float &InVal);
+	float	GetTarNetworkFreq() const;
+
+	void	SetTimeScale(float &InTimeScale);
+	float	GettimeScale() const;
+
 private:
 	bool ReadConfigFile();
 	void StoreValue(string &key, string &value);
 
 	//Set Default Value
 	void SetDefault(string &key);
-	void SetDefaultAll();
+	void SetDefaultAll(); 
 
 private:
 	const std::string configFileName = ".\\Resources\\config.txt";
@@ -49,18 +64,28 @@ private:
 
 	//Surface properties
 	float mSurfaceRadius;
-	
+
 	//Ball properties
 	int mNumberOfBalls;
 	float mBallRadius;
+	bool mDisplayAll;
+	
+	//Gravity Well Properties
 	float mGwRadius;
 
 	//Local Peer ID
-	int mOwnerID;
+	int mPeerID;
 
 	//Forces Properties
-	float mGroundFriction;
+	float mFriction;
+	float mElasticity;
 
-	float mElasticForce;
+	//Target Frequency
+	float mTarPhysicsFreq;		//at least 120 ? asap?
+	float mTarGraphicFreq;		//60
+	float mTarNetworkFreq;		//4-30?
+
+	float mTimeScale;
+
 };
 

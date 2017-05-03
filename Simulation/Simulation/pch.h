@@ -1,5 +1,4 @@
 #pragma once
-
 // Win32
 #include <windows.h>
 #include <Winuser.h>
@@ -21,6 +20,7 @@
 #include <algorithm>
 #include <bemapiset.h>
 #include <profileapi.h>
+#include <thread>
 
 // DirectX
 #include <d3d11.h>
@@ -39,29 +39,22 @@ using namespace DirectX;
 #include "DDSTextureLoader.h"
 #include "DirectXHelpers.h"
 #include "Effects.h"
-#include "GamePad.h"
 #include "GeometricPrimitive.h"
-#include "GraphicsMemory.h"
 #include "Keyboard.h"
 #include "Model.h"
 #include "Mouse.h"
 #include "PrimitiveBatch.h"
-#include "ScreenGrab.h"
 #include "SimpleMath.h"
-#include "SpriteBatch.h"
-#include "SpriteFont.h"
-#include "VertexTypes.h"
 #include "WICTextureLoader.h"
+
 
 //AntTweakBar
 #include <AntTweakBar.h>
 
-//Global
-
-//My Own Class
+//Global Class
 #include "ConfigClass.h"
-#include "TimerClass.h"
 #include "D3DClass.h"
+#include "StepTimer.h"
 
 namespace DX
 {
@@ -94,4 +87,3 @@ namespace DX
 
 // Convenience macro for releasing COM objects
 #define ReleaseCOM(x) if (x != NULL) { x->Release(); x = NULL; }
-

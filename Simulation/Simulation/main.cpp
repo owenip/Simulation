@@ -1,31 +1,22 @@
 #include "pch.h"
 #include "SystemClass.h"
 
-
 int WINAPI WinMain(const HINSTANCE, const HINSTANCE, const PSTR, const int)
-{
-	SystemClass* System;
+{	
 	bool result;
 
+	std::unique_ptr<SystemClass> mSystem;
+	mSystem = make_unique<SystemClass>();
 
-	// Create the system object.
-	System = new SystemClass;
-	if (!System)
+	result = mSystem->Initialize();
+	if(result)
 	{
-		return 0;
+		mSystem->Run();
 	}
 
-	// Initialize and run the system object.
-	result = System->Initialize();
-	if (result)
-	{
-		System->Run();
-	}
-
-	// Shutdown and release the system object.
-	System->Shutdown();
-	delete System;
-	System = nullptr; 
+	mSystem->Shutdown();
+	mSystem.reset();
 
 	return 0;
+
 }

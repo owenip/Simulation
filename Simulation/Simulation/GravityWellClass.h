@@ -16,7 +16,7 @@ public:
 
 	SimpleMath::Color GetColor() const;
 
-	void	SetForce(float InForce);	
+	void	SetForce(float InForce);
 	float	GetForce() const;
 
 	void	AddForce(float InForce);
@@ -26,10 +26,15 @@ public:
 	SimpleMath::Vector3 GetPos() const;
 	void	AddMove(SimpleMath::Vector3 move);
 
-protected:	
+	void SetApplyingForce(bool inVal);
+	bool GetApplyingForce() const;
+
+
+protected:
 	int mGwID;
 	SimpleMath::Vector3	mGravityWellPos;
 	SimpleMath::Color	mGwColor;
 	float mForce;
+	bool mApplyingForce;
 };
 

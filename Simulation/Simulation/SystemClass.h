@@ -1,7 +1,10 @@
 #pragma once
 #include "ConfigClass.h"
 #include "GraphicClass.h"
+#include "BallManagerClass.h"
+#include "GravityWellManager.h"
 #include "Simulation.h"
+
 class SystemClass
 {
 public:
@@ -28,18 +31,29 @@ private:
 	HWND m_hwnd;
 	//std::wstring mMainWndCaption;
 
-	
-	//ConfigClass* mConfig;	
-	shared_ptr<TimerClass> mTimer;
-	shared_ptr<ConfigClass> mConfig;
-	GraphicClass *mGraphic;	
-	shared_ptr<Simulation> mSimulation;
+	//Config
+	std::shared_ptr<ConfigClass> mConfig;
 
-	
+	//Timer
+	DX::StepTimer GraphicTimer;
+	DX::StepTimer PhyTimer;
+	DX::StepTimer NetworkTimer;
+
+	//Graphic
+	GraphicClass mGraphic;
+
+	//Simulation
+	Simulation mSimulation;
+
+	//Ball Manager
+	std::shared_ptr<BallManagerClass> mBallManger;
+
+	//Gravity Manager
+	std::shared_ptr<GravityWellManager> mGwManager;
 
 	bool      mAppPaused;
 };
 
-const std::wstring mMainWndCaption = L"08025ACW";
+const std::wstring mMainWndCaption = L"08024ACW";
 static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 static SystemClass* ApplicationHandle = 0;

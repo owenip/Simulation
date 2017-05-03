@@ -6,19 +6,10 @@ D3DClass::D3DClass():
 	mSwapChain(nullptr),
 	mDevice(nullptr),
 	mDeviceContext(nullptr),
-	mRenderTargetView(nullptr),
-	mDepthStencilView(nullptr),
-	mDepthStencilBuffer(nullptr),
-	m_NormalrasterState(nullptr),
-	m_WireFramerasterState(nullptr),
-	m_alphaEnableBlendingState(nullptr), 
-	m_alphaDisableBlendingState(nullptr), 
-	m_vsync_enabled(false), 
-	mScreenWidth(0), 
-	mScreenHeight(0),
+	mRenderTargetView(nullptr), 
+	m_vsync_enabled(false),
 	blendFactor{0.f,0.f,0.f,0.3f}
 {
-	
 }
 
 
@@ -29,6 +20,7 @@ D3DClass::~D3DClass()
 
 bool D3DClass::Initialize(const HWND hwnd, shared_ptr<ConfigClass> Config)
 {
+	
 	HRESULT result;
 	mConfig = Config;
 	DX::ThrowIfFailed(mScreenWidth = mConfig->GetScreenWidth());
@@ -49,13 +41,13 @@ bool D3DClass::Initialize(const HWND hwnd, shared_ptr<ConfigClass> Config)
 
 	if (FAILED(result))
 	{
-		MessageBox(hwnd, L"D3D11CreateDevice Failed.", NULL, 0);
+		MessageBox(NULL, L"D3D11CreateDevice Failed.", NULL, 0);
 		return false;
 	}
 
 	if (featureLevel != D3D_FEATURE_LEVEL_11_0)
 	{
-		MessageBox(hwnd, L"Direct3D Feature Level 11 unsupported.", NULL, 0);
+		MessageBox(NULL, L"Direct3D Feature Level 11 unsupported.", NULL, 0);
 		return false;
 	}
 

@@ -1,11 +1,13 @@
+#include "pch.h"
 #include "GravityWellManager.h"
 
 
 
-GravityWellManager::GravityWellManager():
-mGwRadius(0.f), 
-mLocalID(0), 
-ForceGain(1.f)
+GravityWellManager::GravityWellManager() :
+	mGwRadius(0.f),
+	mLocalPeerID(0),
+	mGWMovementGain(0.01f),
+	mGwForceGain(0.05f)
 {
 }
 
@@ -14,30 +16,34 @@ GravityWellManager::~GravityWellManager()
 {
 }
 
-bool GravityWellManager::Initialise(int OwnerID, float InGwRadius)
+
+bool GravityWellManager::Initialise(shared_ptr<ConfigClass> Config)
 {
-	mGwRadius = InGwRadius;
+	mConfig = Config;
+	mGwRadius = mConfig->GetGwRadius();
+	mLocalPeerID = mConfig->GetPeerID();
+	mGwIndex.clear();
 	SimpleMath::Color GwColor;
-	switch(OwnerID)
+	switch (mLocalPeerID)
 	{
-		case 0:
-		{
-			GwColor = Colors::Black;
-			break;
-		}
-		case 1:
-		{
-			GwColor = Colors::HotPink;
-			break;
-		}
-		case 2:
-		{
-			GwColor = Colors::Lime;
-			break;
-		}
+	case 0:
+	{
+		GwColor = Colors::Red;
+		break;
 	}
-	this->AddGw(OwnerID, SimpleMath::Vector3::Zero, GwColor);
-	return false;
+	case 1:
+	{
+		GwColor = Colors::Green;
+		break;
+	}
+	case 2:
+	{
+		GwColor = Colors::Blue;
+		break;
+	}
+	}
+	this->AddGw(mLocalPeerID, SimpleMath::Vector3::Zero, GwColor);
+	return true;
 }
 
 bool GravityWellManager::InitialiseGraphic(shared_ptr<D3DClass> InDirect3D)
@@ -50,12 +56,11 @@ bool GravityWellManager::InitialiseGraphic(shared_ptr<D3DClass> InDirect3D)
 
 	mGwPrimitive = GeometricPrimitive::CreateSphere(mDirect3D->GetDeviceContext(), mGwRadius * 2);
 	mGwPrimitive->CreateInputLayout(mGwEffect.get(), mGwInputLayout.ReleaseAndGetAddressOf());
-	mGwPrimitive->CreateInputLayout(mGwEffect.get(), mGwInputLayout.ReleaseAndGetAddressOf());
 
 	//Center Indication for Gw
 	mGwCenter = GeometricPrimitive::CreateSphere(mDirect3D->GetDeviceContext(), mGwRadius / 10.f);
 
-	return false;
+	return true;
 }
 
 void GravityWellManager::Render(SimpleMath::Matrix InView)
@@ -64,13 +69,14 @@ void GravityWellManager::Render(SimpleMath::Matrix InView)
 	mDirect3D->GetProj(Proj);
 	mGwEffect->SetProjection(Proj);
 	mGwEffect->SetView(InView);
+
 	for (GravityWellClass* element : mGwIndex)
 	{
 		SimpleMath::Matrix World = SimpleMath::Matrix::Identity;
-		SimpleMath::Vector3 newPos = element->GetPos();		
+		SimpleMath::Vector3 newPos = element->GetPos();
 		World = World.CreateTranslation(newPos);
 		mGwEffect->SetWorld(World);
-		
+
 		//Settup color for this Gw
 		SimpleMath::Color GwColor = element->GetColor();
 		//mGwEffect->SetColorAndAlpha(GwColor);
@@ -84,7 +90,6 @@ void GravityWellManager::Render(SimpleMath::Matrix InView)
 		{
 			mDirect3D->GetDeviceContext()->RSSetState(mStates->CullNone());
 		});
-		
 	}
 }
 
@@ -115,6 +120,7 @@ float GravityWellManager::GetGwRadius() const
 	return mGwRadius;
 }
 
+
 void GravityWellManager::AddGw(int InGwID, SimpleMath::Vector3 InGravityWellPos, SimpleMath::Color InGwColor)
 {
 	GravityWellClass *newGw = new GravityWellClass();
@@ -137,7 +143,7 @@ void GravityWellManager::RemoveGw(int GwID)
 
 void GravityWellManager::SetLocalID(int GwID)
 {
-	mLocalID = GwID;
+	mLocalPeerID = GwID;
 }
 
 void GravityWellManager::GwSetPos(int GwID, SimpleMath::Vector3 InGravityWellPos)
@@ -160,7 +166,7 @@ SimpleMath::Vector3 GravityWellManager::GwGetPos(int GwID)
 	{
 		if ((*iter)->GetGwID() == GwID)
 		{
-			return (*iter)->GetPos();			
+			return (*iter)->GetPos();
 		}
 		else
 		{
@@ -169,51 +175,88 @@ SimpleMath::Vector3 GravityWellManager::GwGetPos(int GwID)
 	}
 }
 
-void GravityWellManager::GwAddMove(int GwID, SimpleMath::Vector3 InMove)
+
+void GravityWellManager::GwAddMove(SimpleMath::Vector3 InMove)
 {
 	for (vector<GravityWellClass*>::iterator iter = mGwIndex.begin();
 		iter != mGwIndex.end(); ++iter)
 	{
-		if ((*iter)->GetGwID() == GwID)
+		if ((*iter)->GetGwID() == mLocalPeerID)
 		{
-			(*iter)->AddMove(InMove);
+			(*iter)->AddMove(InMove * mGWMovementGain);
 			break;
 		}
 	}
 }
 
-void GravityWellManager::GwAddAttractF(int GwID)
+void GravityWellManager::GwMoveForward()
 {
-	for(vector<GravityWellClass*>::iterator iter = mGwIndex.begin();
-		iter!=mGwIndex.end();++iter)
+	this->GwAddMove(SimpleMath::Vector3::Forward);
+}
+
+void GravityWellManager::GwMoveBackward()
+{
+	this->GwAddMove(SimpleMath::Vector3::Backward);
+}
+
+void GravityWellManager::GwMoveLeft()
+{
+	this->GwAddMove(SimpleMath::Vector3::Left);
+}
+
+void GravityWellManager::GwMoveRight()
+{
+	this->GwAddMove(SimpleMath::Vector3::Right);
+}
+
+void GravityWellManager::GwMoveByMouse(float mouseX, float mouseY)
+{
+	SimpleMath::Vector3 move = SimpleMath::Vector3(mouseX, 0.f, mouseY);
+	this->GwAddMove(move);
+}
+
+void GravityWellManager::GwMoveUp()
+{
+	this->GwAddMove(SimpleMath::Vector3::Up);
+}
+
+void GravityWellManager::GwMoveDown()
+{
+	this->GwAddMove(SimpleMath::Vector3::Down);
+}
+
+void GravityWellManager::GwAddAttractF()
+{
+	for (vector<GravityWellClass*>::iterator iter = mGwIndex.begin();
+		iter != mGwIndex.end(); ++iter)
 	{
-		if((*iter)->GetGwID() == GwID)
+		if ((*iter)->GetGwID() == mLocalPeerID)
 		{
-			(*iter)->AddForce(ForceGain);
+			(*iter)->AddForce(mGwForceGain);
 			break;
 		}
 	}
 }
 
-void GravityWellManager::GwAddRepellF(int GwID)
+void GravityWellManager::GwAddRepellF()
 {
 	for (vector<GravityWellClass*>::iterator iter = mGwIndex.begin();
 		iter != mGwIndex.end(); ++iter)
 	{
-		if ((*iter)->GetGwID() == GwID)
+		if ((*iter)->GetGwID() == mLocalPeerID)
 		{
-			(*iter)->AddForce(-ForceGain);
+			(*iter)->AddForce(-mGwForceGain);
 			break;
 		}
 	}
 }
 
-void GravityWellManager::ClearForce(int GwID)
+void GravityWellManager::ClearForce()
 {
 	for (vector<GravityWellClass*>::iterator iter = mGwIndex.begin();
 		iter != mGwIndex.end(); ++iter)
 	{
-		if ((*iter)->GetGwID() == GwID)
+		if ((*iter)->GetGwID() == mLocalPeerID)
 		{
 			(*iter)->SetForce(0.f);
 			break;
@@ -221,9 +264,14 @@ void GravityWellManager::ClearForce(int GwID)
 	}
 }
 
-std::vector<GravityWellClass*> GravityWellManager::GetGwIndex()
+std::vector<GravityWellClass*> GravityWellManager::GetGwIndex() const
 {
 	return mGwIndex;
+}
+
+int GravityWellManager::GetNumofGw() const
+{
+	return mGwIndex.size();
 }
 
 float GravityWellManager::GwGetForce(int GwID)
@@ -238,3 +286,4 @@ float GravityWellManager::GwGetForce(int GwID)
 		}
 	}
 }
+

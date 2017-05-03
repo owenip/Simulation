@@ -3,8 +3,9 @@
 #include "BallClass.h"
 
 
-ContactManifold::ContactManifold(): 
-mNumofPoint(0)
+
+ContactManifold::ContactManifold() :
+	mNumofPoint(0)
 {
 }
 
@@ -22,7 +23,7 @@ void ContactManifold::Add(ManifoldPoint &point)
 void ContactManifold::Clear()
 {
 	mPoints.clear();
-	mNumofPoint = 0;	
+	mNumofPoint = 0;
 }
 
 int ContactManifold::GetNumPoints() const
@@ -57,7 +58,7 @@ void ContactManifold::ResolveContact(float duration)
 		}
 
 		// Do we have anything worth resolving?
-		if (maxIndex == mNumofPoint) 
+		if (maxIndex == mNumofPoint)
 			break;
 
 		// Resolve this contact
@@ -70,7 +71,7 @@ void ContactManifold::ResolveContact(float duration)
 			if (mPoints[i].balls[0] == mPoints[maxIndex].balls[0])
 			{
 				mPoints[i].penetration -= move[0].Dot(mPoints[i].contactNormal);
- 			}
+			}
 			else if (mPoints[i].balls[0] == mPoints[maxIndex].balls[1])
 			{
 				mPoints[i].penetration -= move[1].Dot(mPoints[i].contactNormal);
@@ -112,7 +113,7 @@ void ContactManifold::ResolveVelocity(ManifoldPoint &mp)
 	}
 
 	// Calculate the new separating velocity
-	float newSepVelocity = -separatingVelocity * mp.restitution;
+	float newSepVelocity = -separatingVelocity * mp.restitution * mp.friction;
 
 	// Check the velocity build-up due to acceleration only
 	SimpleMath::Vector3 accCausedVelocity = mp.balls[0]->GetAccleration();
@@ -166,7 +167,7 @@ void ContactManifold::ResolveVelocity(ManifoldPoint &mp)
 
 void ContactManifold::ResolveInterpenetration(ManifoldPoint & mp)
 {
-	if (mp.penetration <= 0) 
+	if (mp.penetration <= 0)
 		return;
 
 	// The movement of each object is based on their inverse mass, so
@@ -204,7 +205,7 @@ void ContactManifold::ResolveInterpenetration(ManifoldPoint & mp)
 float ContactManifold::CalculateSeparatingVelocity(ManifoldPoint & mp) const
 {
 	SimpleMath::Vector3 relativeVelocity = mp.balls[0]->GetVelocity();
-	if(mp.balls[1])
+	if (mp.balls[1])
 	{
 		relativeVelocity -= mp.balls[1]->GetVelocity();
 	}

@@ -1,39 +1,26 @@
 #include "Simulation.h"
 
-Simulation::Simulation():
-	maxContacts(0), 
-calculateIterations(false),
-	mRestitution(0.5f)
+Simulation::Simulation()
 {
 }
 
 
 Simulation::~Simulation()
 {
-	this->Shutdown();
 }
 
 void Simulation::Initialise(shared_ptr<ConfigClass> InConfig)
-{	
+{
 	mConfig = InConfig;
-	//Initialise Ball Manager
-	mBallManager = make_shared<BallManagerClass>();
-	mBallManager->Initialise(mConfig);
-	//Initialise Gw Manager
-	mGwManager = make_shared<GravityWellManager>();
-	mGwManager->Initialise(mConfig->GetOwnerID(), mConfig->GetGwRadius());
+	mFriction = mConfig->GetFriction();
+	mElasticity = mConfig->GetElasticForce();
+	mGravity = SimpleMath::Vector3(0.f, -9.81f, 0.f);
+	TarPhyFreq = mConfig->GetTarPhyFreq();
+	mPhyTimer.SetFixedTimeStep(false);
+	mPeerID = mConfig->GetPeerID();
 
-	//Initialise Contact Generators
-	maxContacts = mConfig->GetNumberOfBalls() * 10;
 	mManifold = make_unique<ContactManifold>();
 
-	mRestitution = mConfig->GetElasticForce();
-
-	//Initialise Force generators and Fgen list
-	//Gravity Force Generator
-	mGravity = SimpleMath::Vector3(0.f, -9.81f, 0.f);
-	//Frictional Forces(Drag) Generator
-	mGroundFriction = mConfig->GetGroundFriction();	
 }
 
 void Simulation::Shutdown()
@@ -44,29 +31,57 @@ void Simulation::Shutdown()
 	mConfig.reset();
 }
 
-
-void Simulation::RunPhysics(float dt)
+void Simulation::Tick()
 {
-	mBallManager->ClearAccumulator();
+	mPhyTimer.Tick([&]()
+	{
+		if (!mConfig->GetIsPaused())
+		{
+			RunPhysics(mPhyTimer);			
+		}
+	});
+}
+
+void Simulation::RunPhysics(DX::StepTimer const& timer)
+{
+	timescale = mConfig->GettimeScale();
+	mFriction = mConfig->GetFriction();
+	mElasticity = mConfig->GetElasticForce();
+	
+	float dt = float(mPhyTimer.GetElapsedSeconds()) * timescale;
+
 	mManifold->Clear();
-
-	//1.Apply force
+	mBallManager->ClearAccumulator();
 	ApplyGravity();
-	//ApplyGroundFriction(dt);
-	//2.Integrate Object physics
-
+	ApplyGwForce();
 	mBallManager->Integrate(dt);
 
 	//Generate Contact
 	unsigned usedContacts = GenerateContacts();
 	//Resolve Contact
-	if(usedContacts > 0)
+	if (usedContacts > 0)
 	{
 		mManifold->ResolveContact(dt);
 	}
 
-	//Up Ball Rotation
 	mBallManager->Update(dt);
+}
+
+void Simulation::ModifyPhyFreq()
+{
+	mPhyTimer.SetFixedTimeStep(true);
+	TarPhyFreq = mConfig->GetTarPhyFreq();	
+	mPhyTimer.SetTargetElapsedSeconds(TarPhyFreq);
+}
+
+void Simulation::SetBallManagerPtr(shared_ptr<BallManagerClass> InBallManager)
+{
+	mBallManager = InBallManager;
+}
+
+void Simulation::SetGwManagerPtr(shared_ptr<GravityWellManager> InGwManager)
+{
+	mGwManager = InGwManager;
 }
 
 unsigned Simulation::GenerateContacts()
@@ -78,74 +93,83 @@ unsigned Simulation::GenerateContacts()
 }
 
 void Simulation::GroundBallCollision()
-{	
-	for (auto element : mBallManager->GetBallIndex())
+{
+	for (auto ball : mBallManager->GetBallIndex())
 	{
-		float y = element->GetPosition().y - element->GetRadius();
+		if (ball->GetOwenerID() != mPeerID)
+			continue;
+		float y = ball->GetPosition().y - ball->GetRadius();
 		if (y < 0.0f)
-		{	
+		{
 			ManifoldPoint contact;
 			contact.contactNormal = SimpleMath::Vector3::Up;
-			contact.balls[0] = element;
+			contact.balls[0] = ball;
 			contact.balls[1] = nullptr;
 			contact.penetration = -y;
-			contact.restitution = mRestitution;
+			contact.restitution = mElasticity;
+			contact.friction = mFriction;
 			mManifold->Add(contact);
 		}
 	}
 }
 
-void Simulation::BallBallCollision() const
+void Simulation::BallBallCollision()
 {
 	for (auto b1 : mBallManager->GetBallIndex())
-	{		
+	{
+		if (b1->GetOwenerID() != mPeerID)
+			continue;
 		for (auto b2 : mBallManager->GetBallIndex())
 		{
-			SimpleMath::Vector3 midline = b1->GetPosition() - b2->GetPosition();
-			float d = midline.LengthSquared();
-			float rSum = b1->GetRadius() + b2->GetRadius();
-			if (d> rSum* rSum)
-			{
+			if (b2->GetOwenerID() != mPeerID)
 				continue;
-			}
-			else
+			if ((b1->GetBallId() != b2->GetBallId()))
 			{
-				float size = midline.Length();
-				ManifoldPoint contact;
-				SimpleMath::Vector3 normal = midline * (1.f / size);
-				contact.contactNormal = normal;
-				contact.balls[0] = b1;
-				contact.balls[1] = b2;
-				contact.penetration = (b1->GetRadius() + b2->GetRadius() - size);
-				contact.restitution = mRestitution;
-				mManifold->Add(contact);
+				SimpleMath::Vector3 midline = b1->GetPosition() - b2->GetPosition();
+				float d = midline.LengthSquared();
+				float rSum = b1->GetRadius() + b2->GetRadius();
+				if (d > rSum* rSum)
+				{
+					continue;
+				}
+				else
+				{
+					float size = midline.Length();
+					ManifoldPoint contact;
+					SimpleMath::Vector3 normal = midline * (1.f / size);
+					contact.contactNormal = normal;
+					contact.balls[0] = b1;
+					contact.balls[1] = b2;
+					contact.penetration = (b1->GetRadius() + b2->GetRadius() - size);
+					contact.restitution = mElasticity;
+					contact.friction = mFriction;
+					mManifold->Add(contact);
+				}
 			}
 		}
 	}
 }
 
-void Simulation::WallBallCollision() const
+void Simulation::WallBallCollision()
 {
 	for (auto element : mBallManager->GetBallIndex())
 	{
+		if(element->GetOwenerID() != mPeerID)
+			continue;
 		SimpleMath::Vector3 d = element->GetPosition();
 		d.y = 0;
-		//d += Vector3(element->GetRadius(), 0.f, element->GetRadius());
 		float ballDistance = d.LengthSquared();
-		//float ballDistance = element->GetPosition().LengthSquared() + element->GetRadius() * element->GetRadius();
-		if (ballDistance >= (mConfig->GetSurfaceRadius()-element->GetRadius()) * (mConfig->GetSurfaceRadius() - element->GetRadius()))
-		{			
-			//Vector3 normal = element->GetPosition() + Vector3( element->GetRadius(), element->GetRadius(), element->GetRadius());
-			//Vector3 normal = element->GetVelocity();
-			//normal.Normalize();
-			//normal = -normal;
+		if (ballDistance >= (mConfig->GetSurfaceRadius() - element->GetRadius()) * (mConfig->GetSurfaceRadius() - element->GetRadius()))
+		{
+			
 			d.Normalize();
 			ManifoldPoint contact;
 			contact.contactNormal = -d;
 			contact.balls[0] = element;
 			contact.balls[1] = nullptr;
 			contact.penetration = sqrtf(ballDistance) - mConfig->GetSurfaceRadius();
-			contact.restitution = mRestitution;
+			contact.restitution = mElasticity;
+			contact.friction = mFriction;
 			mManifold->Add(contact);
 		}
 	}
@@ -153,69 +177,49 @@ void Simulation::WallBallCollision() const
 
 void Simulation::ApplyGravity()
 {
-	for (auto element : mBallManager->GetBallIndex())
+	for (auto ball : mBallManager->GetBallIndex())
 	{
-		SimpleMath::Vector3 force = element->GetForce();
-		//if (!element->HasFiniteMass()) continue;
-		if (element->GetPosition().y >= element->GetRadius() )
-		{
-			element->AddForce(mGravity);			
+		if (ball->GetOwenerID() != mPeerID)
+			continue;
+
+		ball->AddForce(SimpleMath::Vector3(-00.f, -9.81f * ball->GetMass(), 0.f));
+	}
+}
+
+void Simulation::ApplyGwForce()
+{
+	for (auto ball : mBallManager->GetBallIndex())
+	{
+		if (ball->GetOwenerID() != mPeerID)
+			continue; //Apply force to another peer!!!!
+		for (auto Gw : mGwManager->GetGwIndex())
+		{			
+			SimpleMath::Vector3 midline = ball->GetPosition() - Gw->GetPos();
+			float d = midline.LengthSquared();
+			float rSum = mConfig->GetGwRadius();
+			if (d > rSum* rSum)
+			{
+				continue;
+			}
+			float ApplyingForce = Gw->GetForce();
+			
+			if (ApplyingForce > 0)
+			{
+
+				//float size = midline.Length();
+				//SimpleMath::Vector3 normal = midline * (1.f / size);
+				midline.Normalize();
+				ball->AddForce(midline * ApplyingForce);
+			}
+			else 
+			{
+				midline = Gw->GetPos() - ball->GetPosition();
+				//float size = midline.Length();
+				//SimpleMath::Vector3 normal = midline * (1.f / size);
+				midline.Normalize();
+				ball->AddForce(-midline * ApplyingForce);
+			}
+
 		}	
 	}
-}
-
-void Simulation::ApplyGroundFriction(float dt)
-{
-	for (auto element : mBallManager->GetBallIndex())
-	{
-		SimpleMath::Vector3 force = element->GetVelocity();
-
-		if (element->GetPosition().y <= element->GetRadius())
-		{
-			element->AddForce(-mGravity);
-
-			if (force.x > 0.f || force.z > 0.f && force.y <= 0.f)
-			{
-				float dragCoeff = force.Length();
-				dragCoeff = mGroundFriction * dragCoeff;
-
-				force.Normalize();
-				force *= -dragCoeff;
-				//element->AddForce(force);
-			}
-		}
-	}
-}
-
-void Simulation::ApplyWellForce()
-{
-	for (auto Gw : mGwManager->GetGwIndex())
-	{
-
-	}
-}
-
-void Simulation::SetBallManager(shared_ptr<BallManagerClass> InBallManager)
-{
-	mBallManager = InBallManager;
-}
-
-shared_ptr<BallManagerClass> Simulation::GetBallManagerPtr() const
-{
-	return mBallManager;
-}
-
-std::shared_ptr<GravityWellManager> Simulation::GetGwManagerPtr() const
-{
-	return mGwManager;
-}
-
-void Simulation::SetRestitution(float restitustion)
-{
-	mRestitution = restitustion;
-}
-
-float Simulation::GetRestitution() const
-{
-	return mRestitution;
 }

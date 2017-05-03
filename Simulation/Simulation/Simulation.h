@@ -9,55 +9,44 @@ public:
 	Simulation();
 	~Simulation();
 
-	void Initialise(shared_ptr<ConfigClass> InBallManager);
+	void Initialise(shared_ptr<ConfigClass> InConfig);
 	void Shutdown();
 
-	void StartFrame();
-	void RunPhysics(float dt);
+	void Tick();
+	void RunPhysics(DX::StepTimer const& timer);
+	
 
-	void SetBallManager(shared_ptr<BallManagerClass> InBallManager);
-	shared_ptr<BallManagerClass> GetBallManagerPtr() const;
+	void ModifyPhyFreq();
 
-	std::shared_ptr<GravityWellManager> GetGwManagerPtr() const;
-
-	void	SetRestitution(float restitustion);
-	float	GetRestitution() const;
+	void SetBallManagerPtr(shared_ptr<BallManagerClass> InBallManager);
+	void SetGwManagerPtr(shared_ptr<GravityWellManager> InGwManager);
 
 private:
 	unsigned GenerateContacts();
+
 	void GroundBallCollision();
-	void BallBallCollision() const;
-	void WallBallCollision() const;
+	void BallBallCollision();
+	void WallBallCollision();
 
-	//Force
 	void ApplyGravity();
-	void ApplyGroundFriction(float dt);
-	void ApplyGroundFriction(BallClass* Ball);
-	void ApplyWellForce();
-
-
-protected:
-	//Holds the maximum number of contacts allowed (the  size of the contacts array)
-	unsigned maxContacts;
-	std::unique_ptr<ContactManifold> mManifold;
-
-	
-	bool calculateIterations;
+	void ApplyGwForce();
 
 private:
 	std::shared_ptr<BallManagerClass> mBallManager;
 	std::shared_ptr<GravityWellManager> mGwManager;
 	std::shared_ptr<ConfigClass> mConfig;
+	int mPeerID;
+	//Timer
+	DX::StepTimer mPhyTimer;
+	float TarPhyFreq;
+	float timescale;
 
-	float mRestitution;
+	std::unique_ptr<ContactManifold> mManifold;
+
+
+	//Forces Properties
+	float mFriction;
+	float mElasticity;
 	SimpleMath::Vector3 mGravity;
-
-	float mGroundFriction;
-	float *mDragCoeffificent[3];
-
-	
-	
-
-
 };
 

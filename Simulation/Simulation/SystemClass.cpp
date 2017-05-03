@@ -1,17 +1,12 @@
 #include "pch.h"
 #include "SystemClass.h"
-
-
-
-SystemClass::SystemClass():
+#include <process.h>
+SystemClass::SystemClass() :
 	m_applicationName(nullptr),
 	m_hinstance(nullptr),
 	m_hwnd(nullptr),
-	mConfig(nullptr),
-	mGraphic(nullptr),
-	mTimer(nullptr), 
 	mAppPaused(false)
-	
+
 {
 }
 
@@ -22,7 +17,7 @@ SystemClass::~SystemClass()
 }
 
 bool SystemClass::Initialize()
-{	
+{
 	bool result = false;
 
 	//Initialise Config Class
@@ -32,13 +27,13 @@ bool SystemClass::Initialize()
 		MessageBoxA(m_hwnd, "Unable to initialise the config class.", "Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	result = mConfig->Initialize();
-	if (!result)
+	//result = mConfig->Initialize();
+	/*if (!result)
 	{
 		MessageBoxA(m_hwnd, "Unable to initialise the config class.", "Error", MB_OK | MB_ICONERROR);
 		return false;
-	}
-	
+	}*/
+
 	//Initialse Window 
 	if (!InitializeWindow(mConfig->GetScreenWidth(), mConfig->GetScreenHeight()))
 	{
@@ -46,59 +41,40 @@ bool SystemClass::Initialize()
 		return false;
 	}
 
-	//Timer initialse
-	mTimer = make_shared<TimerClass>();
-	if (!mTimer)
-	{
-		return false;
-	}
-	result = mTimer->Initialize();
-	if (!result)
-	{
-		MessageBox(m_hwnd, L"Could not initialize Timer.", L"Error", MB_OK);
-		return false;
-	}
-
 	//Initialise Graphic Class
-	mGraphic = new GraphicClass();
-	result = mGraphic->Initialize(m_hwnd, mConfig, mTimer);
+	result = mGraphic.Initialize(m_hwnd, mConfig);
 	if (!result)
 	{
 		MessageBoxA(m_hwnd, "Unable to initialise the graphic class!", "Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
 
-	//Set Gw OwnerID
-	mConfig->SetOwnerID(0);
+	//Simulation
+	//mSimulation = make_unique<Simulation>();
+	mSimulation.Initialise(mConfig);
 
-	//Initialise Simulation Class
-	mSimulation = make_shared<Simulation>();
-	mSimulation->Initialise(mConfig);
-	//Passing Models Class to graphic after being initialising in Simulation Class
-	mGraphic->SetSimulationPtr(mSimulation);
-	mGraphic->SetBallManagerPtr(mSimulation->GetBallManagerPtr());
-	mGraphic->SetGwManagerPtr(mSimulation->GetGwManagerPtr());
+	//Ball Manager
+	mBallManger = make_shared<BallManagerClass>();
+	mBallManger->Initialise(mConfig);
+	mGraphic.SetBallManagerPtr(mBallManger);
+	mSimulation.SetBallManagerPtr(mBallManger);
 
-	
+	//GravityManager
+	mGwManager = make_shared<GravityWellManager>();
+	mGwManager->Initialise(mConfig);
+	mGraphic.SetGwManagerPtr(mGwManager);
+	mSimulation.SetGwManagerPtr(mGwManager);
 
 	return true;
 }
 
 void SystemClass::Shutdown()
 {
-	mSimulation.reset();
-	if (mGraphic)
-	{
-		mGraphic->Shutdown();
-		delete mGraphic;
-		mGraphic = nullptr;
-	}
+	mBallManger.reset();
+	mGwManager.reset();
+	//mSimulation.reset();
+	mGraphic;
 	mConfig.reset();
-	/*if (mConfig)
-	{
-		delete mConfig;
-		mConfig = nullptr;
-	}*/
 }
 
 void SystemClass::Run()
@@ -108,10 +84,10 @@ void SystemClass::Run()
 	MSG msg;
 	// Initialize the message structure.
 	ZeroMemory(&msg, sizeof(MSG));
-	
+
 	// Loop until there is a quit message from the window or the user.
 	done = false;
-	mTimer->Reset();
+	
 	while (!done)
 	{
 		// Handle the windows messages.
@@ -126,34 +102,32 @@ void SystemClass::Run()
 			done = true;
 		}
 		else
-		{
-			mTimer->Tick();
-						
-			CalculateFrameStats();
-
+		{		
 			result = Update();
 			if (!result)
 			{
 				done = true;
-			}			
-			
+			}
 		}
 	}
 }
 
 
+
+
 bool SystemClass::Update()
 {
-	bool result;
-	float dt = mTimer->DeltaTime();
+	//mGraphic.Tick();	
+	//mSimulation.Tick();
 
-	if (!mConfig->GetIsPaused())
-	{		
-		mSimulation->RunPhysics(dt);
-	}
+	std::thread thread1(&GraphicClass::Tick, &mGraphic);
+	thread1.native_handle();
+	SetThreadAffinityMask(thread1.native_handle(), 1);	
+	std::thread thread2(&Simulation::Tick, &mSimulation);
+	SetThreadAffinityMask(thread2.native_handle(), 4);
 
-	result = mGraphic->Update(dt);
-
+	thread1.join();
+	thread2.join();
 	return true;
 }
 
@@ -179,6 +153,7 @@ bool SystemClass::InitializeWindow(int screenWidth, int screenHeight)
 	wc.lpfnWndProc = WndProc;
 	wc.cbClsExtra = 0;
 	wc.cbWndExtra = 0;
+
 	wc.hInstance = m_hinstance;
 	wc.hIcon = LoadIcon(nullptr, IDI_WINLOGO);
 	wc.hIconSm = wc.hIcon;
@@ -193,7 +168,7 @@ bool SystemClass::InitializeWindow(int screenWidth, int screenHeight)
 	{
 		MessageBoxA(NULL, "Unable to register the window class.", "Error", MB_OK | MB_ICONERROR);
 	}
-	
+
 	// Setup the screen settings depending on whether it is running in full screen or in windowed mode.
 	if (mConfig->CheckFullScreen())
 	{
@@ -212,7 +187,7 @@ bool SystemClass::InitializeWindow(int screenWidth, int screenHeight)
 		posX = posY = 0;
 	}
 	else
-	{	
+	{
 		// Place the window in the middle of the screen.
 		posX = (GetSystemMetrics(SM_CXSCREEN) - screenWidth) / 2;
 		posY = (GetSystemMetrics(SM_CYSCREEN) - screenHeight) / 2;
@@ -265,85 +240,85 @@ void SystemClass::ShutdownWindows()
 
 void SystemClass::CalculateFrameStats()
 {
-	// Code computes the average frames per second, and also the 
-	// average time it takes to render one frame.  These stats 
-	// are appended to the window caption bar.
+	//// Code computes the average frames per second, and also the 
+	//// average time it takes to render one frame.  These stats 
+	//// are appended to the window caption bar.
 
-	static int frameCnt = 0;
-	static float timeElapsed = 0.0f;
+	//static int frameCnt = 0;
+	//static float timeElapsed = 0.0f;
 
-	frameCnt++;
+	//frameCnt++;
 
-	// Compute averages over one second period.
-	if ((mTimer -> TotalTime() - timeElapsed) >= 1.0f)
-	{
-		float fps = static_cast<float>(frameCnt); // fps = frameCnt / 1
-		float mspf = 1000.0f / fps;
+	//// Compute averages over one second period.
+	//if ((mTimer->TotalTime() - timeElapsed) >= 1.0f)
+	//{
+	//	float fps = static_cast<float>(frameCnt); // fps = frameCnt / 1
+	//	float mspf = 1000.0f / fps;
 
-		std::wostringstream outs;
-		outs.precision(6);
-		outs << mMainWndCaption << L"    "
-			<< L"FPS: " << fps << L"    "
-			<< L"Frame Time: " << mspf << L" (ms)";
-		SetWindowText(m_hwnd, outs.str().c_str());
+	//	std::wostringstream outs;
+	//	outs.precision(6);
+	//	outs << mMainWndCaption << L"    "
+	//		<< L"FPS: " << fps << L"    "
+	//		<< L"Frame Time: " << mspf << L" (ms)";
+	//	SetWindowText(m_hwnd, outs.str().c_str());
 
-		// Reset for next average.
-		frameCnt = 0;
-		timeElapsed += 1.0f;
-	}
+	//	// Reset for next average.
+	//	frameCnt = 0;
+	//	timeElapsed += 1.0f;
+	//}
 }
 
 
 LRESULT CALLBACK SystemClass::MessageHandler(const HWND  hwnd, const UINT umsg, const WPARAM wparam, const LPARAM lparam)
 {
 	switch (umsg)
-	{		
-		case WM_ACTIVATE:
+	{
+	case WM_ACTIVATE:
+	{
+		if (LOWORD(wparam) == WA_INACTIVE)
 		{
-			if (LOWORD(wparam) == WA_INACTIVE)
-			{
-				//Check window is losing focus				
-				if(mGraphic)
-					mGraphic->OnPause();
-			}
-			else
-			{
-				//Check window is having focus				
-				Keyboard::ProcessMessage(umsg, wparam, lparam);
-				Mouse::ProcessMessage(umsg, wparam, lparam);
-			}
-			return 0;
-				
+			//Check window is losing focus				
+			
+			mGraphic.OnPause();
 		}
-		case WM_INPUT:
-		case WM_MOUSEMOVE:
-		case WM_LBUTTONDOWN:
-		case WM_LBUTTONUP:
-		case WM_RBUTTONDOWN:
-		case WM_RBUTTONUP:
-		case WM_MBUTTONDOWN:
-		case WM_MBUTTONUP:
-		case WM_MOUSEWHEEL:
-		case WM_XBUTTONDOWN:
-		case WM_XBUTTONUP:
-		case WM_MOUSEHOVER:
+		else
 		{
-			Mouse::ProcessMessage(umsg, wparam, lparam);
-			return 0;
-		}
-		case WM_KEYDOWN:
-		case WM_SYSKEYDOWN:
-		case WM_KEYUP:
-		case WM_SYSKEYUP:
-		{
+			//Check window is having focus				
 			Keyboard::ProcessMessage(umsg, wparam, lparam);
-			return 0;
+			Mouse::ProcessMessage(umsg, wparam, lparam);
 		}
-		// Any other messages send to the default message handler as our application won't make use of them.
-		default:
-		{
-			return DefWindowProc(hwnd, umsg, wparam, lparam);
-		}
+		return 0;
+
+	}
+	case WM_INPUT:
+	case WM_MOUSEMOVE:
+	case WM_LBUTTONDOWN:
+	case WM_LBUTTONUP:
+	case WM_RBUTTONDOWN:
+	case WM_RBUTTONUP:
+	case WM_MBUTTONDOWN:
+	case WM_MBUTTONUP:
+	case WM_MOUSEWHEEL:
+	case WM_XBUTTONDOWN:
+	case WM_XBUTTONUP:
+	case WM_MOUSEHOVER:
+	{
+		Mouse::ProcessMessage(umsg, wparam, lparam);
+		return 0;
+	}
+	case WM_KEYDOWN:
+	case WM_SYSKEYDOWN:
+	case WM_KEYUP:
+	case WM_SYSKEYUP:
+	{
+		Keyboard::ProcessMessage(umsg, wparam, lparam);
+		return 0;
+	}
+	// Any other messages send to the default message handler as our application won't make use of them.
+	default:
+	{
+		return DefWindowProc(hwnd, umsg, wparam, lparam);
+	}
 	}
 }
 
@@ -356,24 +331,24 @@ LRESULT CALLBACK WndProc(const HWND hwnd, const UINT umessage, const WPARAM wpar
 	switch (umessage)
 	{
 		// Check if the window is being destroyed.
-		case WM_DESTROY:
-		{
-			PostQuitMessage(0);
-			return 0;
-		}
+	case WM_DESTROY:
+	{
+		PostQuitMessage(0);
+		return 0;
+	}
 
-		// Check if the window is being closed.
-		case WM_CLOSE:
-		{
-			PostQuitMessage(0);
-			return 0;
-		}
+	// Check if the window is being closed.
+	case WM_CLOSE:
+	{
+		PostQuitMessage(0);
+		return 0;
+	}
 
-		// All other messages pass to the message handler in the system class.
-		default:
-		{
-			return ApplicationHandle->MessageHandler(hwnd, umessage, wparam, lparam);
-		}
+	// All other messages pass to the message handler in the system class.
+	default:
+	{
+		return ApplicationHandle->MessageHandler(hwnd, umessage, wparam, lparam);
+	}
 	}
 }
 

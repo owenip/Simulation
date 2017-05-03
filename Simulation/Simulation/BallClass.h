@@ -14,9 +14,7 @@ public:
 	                float damping);
 
 	void Integrate(float duration);
-
-	void IntegrateRK(float dt);
-
+	void IntegrateRK(float duration);
 
 	bool CollisionWithBall(BallClass* b2, float dt);
 	bool CollisionWithGround(float dt);
@@ -60,6 +58,7 @@ public:
 
 	void GetAccleration(SimpleMath::Vector3 &acceleration);
 	SimpleMath::Vector3 GetAccleration() const;
+	void AddAcceleration(const SimpleMath::Vector3 &acce);
 
 	void ClearAccumulator();
 	void AddForce(const SimpleMath::Vector3 &force);
@@ -75,6 +74,7 @@ public:
 	SimpleMath::Vector3 mLastPosition;
 private:
 	void recalculate();
+	
 
 
 private:
@@ -83,71 +83,50 @@ private:
 	
 
 	//Primary Physics State
-	SimpleMath::Vector3 mPosition;
-	SimpleMath::Quaternion mOrientation;	///< the orientation of the cube represented by a unit quaternion.
-	SimpleMath::Vector3 mMomentum;			///< the momentum of the cube in kilogram meters per second.
-	SimpleMath::Vector3 mAngularMomentum;	///< angular momentum vector.
-
+	SimpleMath::Vector3 mPosition;	
 	SimpleMath::Vector3 mAcceleration;
 	SimpleMath::Vector3 mForceAccum;
 
 	//Secondary State
 	SimpleMath::Vector3 mVelocity;
-	SimpleMath::Quaternion mSpin;
-	SimpleMath::Vector3 mAngularVelocity;
-	SimpleMath::Matrix bodyToWorld;
-	SimpleMath::Matrix worldToBody;
+
 
 	//Constant State
 	int mBallID;
 	int mOwenerID;
 	float mRadius;
 	SimpleMath::Color mColour;
-
 	float mInverseMass; //Inverse Mass = 1/m
-	float mInertiaTensor; ///< inertia tensor of the cube (i have simplified it to a single value due to the mass properties a cube).
-	float mInverseInertiaTensor; ///< inverse inertia tensor used to convert angular momentum to angular velocity.
-
 	//0.995 as no drag
 	float mDamping;
+	bool mContended;
+	bool mTransferable;
 
 	struct Derivative
 	{
 		SimpleMath::Vector3 velocity;                ///< velocity is the derivative of position.
-		SimpleMath::Vector3 force;                   ///< force in the derivative of momentum.
-		SimpleMath::Quaternion spin;                ///< spin is the derivative of the orientation quaternion.
-		SimpleMath::Vector3 torque;                  ///< torque is the derivative of angular momentum.
+		SimpleMath::Vector3 acceleration;            ///< force in the derivative of momentum.
 	};
 
-	static Derivative evaluate(const BallClass &ball, float t)
+	static Derivative evaluate(BallClass ball)
 	{
 		Derivative output;
 		output.velocity = ball.mVelocity;
-		output.spin = ball.mSpin;
-		forces(ball, t, output.force, output.torque);
+		output.acceleration = ball.mForceAccum * ball.mInverseMass;
 		return output;
 	}
 
-	static void forces(const BallClass &ball, float t, SimpleMath::Vector3 &force, SimpleMath::Vector3 &torque)
+	static Derivative evaluate(BallClass &initial, float dt, const Derivative &d)
 	{
-		//// attract towards origin
-
-		//force = -10 * ball.mPosition;
-
-		//// sine force to add some randomness to the motion
-
-		//force.x += 10 * sin(t*0.9f + 0.5f);
-		//force.y += 11 * sin(t*0.5f + 0.4f);
-		//force.z += 12 * sin(t*0.7f + 0.9f);
-
-		//// sine torque to get some spinning action
-
-		//torque.x = 1.0f * sin(t*0.9f + 0.5f);
-		//torque.y = 1.1f * sin(t*0.5f + 0.4f);
-		//torque.z = 1.2f * sin(t*0.7f + 0.9f);
-
-		// damping torque so we dont spin too fast
-
-		torque -= 0.2f * ball.mAngularVelocity;
+		initial.mPosition += d.velocity * dt;
+		initial.mVelocity += d.acceleration*dt;
+		initial.recalculate();
+		
+		Derivative output;
+		output.velocity = initial.mVelocity;
+		output.acceleration = initial.mForceAccum * initial.mInverseMass;
+		return output;
 	}
+
+	
 };

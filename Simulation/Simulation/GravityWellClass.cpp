@@ -4,7 +4,6 @@
 
 GravityWellClass::GravityWellClass()
 {
-	
 }
 
 
@@ -19,6 +18,7 @@ void GravityWellClass::Initialize(int InID, SimpleMath::Vector3 InPosition, Simp
 	mGwColor = InColor;
 	mForce = 0.f;
 }
+
 
 void GravityWellClass::UpdatePos(SimpleMath::Vector3 InPosition)
 {
@@ -39,6 +39,7 @@ SimpleMath::Color GravityWellClass::GetColor() const
 {
 	return mGwColor;
 }
+
 
 void GravityWellClass::SetForce(float InForce)
 {
@@ -73,4 +74,14 @@ SimpleMath::Vector3 GravityWellClass::GetPos() const
 void GravityWellClass::AddMove(SimpleMath::Vector3 move)
 {
 	mGravityWellPos += move;
+}
+
+void GravityWellClass::SetApplyingForce(bool inVal)
+{
+	mApplyingForce = inVal;
+}
+
+bool GravityWellClass::GetApplyingForce() const
+{
+	return mApplyingForce;
 }

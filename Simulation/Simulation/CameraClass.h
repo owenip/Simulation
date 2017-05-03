@@ -52,8 +52,8 @@ private:
 	SimpleMath::Matrix mProj;
 
 	float mDsitanceFromTarget;
-	const float mMinDistFromTarget = 0.50f;
-	const float mMaxDistFromTarget = 500.0f;
+	const float mMinDistFromTarget = 1.0f;
+	const float mMaxDistFromTarget = 50.0f;
 	float mHeightfromTarget;
 	
 	float mRotationRad;
