@@ -26,6 +26,8 @@ private:
 	unsigned GenerateContacts();
 
 	void GroundBallCollision();
+	void GroundBallCollision(std::vector<ManifoldPoint> &vec_private);
+
 	void BallBallCollision();
 	void WallBallCollision();
 

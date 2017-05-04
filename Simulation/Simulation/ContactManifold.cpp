@@ -7,6 +7,7 @@
 ContactManifold::ContactManifold() :
 	mNumofPoint(0)
 {
+	mPoints.reserve(100000);
 }
 
 
@@ -18,6 +19,11 @@ void ContactManifold::Add(ManifoldPoint &point)
 {
 	mPoints.push_back(point);
 	++mNumofPoint;
+}
+
+void ContactManifold::Add(std::vector<ManifoldPoint> &Inpoints)
+{
+	this->mPoints.insert(mPoints.end(), Inpoints.begin(), Inpoints.end());
 }
 
 void ContactManifold::Clear()

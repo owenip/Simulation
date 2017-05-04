@@ -26,6 +26,7 @@ public:
 	~ContactManifold();
 
 	void Add(ManifoldPoint &point);
+	void Add(std::vector<ManifoldPoint> &Inpoints);
 	void Clear();
 
 	std::vector<ManifoldPoint>* GetPoints();

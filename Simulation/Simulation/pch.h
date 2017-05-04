@@ -47,9 +47,6 @@ using namespace DirectX;
 #include "SimpleMath.h"
 #include "WICTextureLoader.h"
 
-//OpenMP
-#include <omp.h>
-
 //AntTweakBar
 #include <AntTweakBar.h>
 

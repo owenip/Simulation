@@ -96,60 +96,57 @@ void Simulation::SetGwManagerPtr(shared_ptr<GravityWellManager> InGwManager)
 
 unsigned Simulation::GenerateContacts()
 {
-	GroundBallCollision();
+	std::vector<ManifoldPoint> temp1;
+	GroundBallCollision(temp1);
+	mManifold.Add(temp1);
+	//GroundBallCollision();
 	BallBallCollision();
 	WallBallCollision();
 	return mManifold.GetNumPoints();
 }
 
 void Simulation::GroundBallCollision()
-{
-	std::vector<ManifoldPoint> *Points = mManifold.GetPoints();
-	#pragma omp parallel
-	{
-		std::vector<ManifoldPoint> vec_private;
-		#pragma omp for nowait //fill vec_private in parallel
-		//for (auto ball : mBallManager->GetBallIndex())
-		//{						
-		//	if (ball->GetOwenerID() != mPeerID)
-		//		continue;
-		//	float y = ball->GetPosition().y - ball->GetRadius();
-		//	if (y < 0.0f)
-		//	{
-		//		ManifoldPoint contact;
-		//		contact.contactNormal = SimpleMath::Vector3::Up;
-		//		contact.balls[0] = ball;
-		//		contact.balls[1] = nullptr;
-		//		contact.penetration = -y;
-		//		contact.restitution = mElasticity;
-		//		contact.friction = mFriction;
-		//		vec_private.push_back(contact);
-		//		//mManifold->Add(contact);
-		//	}
-		//}	
-		for(int i = 0; i< mBallManager->GetBallIndex().size(); i++)
+{	
+	for (auto ball : mBallManager->GetBallIndex())
+	{						
+		if (ball->GetOwenerID() != mPeerID)
+			continue;
+		float y = ball->GetPosition().y - ball->GetRadius();
+		if (y < 0.0f)
 		{
-			if (mBallManager->GetBallIndex()[i]->GetOwenerID() != mPeerID)
-			{
-				continue;
-			}
-			float y = mBallManager->GetBallIndex()[i]->GetPosition().y - mBallManager->GetBallIndex()[i]->GetRadius();
-			if (y < 0.0f)
-			{
-				ManifoldPoint contact;
-				contact.contactNormal = SimpleMath::Vector3::Up;
-				contact.balls[0] = mBallManager->GetBallIndex()[i];
-				contact.balls[1] = nullptr;
-				contact.penetration = -y;
-				contact.restitution = mElasticity;
-				contact.friction = mFriction;
-				vec_private.push_back(contact);
-				//mManifold->Add(contact);
-			}
-			
+			ManifoldPoint contact;
+			contact.contactNormal = SimpleMath::Vector3::Up;
+			contact.balls[0] = ball;
+			contact.balls[1] = nullptr;
+			contact.penetration = -y;
+			contact.restitution = mElasticity;
+			contact.friction = mFriction;				
+			mManifold.Add(contact);
 		}
-		#pragma omp critical		
-		Points->insert(Points->end(), vec_private.begin(), vec_private.end());
+	}			
+}
+
+
+void  Simulation::GroundBallCollision(std::vector<ManifoldPoint> &vec_private)
+{	
+	for (int i = 0; i< mBallManager->GetBallIndex().size(); i++)
+	{
+		if (mBallManager->GetBallIndex()[i]->GetOwenerID() != mPeerID)
+		{
+			continue;
+		}
+		float y = mBallManager->GetBallIndex()[i]->GetPosition().y - mBallManager->GetBallIndex()[i]->GetRadius();
+		if (y < 0.0f)
+		{
+			ManifoldPoint contact;
+			contact.contactNormal = SimpleMath::Vector3::Up;
+			contact.balls[0] = mBallManager->GetBallIndex()[i];
+			contact.balls[1] = nullptr;
+			contact.penetration = -y;
+			contact.restitution = mElasticity;
+			contact.friction = mFriction;
+			vec_private.push_back(contact);
+		}
 	}
 }
 
