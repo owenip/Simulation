@@ -140,6 +140,7 @@ bool SystemClass::InitializeWindow(int screenWidth, int screenHeight)
 	DEVMODE dmScreenSettings;
 	int posX, posY;
 
+	
 
 	// Get an external pointer to this object.	
 	ApplicationHandle = this;
@@ -200,6 +201,8 @@ bool SystemClass::InitializeWindow(int screenWidth, int screenHeight)
 	m_hwnd = CreateWindowEx(WS_EX_APPWINDOW, m_applicationName, mMainWndCaption.c_str(),
 		WS_OVERLAPPEDWINDOW,
 		posX, posY, screenWidth, screenHeight, nullptr, nullptr, m_hinstance, nullptr);
+
+	
 
 	//Check if window created
 	if (!m_hwnd)

@@ -1,5 +1,6 @@
 #pragma once
 // Win32
+#define _CRT_SECURE_NO_DEPRECATE
 #include <windows.h>
 #include <Winuser.h>
 #include <mmsystem.h>

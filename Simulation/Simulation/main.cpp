@@ -3,11 +3,14 @@
 
 int WINAPI WinMain(const HINSTANCE, const HINSTANCE, const PSTR, const int)
 {	
+	
+	//AllocConsole();
+	//FILE *stream;
+	//freopen_s(&stream, "CONOUT$", "w", stdout);
 
-#ifdef 	_OPENMP
-	cout <<  "OpenMP enabled"  << endl;
-#endif
-
+	AllocConsole();
+	FILE* new_stdout;
+	freopen_s(&new_stdout, "CONOUT$", "w", stdout);
 
 	SetThreadAffinityMask(GetCurrentThread(),0b1);
 	bool result;

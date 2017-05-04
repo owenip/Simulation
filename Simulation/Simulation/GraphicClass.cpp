@@ -169,8 +169,6 @@ bool GraphicClass::Update(DX::StepTimer const& timer)
 	//mBallManager->Integrate(dt);
 	//CheckInput();
 	
-	
-
 	return true;
 }
 
@@ -242,20 +240,24 @@ bool GraphicClass::InitAntTweak(const HWND hwnd)
 	TwWindowSize(mScreenWidth, mScreenHeight);
 
 	mATBar = TwNewBar("AntTweakBar");
+	TwDefine(" AntTweakBar movable=false");
+	TwDefine(" AntTweakBar size='240 320'");
+	TwDefine(" TW_HELP visible=false");
+
 	int barSize[2] = { mScreenWidth / 4, mScreenHeight / 4 };
 	TwSetParam(mATBar, nullptr, "size", TW_PARAM_INT32, 2, barSize);
 	//Non-Changable variables
 	TwAddVarRW(mATBar, "Actual FPS", TW_TYPE_DOUBLE, &mActualFPS, "");
-	TwAddVarRW(mATBar, "No. of balls owned by this peer", TW_TYPE_INT32, &mNumberOfBalls, "min=0 max=64000");
-	TwAddVarRW(mATBar, "No. of balls currently contended", TW_TYPE_INT32, nullptr, "");
+	TwAddVarRW(mATBar, "Balls ownwed by this peer", TW_TYPE_INT32, &mNumberOfBalls, "min=0 max=64000");
+	TwAddVarRW(mATBar, "Balls contended", TW_TYPE_INT32, nullptr, "");
 	TwAddVarRW(mATBar, "Total number of balls", TW_TYPE_INT32, &mNumberOfBalls, "");
-	TwAddVarRW(mATBar, "Magnitude of the applying force ", TW_TYPE_FLOAT, &mGwForce, "");
-	TwAddVarRW(mATBar, "Time step of each simulation loop per second", TW_TYPE_INT32, nullptr, "");
+	TwAddVarRW(mATBar, "Magnitude of applied force ", TW_TYPE_FLOAT, &mGwForce, "");
+	TwAddVarRW(mATBar, "Time step", TW_TYPE_INT32, nullptr, "");
 
 	//Changable variables
 	TwAddVarRW(mATBar, "The time scale", TW_TYPE_FLOAT, &timescale, "");
-	TwAddVarRW(mATBar, "1 - Elasticity", TW_TYPE_FLOAT, &mElasticity, "");
-	TwAddVarRW(mATBar, "1 - Frictional", TW_TYPE_FLOAT, &mFriction, "");
+	TwAddVarRW(mATBar, "Elasticity", TW_TYPE_FLOAT, &mElasticity, "");
+	TwAddVarRW(mATBar, "Frictional", TW_TYPE_FLOAT, &mFriction, "");
 	TwAddVarRW(mATBar, "Tar Physics Freq(in Hz)", TW_TYPE_FLOAT, &mTarPhysicsFreq, "");
 	TwAddVarRW(mATBar, "Tar graphics freq(in Hz)", TW_TYPE_FLOAT, &mTarGraphicFreq, "");
 	TwAddVarRW(mATBar, "Tar networking freq(in Hz)", TW_TYPE_FLOAT, &mTarNetowrkFreq, "");
