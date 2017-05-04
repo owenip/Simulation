@@ -52,5 +52,7 @@ private:
 	std::vector<ManifoldPoint> mPoints;
 	int mNumofPoint;
 	float mDuration;
+
+	std::mutex mPtmutex;
 };
 

@@ -17,12 +17,14 @@ ContactManifold::~ContactManifold()
 
 void ContactManifold::Add(ManifoldPoint &point)
 {
+	std::lock_guard<std::mutex> pt_guard(mPtmutex);
 	mPoints.push_back(point);
 	++mNumofPoint;
 }
 
 void ContactManifold::Add(std::vector<ManifoldPoint> &Inpoints)
 {
+	std::lock_guard<std::mutex> pt_guard(mPtmutex);
 	this->mPoints.insert(mPoints.end(), Inpoints.begin(), Inpoints.end());
 }
 

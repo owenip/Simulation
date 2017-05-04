@@ -436,7 +436,7 @@ void GraphicClass::CheckInput()
 	if (mouse.leftButton && mouse.rightButton)
 	{
 		//Cancel force
-		//Force = 0
+		//Force = 0		
 		mGwManager->ClearForce();
 	}
 	else if (mouse.leftButton)

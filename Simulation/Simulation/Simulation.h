@@ -22,7 +22,7 @@ public:
 	void SetBallManagerPtr(shared_ptr<BallManagerClass> InBallManager);
 	void SetGwManagerPtr(shared_ptr<GravityWellManager> InGwManager);
 
-private:
+
 	unsigned GenerateContacts();
 
 	void GroundBallCollision();

@@ -95,13 +95,23 @@ void Simulation::SetGwManagerPtr(shared_ptr<GravityWellManager> InGwManager)
 }
 
 unsigned Simulation::GenerateContacts()
-{
-	std::vector<ManifoldPoint> temp1;
-	GroundBallCollision(temp1);
-	mManifold.Add(temp1);
+{	
+	std::thread t_groundCollision([this] {GroundBallCollision(); });
+	SetThreadAffinityMask(t_groundCollision.native_handle(), 0b00001000);
+
+	std::thread t_BallBallCollision([this] {BallBallCollision(); });
+	SetThreadAffinityMask(t_BallBallCollision.native_handle(), 0b00010000);
+
+	std::thread t_WallBallCollision([this] {WallBallCollision(); });
+	SetThreadAffinityMask(t_WallBallCollision.native_handle(), 0b01000000);
+
 	//GroundBallCollision();
-	BallBallCollision();
-	WallBallCollision();
+	//BallBallCollision();
+	//WallBallCollision();
+
+	t_groundCollision.join();
+	t_BallBallCollision.join();
+	t_WallBallCollision.join();
 	return mManifold.GetNumPoints();
 }
 
@@ -245,7 +255,7 @@ void Simulation::ApplyGwForce()
 				//float size = midline.Length();
 				//SimpleMath::Vector3 normal = midline * (1.f / size);
 				midline.Normalize();
-				ball->AddForce(midline * ApplyingForce);
+				ball->AddForce(midline * ApplyingForce );
 			}
 			else 
 			{

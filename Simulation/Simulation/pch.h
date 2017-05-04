@@ -21,6 +21,7 @@
 #include <bemapiset.h>
 #include <profileapi.h>
 #include <thread>
+#include<mutex>
 
 // DirectX
 #include <d3d11.h>
