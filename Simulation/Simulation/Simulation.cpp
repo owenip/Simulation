@@ -132,6 +132,16 @@ void Simulation::GroundBallCollision()
 			contact.restitution = mElasticity;
 			contact.friction = mFriction;				
 			mManifold.Add(contact);
+
+			SimpleMath::Vector3 Vel = ball->GetVelocity();
+			if (Vel.y < 0.5f && Vel.y > -0.5f)
+			{
+				Vel.y = 0.f;
+				ball->SetVelocity(Vel);
+				SimpleMath::Vector3 mg(-0.f, -9.81f * ball->GetMass(), 0.f);				
+				SimpleMath::Vector3 FrictionForce = mFriction * mg.Length() * -Vel;
+				ball->AddForce(FrictionForce);
+			}
 		}
 	}			
 }
@@ -156,6 +166,8 @@ void  Simulation::GroundBallCollision(std::vector<ManifoldPoint> &vec_private)
 			contact.restitution = mElasticity;
 			contact.friction = mFriction;
 			vec_private.push_back(contact);
+
+			
 		}
 	}
 }

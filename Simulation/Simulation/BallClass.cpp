@@ -31,7 +31,7 @@ BallClass::BallClass(int BallID, int OwenerID, float Radius, float mass, SimpleM
 	mAcceleration = SimpleMath::Vector3::Zero;
 	mForceAccum = SimpleMath::Vector3::Zero;
 	mVelocity = SimpleMath::Vector3::Zero;
-	mDamping = 0.995f;
+	mDamping = 0.9f;
 	mTransferable = false;
 }
 
@@ -66,6 +66,9 @@ void BallClass::Integrate(float duration)
 
 	this->mLastPosition = this->mPosition;
 	// Update linear position.
+
+
+
 	this->mPosition += this->mVelocity * duration;
 
 	// Work out the acceleration from the force.
@@ -79,6 +82,20 @@ void BallClass::Integrate(float duration)
 	this->mVelocity *= powf(this->mDamping, duration);
 	//mVelocity *= mDamping;
 
+
+	//if (mPosition.y <= mRadius)
+	//{
+	//	if (mVelocity.y < 0.5f && mVelocity.y > -0.5f)
+	//	{
+	//		if ((mVelocity.x < 0.1f && mVelocity.x > -0.1f) || (mVelocity.z < 0.1f && mVelocity.z > -0.1f))
+	//		{
+	//			//float  resultingVel = mVelocity.Length();
+	//			//if (resultingVel < 0.5)
+	//				mVelocity = SimpleMath::Vector3::Zero;
+	//		}
+	//	}
+	//}
+		
 	//Clear the forces
 	ClearAccumulator();
 }

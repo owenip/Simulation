@@ -132,7 +132,7 @@ void ContactManifold::ResolveVelocity(ManifoldPoint &mp)
 	}
 
 	// Calculate the new separating velocity
-	float newSepVelocity = -separatingVelocity * mp.restitution * mp.friction;
+	float newSepVelocity = -separatingVelocity * mp.restitution;
 
 	// Check the velocity build-up due to acceleration only
 	SimpleMath::Vector3 accCausedVelocity = mp.balls[0]->GetAccleration();
