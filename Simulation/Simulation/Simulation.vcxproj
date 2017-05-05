@@ -141,6 +141,7 @@
     <ClCompile Include="GravityWellClass.cpp" />
     <ClCompile Include="GravityWellManager.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Network.cpp" />
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="Simulation.cpp" />
     <ClCompile Include="SystemClass.cpp" />
@@ -158,6 +159,7 @@
     <ClInclude Include="GraphicClass.h" />
     <ClInclude Include="GravityWellClass.h" />
     <ClInclude Include="GravityWellManager.h" />
+    <ClInclude Include="Network.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Simulation.h" />

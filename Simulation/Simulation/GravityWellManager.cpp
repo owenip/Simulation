@@ -6,8 +6,8 @@
 GravityWellManager::GravityWellManager() :
 	mGwRadius(0.f),
 	mLocalPeerID(0),
-	mGWMovementGain(0.0001f),
-	mGwForceGain(0.00005f)
+	mGWMovementGain(0.01f),
+	mGwForceGain(0.005f)
 {
 }
 
@@ -211,7 +211,7 @@ void GravityWellManager::GwMoveRight()
 
 void GravityWellManager::GwMoveByMouse(float mouseX, float mouseY)
 {
-	SimpleMath::Vector3 move = SimpleMath::Vector3(mouseX, 0.f, mouseY);
+	SimpleMath::Vector3 move = SimpleMath::Vector3(mouseX * 10, 0.f, mouseY * 10);
 	this->GwAddMove(move);
 }
 

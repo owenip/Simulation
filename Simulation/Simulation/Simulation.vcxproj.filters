@@ -22,6 +22,9 @@
     <Filter Include="Simulation\BAll">
       <UniqueIdentifier>{d09ee0f5-5d8e-4d22-901f-d341722482f8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Network">
+      <UniqueIdentifier>{40e5623b-2b75-4727-a194-7528ad7f3762}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -62,6 +65,9 @@
     </ClCompile>
     <ClCompile Include="BallManagerClass.cpp">
       <Filter>Simulation\BAll</Filter>
+    </ClCompile>
+    <ClCompile Include="Network.cpp">
+      <Filter>Network</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -109,6 +115,9 @@
     </ClInclude>
     <ClInclude Include="StepTimer.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Network.h">
+      <Filter>Network</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

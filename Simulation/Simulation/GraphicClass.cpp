@@ -42,8 +42,8 @@ bool GraphicClass::Initialize(const HWND hwnd, shared_ptr<ConfigClass> Config)
 	mTarGraphicFreq = mConfig->GetTarGraphicFreq();
 	mTarPhysicsFreq = mConfig->GetTarPhyFreq();
 	mTarNetowrkFreq = mConfig->GetTarNetworkFreq();
-	mGraphicTimer.SetFixedTimeStep(true);
-	mGraphicTimer.SetTargetElapsedSeconds(1/(mTarGraphicFreq));
+	//mGraphicTimer.SetFixedTimeStep(true);
+	//mGraphicTimer.SetTargetElapsedSeconds(1/(mTarGraphicFreq));
 	
 	//Changable force
 	mFriction = mConfig->GetFriction();
@@ -433,7 +433,7 @@ void GraphicClass::CheckInput()
 	{
 		float mouseX = static_cast<float>(mouse.x);
 		float mouseY = static_cast<float>(mouse.y);
-		mGwManager->GwMoveByMouse(mouseX * 100 , mouseY* 100);
+		mGwManager->GwMoveByMouse(mouseX , mouseY);
 	}
 	if (mouse.leftButton && mouse.rightButton)
 	{
@@ -441,7 +441,7 @@ void GraphicClass::CheckInput()
 		//Force = 0		
 		mGwManager->ClearForce();
 	}
-	else if (mouse.leftButton)
+	else if (mouse.rightButton)
 	{
 		//1.Clear repelling force
 		//2.Apply attractor force
@@ -449,7 +449,7 @@ void GraphicClass::CheckInput()
 			mGwManager->ClearForce();
 		mGwManager->GwAddAttractF();
 	}
-	else if (mouse.rightButton)
+	else if (mouse.leftButton)
 	{
 		//Clear Attrating force
 		//Apply repellor force

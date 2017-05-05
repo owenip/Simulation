@@ -190,7 +190,7 @@ void BallManagerClass::Render(SimpleMath::Matrix View)
 				SimpleMath::Color c(0, 0, 0, 0.5f);
 				if (Ball->GetOwenerID() == 0)
 				{
-					m_Balleffect->SetLightDiffuseColor(0, Colors::Red);
+					m_Balleffect->SetLightSpecularColor(0, Colors::Red);
 				}
 				else if (Ball->GetOwenerID() == 1)
 				{
