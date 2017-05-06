@@ -6,7 +6,6 @@ SystemClass::SystemClass() :
 	m_hinstance(nullptr),
 	m_hwnd(nullptr),
 	mAppPaused(false)
-
 {
 }
 
@@ -53,17 +52,22 @@ bool SystemClass::Initialize()
 	//mSimulation = make_unique<Simulation>();
 	mSimulation.Initialise(mConfig);
 
+	//Network
+	mNetwork.Initialise(mConfig);
+
 	//Ball Manager
 	mBallManger = make_shared<BallManagerClass>();
 	mBallManger->Initialise(mConfig);
 	mGraphic.SetBallManagerPtr(mBallManger);
 	mSimulation.SetBallManagerPtr(mBallManger);
+	mNetwork.SetBallManagerPtr(mBallManger);
 
 	//GravityManager
 	mGwManager = make_shared<GravityWellManager>();
 	mGwManager->Initialise(mConfig);
 	mGraphic.SetGwManagerPtr(mGwManager);
 	mSimulation.SetGwManagerPtr(mGwManager);
+	mNetwork.SetGwManagerPtr(mGwManager);
 
 	return true;
 }
@@ -91,6 +95,8 @@ void SystemClass::Run()
 	std::thread thread2(&Simulation::Tick, &mSimulation);
 	SetThreadAffinityMask(thread2.native_handle(), 0b0100);
 	
+	std::thread thread_netowrk(&Network::Tick, &mNetwork);
+	SetThreadAffinityMask(thread_netowrk.native_handle(), 0b0010);
 
 	while (!done)
 	{
@@ -111,7 +117,9 @@ void SystemClass::Run()
 			if (!result)
 			{
 				done = true;
+				thread_netowrk.join();
 				thread2.join();
+				
 			}
 		}
 	}

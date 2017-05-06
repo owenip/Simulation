@@ -4,6 +4,7 @@
 #include "BallManagerClass.h"
 #include "GravityWellManager.h"
 #include "Simulation.h"
+#include "Network.h"
 
 class SystemClass
 {
@@ -43,6 +44,9 @@ private:
 
 	//Simulation
 	Simulation mSimulation;
+
+	//Network
+	Network mNetwork;
 
 	//Ball Manager
 	std::shared_ptr<BallManagerClass> mBallManger;

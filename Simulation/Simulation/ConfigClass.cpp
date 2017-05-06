@@ -19,7 +19,10 @@ ConfigClass::ConfigClass() :
 	mTarPhysicsFreq(60.f),
 	mTarGraphicFreq(60.f),
 	mTarNetworkFreq(120.f),
-	mTimeScale(1.f)
+	mTimeScale(1.f),
+	mInitServer(true),
+	mPortNum(9171),
+	mHostIP("127.0.0.1")
 {
 	if (!ReadConfigFile())
 	{
@@ -174,6 +177,36 @@ float ConfigClass::GettimeScale() const
 	return mTimeScale;
 }
 
+void ConfigClass::SetInitServer(bool InVal)
+{
+	mInitServer = InVal;
+}
+
+bool ConfigClass::GetInitServer() const
+{
+	return mInitServer;
+}
+
+void ConfigClass::SetPortNum(int InStr)
+{
+	mPortNum = InStr;
+}
+
+int ConfigClass::GetPortNum() const
+{
+	return mPortNum;
+}
+
+void ConfigClass::SetHostIP(string InStr)
+{
+	mHostIP = InStr;
+}
+
+string ConfigClass::GetHostIP() const
+{
+	return mHostIP;
+}
+
 void ConfigClass::Reset()
 {
 	mIsPaused = false;
@@ -316,6 +349,37 @@ void ConfigClass::StoreValue(string &key, string &value)
 			std::cerr << "Invalid argument: " << ia.what() << '\n';
 		}
 	}
+	else if(key == "IsServer")
+	{
+		if (value == "True"|| value == "T")
+		{
+			mInitServer = true;
+		}
+		else if(value == "False" || value == "F")
+		{
+			mInitServer = false;
+		}
+		else
+		{
+			SetDefault(key);
+		}
+	}
+	else if (key == "Port")
+	{
+		try {
+			int InPeerID = stoi(value);
+			mPortNum = InPeerID;
+		}
+		catch (const std::invalid_argument& ia)
+		{
+			SetDefault(key);
+			std::cerr << "Invalid argument: " << ia.what() << '\n';
+		}		
+	}
+	else if(key == "HostIP")
+	{
+		mHostIP = value;
+	}
 	return;
 }
 
@@ -354,6 +418,18 @@ void ConfigClass::SetDefault(string & key)
 	{
 		mPeerID = 0;
 	}
+	else if(key == "IsServer")
+	{
+		mInitServer = false;
+	}
+	else if (key == "Port")
+	{
+		mPortNum = 9171;
+	}
+	else if(key == "HostIP")
+	{
+		mHostIP = "127.0.0.1";
+	}
 }
 
 void ConfigClass::SetDefaultAll()
@@ -366,6 +442,7 @@ void ConfigClass::SetDefaultAll()
 	SetDefault(string("Elasticity"));
 	SetDefault(string("Friction"));
 	SetDefault(string("PeerID"));
+	SetDefault(string("IsServer"));
 }
 
 

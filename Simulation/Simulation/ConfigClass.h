@@ -49,6 +49,15 @@ public:
 	void	SetTimeScale(float &InTimeScale);
 	float	GettimeScale() const;
 
+	void	SetInitServer(bool InVal);
+	bool	GetInitServer() const;
+
+	void	SetPortNum(int InStr);
+	int		GetPortNum() const;
+
+	void	SetHostIP(string InStr);
+	string	GetHostIP() const;
+
 	void	Reset();
 
 private:
@@ -93,5 +102,8 @@ private:
 
 	float mTimeScale;
 
+	bool mInitServer;
+	int mPortNum;
+	string	mHostIP;
 };
 
