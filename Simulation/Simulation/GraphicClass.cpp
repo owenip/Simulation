@@ -42,8 +42,8 @@ bool GraphicClass::Initialize(const HWND hwnd, shared_ptr<ConfigClass> Config)
 	mTarGraphicFreq = mConfig->GetTarGraphicFreq();
 	mTarPhysicsFreq = mConfig->GetTarPhyFreq();
 	mTarNetowrkFreq = mConfig->GetTarNetworkFreq();
-	//mGraphicTimer.SetFixedTimeStep(true);
-	//mGraphicTimer.SetTargetElapsedSeconds(1/(mTarGraphicFreq));
+	mGraphicTimer.SetFixedTimeStep(true);
+	mGraphicTimer.SetTargetElapsedSeconds(1/(mTarGraphicFreq));
 	
 	//Changable force
 	mFriction = mConfig->GetFriction();

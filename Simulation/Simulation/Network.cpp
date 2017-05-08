@@ -29,7 +29,8 @@ void Network::Initialise(shared_ptr<ConfigClass> InConfig)
 	mLocalPeerID = mConfig->GetPeerID();
 	mUDPPort = mConfig->GetUDPPort();
 	
-	
+	mNetTimer.SetFixedTimeStep(true);
+	mNetTimer.SetTargetElapsedSeconds(1 / (240.f));
 }
 
 void Network::Connect()
@@ -124,61 +125,8 @@ void Network::SetGwManagerPtr(shared_ptr<GravityWellManager> InGwManager)
 
 
 
-void Network::SendIsPause()
-{
-	mLastPause ? mLastPause = false : mLastPause = true;
-	ostringstream convert;
-	convert << "PS"
-			<< mLastPause;
-	std::string sent_message = convert.str();
-	sent_message = "OI" + std::to_string(sent_message.size()) + '|' + sent_message;
 
-	std::cout << "SENDING PS: " << std::to_string(mLastPause) << std::endl;
 
-	if (!HostExist)
-	{
-		if (send(hostSock, sent_message.c_str(), sent_message.size(), 0) == SOCKET_ERROR)
-		{
-			std::cout << "HOST: FAILED TO SEND Pause" << std::endl;
-		}
-	}
-	else
-	{
-		if (send(peerSock, sent_message.c_str(), sent_message.size(), 0) == SOCKET_ERROR)
-		{
-			std::cout << "PEER: FAILED TO SEND Pause" << std::endl;
-		}
-	}
-}
-
-void Network::SendGwPos()
-{
-	ostringstream convert;
-	convert << "GP";
-	SimpleMath::Vector3 GwPos= mGwManager->GwGetPos(mLocalPeerID);
-	convert << mLocalPeerID << " "
-			<< GwPos.x << " " 
-			<< GwPos.y << " " 
-			<< GwPos.z << " ";
-		
-	std::string sent_message = convert.str();
-	sent_message = "OI" + std::to_string(sent_message.size()) + '|' + sent_message;
-
-	if (!HostExist)
-	{
-		if (send(hostSock, sent_message.c_str(), sent_message.size(), 0) == SOCKET_ERROR)
-		{
-			std::cout << "HOST: FAILED TO SENDGW POS" << std::endl;
-		}
-	}
-	else
-	{
-		if (send(peerSock, sent_message.c_str(), sent_message.size(), 0) == SOCKET_ERROR)
-		{
-			std::cout << "PEER: FAILED TO SEND GW POS" << std::endl;
-		}
-	}	
-}
 
 bool Network::InitUPDListener()
 {
@@ -390,7 +338,8 @@ void Network::ServerListen()
 				}
 				else if (msgbuffer[0] == 'G' && msgbuffer[1] == 'P') //Gw Position
 				{
-					std::cout << "Gw Position." << std::endl;
+					//std::cout << "Gw Position." << std::endl;
+					recvGwPos(string(msgbuffer));
 				}
 				else if (msgbuffer[0] == 'G' && msgbuffer[1] == 'F') //Gw Force
 				{
@@ -531,7 +480,8 @@ void Network::ClientListen()
 				}
 				else if (msgbuffer[0] == 'G' && msgbuffer[1] == 'P') //Gw Position
 				{
-					std::cout << "Gw Position." << std::endl;
+					//std::cout << "Gw Position" << std::endl;
+					recvGwPos(string(msgbuffer));
 				}
 				else if (msgbuffer[0] == 'G' && msgbuffer[1] == 'F') //Gw Force
 				{
@@ -606,6 +556,90 @@ void Network::ClientSend()
 	}
 }
 
+void Network::SendIsPause()
+{
+	mLastPause ? mLastPause = false : mLastPause = true;
+	ostringstream convert;
+	convert << "PS"
+		<< mLastPause;
+	std::string sent_message = convert.str();
+	sent_message = "OI" + std::to_string(sent_message.size()) + '|' + sent_message;
+
+	std::cout << "SENDING PS: " << std::to_string(mLastPause) << std::endl;
+
+	if (!HostExist)
+	{
+		if (send(hostSock, sent_message.c_str(), sent_message.size(), 0) == SOCKET_ERROR)
+		{
+			std::cout << "HOST: FAILED TO SEND Pause" << std::endl;
+		}
+	}
+	else
+	{
+		if (send(peerSock, sent_message.c_str(), sent_message.size(), 0) == SOCKET_ERROR)
+		{
+			std::cout << "PEER: FAILED TO SEND Pause" << std::endl;
+		}
+	}
+}
+
+
+void Network::SendGwPos()
+{
+	ostringstream convert;
+	convert << "GP";
+	SimpleMath::Vector3 GwPos = mGwManager->GwGetPos(mLocalPeerID);
+	convert << mLocalPeerID << " "
+		<< GwPos.x << " "
+		<< GwPos.y << " "
+		<< GwPos.z << " ";
+
+	std::string sent_message = convert.str();
+	sent_message = "OI" + std::to_string(sent_message.size()) + '|' + sent_message;
+	cout << "Sending: " << sent_message << endl;
+	if (!HostExist)
+	{
+		if (send(hostSock, sent_message.c_str(), sent_message.size(), 0) == SOCKET_ERROR)
+		{
+			std::cout << "HOST: FAILED TO SENDGW POS" << std::endl;
+		}
+	}
+	else
+	{
+		if (send(peerSock, sent_message.c_str(), sent_message.size(), 0) == SOCKET_ERROR)
+		{
+			std::cout << "PEER: FAILED TO SEND GW POS" << std::endl;
+		}
+	}
+}
+
+void Network::SendGwForce()
+{
+	ostringstream convert;
+	convert << "GF";
+	float GwForce = mGwManager->GwGetForce(mLocalPeerID);
+	convert << mLocalPeerID << " "
+			<< GwForce << endl;
+
+	std::string sent_message = convert.str();
+	sent_message = "OI" + std::to_string(sent_message.size()) + '|' + sent_message;
+	cout << "Sending: " << sent_message << endl;
+	if (!HostExist)
+	{
+		if (send(hostSock, sent_message.c_str(), sent_message.size(), 0) == SOCKET_ERROR)
+		{
+			std::cout << "HOST: FAILED TO SENDGW POS" << std::endl;
+		}
+	}
+	else
+	{
+		if (send(peerSock, sent_message.c_str(), sent_message.size(), 0) == SOCKET_ERROR)
+		{
+			std::cout << "PEER: FAILED TO SEND GW POS" << std::endl;
+		}
+	}
+}
+
 void Network::recvPause(string input)
 {
 	stringstream ss;
@@ -627,12 +661,17 @@ void Network::recvTimeScale(string input)
 
 void Network::recvGwPos(string input)
 {
+	
 	stringstream ss;
 	ss.str(input.substr(2));
 	int InGwID;
 	float x, y, z;
 	ss >>InGwID >> x >> y >> z;
 	SimpleMath::Vector3 InPos(x, y, z);
+	std::cout << "Re:Gw Position " << InGwID << "|"
+				<< x << "|"
+				<< y << "|" 
+				<< z <<	std::endl;
 	mGwManager->GwSetPos(InGwID, InPos);
 }
 
@@ -643,6 +682,8 @@ void Network::recvGwForce(string input)
 	int InGwID;
 	float InGwForce;
 	ss >> InGwID >> InGwForce;
+	std::cout << "Re:Gw Force " << InGwID << "|"		
+		<< InGwForce << std::endl;
 	mGwManager->GwSetForce(InGwID, InGwForce);
 }
 

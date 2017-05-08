@@ -27,8 +27,7 @@ public:
 	void SetBallManagerPtr(shared_ptr<BallManagerClass> InBallManager);
 	void SetGwManagerPtr(shared_ptr<GravityWellManager> InGwManager);
 
-	void SendIsPause();
-	void SendGwPos();
+	
 	
 
 private:
@@ -44,6 +43,10 @@ private:
 
 	void ServerSend();
 	void ClientSend();
+
+	void SendIsPause();
+	void SendGwPos();
+	void SendGwForce();
 
 	void recvPause(string input);
 	void recvTimeScale(string input);
