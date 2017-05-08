@@ -410,7 +410,7 @@ void Network::ClientListen()
 			mConnReady = false;
 			mNextServer = true;
 			closesocket(peerSock);
-			mConnReady = false;
+			mConnected = false;
 			break;
 		}
 
