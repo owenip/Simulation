@@ -322,7 +322,7 @@ void BallManagerClass::CreateBallIndex()
 			{
 				
 				SimpleMath::Vector3 SpawnPos(CurSpawnX, mBallRadius * 10.f, CurSpawnZ);
-				BallClass *Ball = new BallClass(ProcessedBall, PeerID, mBallRadius, 1.f,
+				BallClass *Ball = new BallClass(ProcessedBall, 0, mBallRadius, 1.f,
 					SpawnPos);
 				//Ball->Initialize(ProcessedBall, PeerID, mBallRadius, 10.f,
 				//	SpawnPos,

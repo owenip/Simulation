@@ -34,7 +34,8 @@ public:
 	void	GwMoveUp();
 	void	GwMoveDown();
 
-	//Gw Force(Local)
+	//Gw Force
+	void	GwSetForce(int GwID, float Inforce);
 	float	GwGetForce(int GwID);
 	//Increase Gravity Well Attracting Force (Will naturalise repelling force) 
 	void	GwAddAttractF();
@@ -43,11 +44,15 @@ public:
 	//Clear Gw force
 	void	ClearForce();
 
+	
+
 	std::vector<GravityWellClass*>	GetGwIndex() const;
 	int	GetNumofGw() const;
 	
 
 private:
+	std::mutex mustex_gw;
+
 	float	mGwRadius;
 	int		mLocalPeerID;
 

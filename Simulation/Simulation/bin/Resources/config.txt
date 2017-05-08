@@ -2,11 +2,11 @@
 FullScreen=false
 ScreenWidth=1024
 ScreenHeight=768
-NumOfBalls=1000
+NumOfBalls=100
 BallRadius=0.5
 Elasticity=0.8
 Friction=0.995
 PeerID=0
 IsServer=True
-Port=9171
+UDPPort=9171
 HostIP=150.237.93.182

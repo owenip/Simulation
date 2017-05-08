@@ -9,6 +9,9 @@ struct client_type
 	SOCKET socket;
 };
 
+#define BUFSIZE 512
+const char OPTION_VALUE = 1;
+
 class Network
 {
 public:
@@ -17,22 +20,39 @@ public:
 
 	void Initialise(shared_ptr<ConfigClass> InConfig);
 
+	void Connect();
 	void Tick();
-	void Run();
+	void SendData();
 
 	void SetBallManagerPtr(shared_ptr<BallManagerClass> InBallManager);
 	void SetGwManagerPtr(shared_ptr<GravityWellManager> InGwManager);
 
-
+	void SendIsPause();
 	void SendGwPos();
-
+	
 
 private:
-	void InitServer();
-	void InitClient();
+	bool InitUPDListener();
+	void InitUDPBoardcaster();
 
+	void InitServer();
 	void ServerListen();
+	
+
+	bool InitClient();
 	void ClientListen();
+
+	void ServerSend();
+	void ClientSend();
+
+	void recvPause(string input);
+	void recvTimeScale(string input);
+	void recvGwPos(string input);
+	void recvGwForce(string input);
+	void recvBallPos(string input);
+	void recvBallRotate(string input);
+	void recvBallOwner(string input);
+	
 
 private:
 	shared_ptr<ConfigClass> mConfig;
@@ -40,41 +60,30 @@ private:
 	shared_ptr<GravityWellManager> mGwManager;
 
 	DX::StepTimer mNetTimer;
-
-	std::mutex mClientIndexMutex;
-	std::mutex mIOmutex;
-
+	
 	int		mLocalPeerID;
 
+	bool HostExist;
 	bool mIsEscaped;
-	int		mPort;
+	bool mNextServer;
+	bool mConnReady;
+	int		mUDPPort;
 	string mHostIP;
 
 
-	const char OPTION_VALUE = 1;
 	WSADATA WSAData;
 	SOCKADDR_IN hostAddr, peerAddr;
 	SOCKET hostSock, peerSock;
 
+	SOCKET UDPSendSock;
+	std::string HostIP;
+	int		mTCPPort = 9176;
+	
+
+	int mNumOfClient;
 	std::vector<client_type> mClientIndex;
 
-	union bytefloat
-	{
-		char bytes[sizeof(float)];
-		float fval;
-	};
-
-	inline void thing()
-	{
-		std::string fs = "1912.09";
-		float f = 1912.09f;
-		bytefloat bytes;
-		bytes.fval = f;
-		bytes.bytes[0];
-		bytes.bytes[1];
-		bytes.bytes[2];
-		bytes.bytes[3];
-	}
+	bool mLastPause;
 
 };
 

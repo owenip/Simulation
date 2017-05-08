@@ -21,7 +21,7 @@ ConfigClass::ConfigClass() :
 	mTarNetworkFreq(120.f),
 	mTimeScale(1.f),
 	mInitServer(true),
-	mPortNum(9171),
+	mUDPPort(9171),
 	mHostIP("127.0.0.1")
 {
 	if (!ReadConfigFile())
@@ -116,6 +116,7 @@ int ConfigClass::GetPeerID() const
 
 void ConfigClass::SetElasticForce(float &InForce)
 {
+	std::lock_guard<std::mutex> config_guard(mutex_config);
 	mElasticity = InForce;
 }
 
@@ -126,6 +127,7 @@ float ConfigClass::GetElasticForce() const
 
 void ConfigClass::SetFriction(float &InFriction)
 {
+	std::lock_guard<std::mutex> config_guard(mutex_config);
 	mFriction = InFriction;
 }
 
@@ -136,6 +138,7 @@ float ConfigClass::GetFriction() const
 
 void ConfigClass::SetTarPhyFreq(float &InVal)
 {
+	std::lock_guard<std::mutex> config_guard(mutex_config);
 	if(InVal > 0)
 		mTarPhysicsFreq = InVal;
 }
@@ -147,6 +150,7 @@ float ConfigClass::GetTarPhyFreq() const
 
 void ConfigClass::SetTarGraphicFreq(float &InVal)
 {
+	std::lock_guard<std::mutex> config_guard(mutex_config);
 	if (InVal > 0)
 		mTarGraphicFreq = InVal;
 }
@@ -158,6 +162,7 @@ float ConfigClass::GetTarGraphicFreq() const
 
 void ConfigClass::SetTarNetworkFreq(float &InVal)
 {
+	std::lock_guard<std::mutex> config_guard(mutex_config);
 	if (InVal > 0)
 		mTarNetworkFreq = InVal;
 }
@@ -169,16 +174,18 @@ float ConfigClass::GetTarNetworkFreq() const
 
 void ConfigClass::SetTimeScale(float & InTimeScale)
 {
+	std::lock_guard<std::mutex> config_guard(mutex_config);
 	mTimeScale = InTimeScale;
 }
 
 float ConfigClass::GettimeScale() const
-{
+{	
 	return mTimeScale;
 }
 
 void ConfigClass::SetInitServer(bool InVal)
 {
+	std::lock_guard<std::mutex> config_guard(mutex_config);
 	mInitServer = InVal;
 }
 
@@ -187,14 +194,15 @@ bool ConfigClass::GetInitServer() const
 	return mInitServer;
 }
 
-void ConfigClass::SetPortNum(int InStr)
+void ConfigClass::SetUDPPort(int InStr)
 {
-	mPortNum = InStr;
+	std::lock_guard<std::mutex> config_guard(mutex_config);
+	mUDPPort = InStr;
 }
 
-int ConfigClass::GetPortNum() const
+int ConfigClass::GetUDPPort() const
 {
-	return mPortNum;
+	return mUDPPort;
 }
 
 void ConfigClass::SetHostIP(string InStr)
@@ -364,11 +372,11 @@ void ConfigClass::StoreValue(string &key, string &value)
 			SetDefault(key);
 		}
 	}
-	else if (key == "Port")
+	else if (key == "UDPPort")
 	{
 		try {
-			int InPeerID = stoi(value);
-			mPortNum = InPeerID;
+			int InUDPPort = stoi(value);
+			mUDPPort = InUDPPort;
 		}
 		catch (const std::invalid_argument& ia)
 		{
@@ -424,7 +432,7 @@ void ConfigClass::SetDefault(string & key)
 	}
 	else if (key == "Port")
 	{
-		mPortNum = 9171;
+		mUDPPort = 9171;
 	}
 	else if(key == "HostIP")
 	{

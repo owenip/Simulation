@@ -52,8 +52,8 @@ public:
 	void	SetInitServer(bool InVal);
 	bool	GetInitServer() const;
 
-	void	SetPortNum(int InStr);
-	int		GetPortNum() const;
+	void	SetUDPPort(int InStr);
+	int		GetUDPPort() const;
 
 	void	SetHostIP(string InStr);
 	string	GetHostIP() const;
@@ -70,6 +70,8 @@ private:
 
 private:
 	const std::string configFileName = ".\\Resources\\config.txt";
+
+	std::mutex mutex_config;
 
 	bool mIsEscaped;
 	bool mIsPaused;
@@ -103,7 +105,7 @@ private:
 	float mTimeScale;
 
 	bool mInitServer;
-	int mPortNum;
+	int mUDPPort;
 	string	mHostIP;
 };
 

@@ -123,6 +123,7 @@ float GravityWellManager::GetGwRadius() const
 
 void GravityWellManager::AddGw(int InGwID, SimpleMath::Vector3 InGravityWellPos, SimpleMath::Color InGwColor)
 {
+	std::lock_guard<std::mutex> pt_guard(mustex_gw);
 	GravityWellClass *newGw = new GravityWellClass();
 	newGw->Initialize(InGwID, InGravityWellPos, InGwColor);
 	mGwIndex.push_back(newGw);
@@ -130,6 +131,7 @@ void GravityWellManager::AddGw(int InGwID, SimpleMath::Vector3 InGravityWellPos,
 
 void GravityWellManager::RemoveGw(int GwID)
 {
+	std::lock_guard<std::mutex> pt_guard(mustex_gw);
 	for (vector<GravityWellClass*>::iterator iter = mGwIndex.begin();
 		iter != mGwIndex.end(); ++iter)
 	{
@@ -148,6 +150,7 @@ void GravityWellManager::SetLocalID(int GwID)
 
 void GravityWellManager::GwSetPos(int GwID, SimpleMath::Vector3 InGravityWellPos)
 {
+	std::lock_guard<std::mutex> pt_guard(mustex_gw);
 	for (vector<GravityWellClass*>::iterator iter = mGwIndex.begin();
 		iter != mGwIndex.end(); ++iter)
 	{
@@ -161,6 +164,7 @@ void GravityWellManager::GwSetPos(int GwID, SimpleMath::Vector3 InGravityWellPos
 
 SimpleMath::Vector3 GravityWellManager::GwGetPos(int GwID)
 {
+	std::lock_guard<std::mutex> pt_guard(mustex_gw);
 	for (vector<GravityWellClass*>::iterator iter = mGwIndex.begin();
 		iter != mGwIndex.end(); ++iter)
 	{
@@ -178,6 +182,7 @@ SimpleMath::Vector3 GravityWellManager::GwGetPos(int GwID)
 
 void GravityWellManager::GwAddMove(SimpleMath::Vector3 InMove)
 {
+	std::lock_guard<std::mutex> pt_guard(mustex_gw);
 	for (vector<GravityWellClass*>::iterator iter = mGwIndex.begin();
 		iter != mGwIndex.end(); ++iter)
 	{
@@ -227,6 +232,7 @@ void GravityWellManager::GwMoveDown()
 
 void GravityWellManager::GwAddAttractF()
 {
+	std::lock_guard<std::mutex> pt_guard(mustex_gw);
 	for (vector<GravityWellClass*>::iterator iter = mGwIndex.begin();
 		iter != mGwIndex.end(); ++iter)
 	{
@@ -240,6 +246,7 @@ void GravityWellManager::GwAddAttractF()
 
 void GravityWellManager::GwAddRepellF()
 {
+	std::lock_guard<std::mutex> pt_guard(mustex_gw);
 	for (vector<GravityWellClass*>::iterator iter = mGwIndex.begin();
 		iter != mGwIndex.end(); ++iter)
 	{
@@ -274,8 +281,23 @@ int GravityWellManager::GetNumofGw() const
 	return mGwIndex.size();
 }
 
+void GravityWellManager::GwSetForce(int GwID, float Inforce)
+{
+	std::lock_guard<std::mutex> pt_guard(mustex_gw);
+	for (vector<GravityWellClass*>::iterator iter = mGwIndex.begin();
+		iter != mGwIndex.end(); ++iter)
+	{
+		if ((*iter)->GetGwID() == GwID)
+		{
+			return (*iter)->SetForce(Inforce);
+			break;
+		}
+	}
+}
+
 float GravityWellManager::GwGetForce(int GwID)
 {
+	std::lock_guard<std::mutex> pt_guard(mustex_gw);
 	for (vector<GravityWellClass*>::iterator iter = mGwIndex.begin();
 		iter != mGwIndex.end(); ++iter)
 	{

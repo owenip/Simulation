@@ -41,7 +41,7 @@ void Simulation::Tick()
 			if (!mConfig->GetIsPaused())
 			{
 				RunPhysics(mPhyTimer);
-			}
+			}			
 		});
 		if (mConfig->GetIsEscaped())
 		{			

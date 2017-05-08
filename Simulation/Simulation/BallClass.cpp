@@ -62,7 +62,11 @@ void BallClass::recalculate()
 
 void BallClass::Integrate(float duration)
 {
-	assert(duration > 0.0);
+	//assert(duration > 0.0);
+	if(duration <= 0 )
+	{
+		duration = 0.0001f;
+	}
 
 	this->mLastPosition = this->mPosition;
 	// Update linear position.

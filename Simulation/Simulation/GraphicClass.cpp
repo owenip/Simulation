@@ -144,6 +144,7 @@ void GraphicClass::OnResume()
 void GraphicClass::Tick()
 {
 	mIsEscaped = false;
+	(mPeerID = mConfig->GetPeerID());
 	//while (true)
 	{
 		Update(mGraphicTimer);
@@ -290,7 +291,7 @@ void GraphicClass::CheckInput()
 		else
 			mConfig->SetIsPaused(true);
 
-		mGraphicTimer.ResetElapsedTime();
+		//mGraphicTimer.ResetElapsedTime();
 	}
 	else if (tracker.pressed.O)
 	{
