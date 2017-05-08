@@ -17,6 +17,7 @@ void GravityWellClass::Initialize(int InID, SimpleMath::Vector3 InPosition, Simp
 	mGravityWellPos = InPosition;
 	mGwColor = InColor;
 	mForce = 0.f;
+	mIsActive = false;
 }
 
 
@@ -84,4 +85,14 @@ void GravityWellClass::SetApplyingForce(bool inVal)
 bool GravityWellClass::GetApplyingForce() const
 {
 	return mApplyingForce;
+}
+
+void GravityWellClass::SetIsActive(bool inVal)
+{
+	mIsActive = inVal;
+}
+
+bool GravityWellClass::GetIsActive() const
+{
+	return mIsActive;
 }

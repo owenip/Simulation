@@ -92,6 +92,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11InputLayout> mSurfaceInputLayout;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mSurfaceTex;
 
+
 	//Wall
 	std::unique_ptr<DirectX::GeometricPrimitive> mWall;
 	Microsoft::WRL::ComPtr<ID3D11InputLayout> mWallInputLayout;

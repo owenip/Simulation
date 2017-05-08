@@ -29,6 +29,8 @@ public:
 	void SetApplyingForce(bool inVal);
 	bool GetApplyingForce() const;
 
+	void	SetIsActive(bool inVal);
+	bool	GetIsActive() const;
 
 protected:
 	int mGwID;
@@ -36,5 +38,6 @@ protected:
 	SimpleMath::Color	mGwColor;
 	float mForce;
 	bool mApplyingForce;
+	bool mIsActive;
 };
 

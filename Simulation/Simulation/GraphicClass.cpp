@@ -86,7 +86,9 @@ bool GraphicClass::Initialize(const HWND hwnd, shared_ptr<ConfigClass> Config)
 	//Surface
 	mSurface = GeometricPrimitive::CreateCylinder(mDirect3D->GetDeviceContext(), 0.05f, mConfig->GetSurfaceRadius() * 2);
 	//mSurface = Model::CreateFromCMO(mDirect3D->GetDevice(), L".\\Resources\\surface.cmo", *m_fxFactory, true, true);
-
+	DX::ThrowIfFailed(
+		CreateDDSTextureFromFile(mDirect3D->GetDevice(), L".\\Resources\\roomtexture.dds", nullptr,
+			mSurfaceTex.ReleaseAndGetAddressOf(),0));
 	//Wall
 	mWall = GeometricPrimitive::CreateCylinder(mDirect3D->GetDeviceContext(), 50.f, mConfig->GetSurfaceRadius() * 2);
 	mWall->CreateInputLayout(m_effect.get(), mWallInputLayout.ReleaseAndGetAddressOf());
@@ -202,7 +204,7 @@ bool GraphicClass::Render()
 
 	//Draw Model
 	//Surface	
-	mSurface->Draw(m_world, m_view, m_proj, Colors::Silver);
+	mSurface->Draw(m_world, m_view, m_proj, Colors::Silver, mSurfaceTex.Get());
 	//Balls
 	mBallManager->Render(m_view);
 	//GravityWell

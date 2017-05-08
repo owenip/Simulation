@@ -21,6 +21,8 @@ public:
 	void	AddGw(int GwID, SimpleMath::Vector3	InGravityWellPos, SimpleMath::Color InGwColor);
 	void	RemoveGw(int GwID);
 
+	void	SetGwIsActive(int GwID, bool activeState);
+
 	void	SetLocalID(int GwID);
 
 	void	GwSetPos(int GwID, SimpleMath::Vector3 InGravityWellPos);

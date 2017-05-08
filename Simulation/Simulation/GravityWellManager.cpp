@@ -6,7 +6,7 @@
 GravityWellManager::GravityWellManager() :
 	mGwRadius(0.f),
 	mLocalPeerID(0),
-	mGWMovementGain(0.01f),
+	mGWMovementGain(0.001f),
 	mGwForceGain(0.005f)
 {
 }
@@ -23,7 +23,7 @@ bool GravityWellManager::Initialise(shared_ptr<ConfigClass> Config)
 	mGwRadius = mConfig->GetGwRadius();
 	mLocalPeerID = mConfig->GetPeerID();
 	mGwIndex.clear();
-	SimpleMath::Color GwColor;
+	/*SimpleMath::Color GwColor;	
 	switch (mLocalPeerID)
 	{
 		case 0:
@@ -41,8 +41,13 @@ bool GravityWellManager::Initialise(shared_ptr<ConfigClass> Config)
 			GwColor = Colors::Blue;
 			break;
 		}
-	}
-	this->AddGw(mLocalPeerID, SimpleMath::Vector3::Zero, GwColor);
+	}*/
+	this->AddGw(0, SimpleMath::Vector3::Zero, static_cast<SimpleMath::Color>(Colors::Red));
+	this->AddGw(1, SimpleMath::Vector3::Zero, static_cast<SimpleMath::Color>(Colors::Green));
+	this->AddGw(2, SimpleMath::Vector3::Zero, static_cast<SimpleMath::Color>(Colors::Blue));
+
+	mGwIndex[mLocalPeerID]->SetIsActive(true);
+	
 	return true;
 }
 
@@ -64,7 +69,8 @@ bool GravityWellManager::InitialiseGraphic(shared_ptr<D3DClass> InDirect3D)
 }
 
 void GravityWellManager::Render(SimpleMath::Matrix InView)
-{
+{	
+	mLocalPeerID = mConfig->GetPeerID();
 	SimpleMath::Matrix Proj = SimpleMath::Matrix::Identity;
 	mDirect3D->GetProj(Proj);
 	mGwEffect->SetProjection(Proj);
@@ -72,24 +78,27 @@ void GravityWellManager::Render(SimpleMath::Matrix InView)
 	std::lock_guard<std::mutex> pt_guard(mustex_gw);
 	for (GravityWellClass* element : mGwIndex)
 	{
-		SimpleMath::Matrix World = SimpleMath::Matrix::Identity;
-		SimpleMath::Vector3 newPos = element->GetPos();
-		World = World.CreateTranslation(newPos);
-		mGwEffect->SetWorld(World);
-
-		//Settup color for this Gw
-		SimpleMath::Color GwColor = element->GetColor();
-		//mGwEffect->SetColorAndAlpha(GwColor);
-		//Draw Center of Gw
-		mGwCenter->Draw(World, InView, Proj, GwColor);
-		//Change to Transparent effect
-		GwColor.w = 0.3f;
-		mGwEffect->SetColorAndAlpha(GwColor);
-		//Draw the Gw
-		mGwPrimitive->Draw(mGwEffect.get(), mGwInputLayout.Get(), true, false, [=]
+		if (element->GetIsActive())
 		{
-			mDirect3D->GetDeviceContext()->RSSetState(mStates->CullNone());
-		});
+			SimpleMath::Matrix World = SimpleMath::Matrix::Identity;
+			SimpleMath::Vector3 newPos = element->GetPos();
+			World = World.CreateTranslation(newPos);
+			mGwEffect->SetWorld(World);
+
+			//Settup color for this Gw
+			SimpleMath::Color GwColor = element->GetColor();
+			//mGwEffect->SetColorAndAlpha(GwColor);
+			//Draw Center of Gw
+			mGwCenter->Draw(World, InView, Proj, GwColor);
+			//Change to Transparent effect
+			GwColor.w = 0.3f;
+			mGwEffect->SetColorAndAlpha(GwColor);
+			//Draw the Gw
+			mGwPrimitive->Draw(mGwEffect.get(), mGwInputLayout.Get(), true, false, [=]
+			{
+				mDirect3D->GetDeviceContext()->RSSetState(mStates->CullNone());
+			});
+		}
 	}
 }
 
@@ -168,6 +177,12 @@ void GravityWellManager::RemoveGw(int GwID)
 	}
 }
 
+void GravityWellManager::SetGwIsActive(int GwID, bool activeState)
+{
+	std::lock_guard<std::mutex> pt_guard(mustex_gw);
+	mGwIndex[GwID]->SetIsActive(activeState);
+}
+
 void GravityWellManager::SetLocalID(int GwID)
 {
 	mLocalPeerID = GwID;
@@ -196,17 +211,14 @@ SimpleMath::Vector3 GravityWellManager::GwGetPos(int GwID)
 		if ((*iter)->GetGwID() == GwID)
 		{
 			return (*iter)->GetPos();
-		}
-		else
-		{
-			return SimpleMath::Vector3::Zero;
-		}
+		}		
 	}
 }
 
 
 void GravityWellManager::GwAddMove(SimpleMath::Vector3 InMove)
 {
+	mLocalPeerID = mConfig->GetPeerID();
 	std::lock_guard<std::mutex> pt_guard(mustex_gw);
 	for (vector<GravityWellClass*>::iterator iter = mGwIndex.begin();
 		iter != mGwIndex.end(); ++iter)
@@ -241,7 +253,7 @@ void GravityWellManager::GwMoveRight()
 
 void GravityWellManager::GwMoveByMouse(float mouseX, float mouseY)
 {
-	SimpleMath::Vector3 move = SimpleMath::Vector3(mouseX * 10, 0.f, mouseY * 10);
+	SimpleMath::Vector3 move = SimpleMath::Vector3(mouseX * 100, 0.f, mouseY * 100);
 	this->GwAddMove(move);
 }
 

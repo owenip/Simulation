@@ -519,6 +519,7 @@ void Network::ExtractMsg(char msgbuffer[BUFSIZE])
 	else if (msgbuffer[0] == 'C' && msgbuffer[1] == 'I') //New Client ID
 	{
 		std::cout << "Accepted by Server" << std::endl;
+		mGwManager->SetGwIsActive(0, true);		
 		mConnReady = true;
 		mConnected = true;
 	}
@@ -533,7 +534,7 @@ void Network::ExtractMsg(char msgbuffer[BUFSIZE])
 			std::cout << "Fail to send ID back" << std::endl;
 			mConnReady = false;			
 		}
-		//mGwManager->AddGw(mLocalPeerID);
+		mGwManager->SetGwIsActive(mNumOfClient, true);
 		mConnReady = true;
 		mConnected = true;
 	}
