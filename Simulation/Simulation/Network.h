@@ -41,8 +41,10 @@ private:
 	bool InitClient();
 	void ClientListen();
 
-	void ServerSend();
-	void ClientSend();
+	void ServerSend(std::string sent_message);
+	void ClientSend(std::string sent_message);
+
+	void ExtractMsg(char Inmsg[BUFSIZE]);
 
 	void SendIsPause();
 	void SendGwPos();
@@ -66,10 +68,11 @@ private:
 	
 	int		mLocalPeerID;
 
-	bool HostExist;
+	bool mIsHost;
 	bool mIsEscaped;
 	bool mNextServer;
-	bool mConnReady;
+	bool mConnReady;	//Sockets ready to accept incoming connection
+	bool mConnected;	//Connection established between peers
 	int		mUDPPort;
 	string mHostIP;
 

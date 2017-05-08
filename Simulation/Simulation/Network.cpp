@@ -7,16 +7,23 @@
 Network::Network() :
 	mIsEscaped(false),
 	mConnReady(false),
+	mConnected(false),
 	mNextServer(false),
 	mLastPause(false),
 	mNumOfClient(0)
 {
 	mClientIndex.reserve(5);
+
+	if (WSAStartup(MAKEWORD(2, 2), &WSAData) != 0) /* Load Winsock 2.2 DLL */
+		std::cout << "WSAStartup() failed with error: " << std::endl;
 }
 
 
 Network::~Network()
 {
+	//Clean up Winsock
+	WSACleanup();
+
 	mConfig.reset();
 	mBallManager.reset();
 	mGwManager.reset();
@@ -35,74 +42,93 @@ void Network::Initialise(shared_ptr<ConfigClass> InConfig)
 
 void Network::Connect()
 {
+	//Setup Flag
 	mConnReady = false;
-	if (WSAStartup(MAKEWORD(2, 2), &WSAData) != 0) /* Load Winsock 2.2 DLL */
-		std::cout << "WSAStartup() failed with error: " << std::endl;
-
-	HostExist = InitUPDListener();
-
-	if(!HostExist || mNextServer == true)
+	
+	if(mConfig->GetInitServer())
 	{
-		std::cout << "Hosting init " << std::endl;
 		InitServer();
-		std::thread thread_IPBoardcast(&Network::InitUDPBoardcaster, this);
 		std::thread thread_sListen(&Network::ServerListen, this);
-		//std::thread thread_sSend(&Network::ServerSend, this);
-		thread_IPBoardcast.join();
-		thread_sListen.join();
-		mConnReady = false;
-		//thread_sSend.join();
+		mIsHost = true;
+		thread_sListen.detach();		
 	}
 	else
 	{
-		std::cout << "hosting exist " << std::endl;
-		std::cout << "HOSTIP:" << HostIP << std::endl;
-
-		if (!InitClient())
+		if (InitClient())
 		{
-			InitServer();
-			std::thread thread_IPBoardcast(&Network::InitUDPBoardcaster, this);
-			std::thread thread_sListen(&Network::ServerListen, this);
-			
-			thread_IPBoardcast.join();
-			thread_sListen.join();
-			mConnReady = false;
+			std::thread thread_cListen(&Network::ClientListen, this);
+			mIsHost = false;
+			thread_cListen.detach();
 		}
 		else
 		{
-			std::thread thread_cListen(&Network::ClientListen, this);				
-			thread_cListen.join();		
-			mConnReady = false;
+			//Cant Connect to Host
+			mConfig->SetInitServer(true);
 		}
 	}
-		
-	//Clean up Winsock
-	WSACleanup();
-	mConnReady = false;
+	mConnReady = true;
+
+	//HostExist = InitUPDListener();
+	//if(!HostExist || mNextServer == true)
+	//{
+	//	std::cout << "Hosting init " << std::endl;
+	//	InitServer();
+	//	std::thread thread_IPBoardcast(&Network::InitUDPBoardcaster, this);
+	//	std::thread thread_sListen(&Network::ServerListen, this);
+	//	//std::thread thread_sSend(&Network::ServerSend, this);
+	//	thread_IPBoardcast.join();
+	//	thread_sListen.join();
+	//	mConnReady = false;
+	//	//thread_sSend.join();
+	//}
+	//else
+	//{
+	//	std::cout << "hosting exist " << std::endl;
+	//	std::cout << "HOSTIP:" << HostIP << std::endl;
+	//	if (!InitClient())
+	//	{
+	//		InitServer();
+	//		std::thread thread_IPBoardcast(&Network::InitUDPBoardcaster, this);
+	//		std::thread thread_sListen(&Network::ServerListen, this);
+	//		
+	//		thread_IPBoardcast.join();
+	//		thread_sListen.join();
+	//		mConnReady = false;
+	//	}
+	//	else
+	//	{
+	//		std::thread thread_cListen(&Network::ClientListen, this);				
+	//		thread_cListen.join();		
+	//		mConnReady = false;
+	//	}
+	//}
+	//	
+	//
+	//mConnReady = false;
 }
 
 void Network::Tick()
 {
-	std::thread thread_connect(&Network::Connect, this);
+	std::thread thread_Connect(&Network::Connect, this);
 	while (true)
 	{		
 		if (mConfig->GetIsEscaped())
 		{
 			break;
 		}
+		if(!mConnReady && !mConnected)
+		{
+			//this->Connect();
+		}
 		mNetTimer.Tick([&]
 		{
-			if (!mConnReady)
-			{
-							
-			}
-			else
+			if (mConnected)
 			{
 				SendData();
 			}
 		});
 	}
-	thread_connect.join();
+	thread_Connect.join();
 }
 
 void Network::SendData()
@@ -327,54 +353,11 @@ void Network::ServerListen()
 					break;
 				}
 				//Extact msg
-				if (msgbuffer[0] == 'P' && msgbuffer[1] == 'S') //Pause Command
-				{
-					std::cout << "Pause Command Received" << std::endl;
-					recvPause(string(msgbuffer));
-				}
-				else if (msgbuffer[0] == 'T' && msgbuffer[1] == 'S') //TimeScale
-				{
-					std::cout << "TimeScale" << std::endl;
-				}
-				else if (msgbuffer[0] == 'G' && msgbuffer[1] == 'P') //Gw Position
-				{
-					//std::cout << "Gw Position." << std::endl;
-					recvGwPos(string(msgbuffer));
-				}
-				else if (msgbuffer[0] == 'G' && msgbuffer[1] == 'F') //Gw Force
-				{
-					std::cout << "Gw Force" << std::endl;
-				}
-				else if (msgbuffer[0] == 'B' && msgbuffer[1] == 'P') //Ball Position
-				{
-					std::cout << "Ball Position" << std::endl;
-				}
-				else if (msgbuffer[0] == 'B' && msgbuffer[1] == 'R') //Ball Rotation
-				{
-					std::cout << "Ball Rotation" << std::endl;
-				}
-				else if (msgbuffer[0] == 'B' && msgbuffer[1] == 'O') //Ball Ownership Receive
-				{
-					std::cout << "Ball Ownership Receive" << std::endl;
-				}
-				else if (msgbuffer[0] == 'N' && msgbuffer[1] == 'C')
-				{
-					std::cout << "New Client Accepted" << std::endl; //New Client handling
-					mNumOfClient++;
-					std::string sent_message = "CI " + std::to_string(mNumOfClient);
-					sent_message = "OI" + std::to_string(sent_message.size()) + '|' + sent_message;
-					if (send(hostSock, sent_message.c_str(), sent_message.size(), 0) == SOCKET_ERROR)
-					{
-						std::cout << "Fail to send ID back" << std::endl;
-						mConnReady = false;
-						break;
-					}
-					mGwManager->AddGw(mLocalPeerID);
-					mConnReady = true;
-				}
+				this->ExtractMsg(msgbuffer);
 			}
 		}
 	}
+	mConnReady = false;
 	//Client DC Connection finish
 	closesocket(hostSock);
 }
@@ -383,7 +366,7 @@ bool Network::InitClient()
 {
 	hostSock = socket(AF_INET, SOCK_STREAM, 0);
 	peerSock = socket(AF_INET, SOCK_STREAM, 0);
-
+	HostIP = mConfig->GetHostIP();
 	peerAddr.sin_family = AF_INET;
 	inet_pton(AF_INET, HostIP.c_str(), &peerAddr.sin_addr);
 	peerAddr.sin_port = htons(mTCPPort);
@@ -394,7 +377,7 @@ bool Network::InitClient()
 		closesocket(peerSock);
 		peerSock = INVALID_SOCKET;
 		std::cout << "NO CONNECTION TO SERVER" << WSAGetLastError() << std::endl;
-		std::cout << "Start Initialise as SERVER now" << WSAGetLastError() << std::endl;
+		//std::cout << "Start Initialise as SERVER now" << WSAGetLastError() << std::endl;
 		return false;
 	}
 	std::string sent_message = "NC";
@@ -412,12 +395,13 @@ void Network::ClientListen()
 {
 	//SOCKET incoming = INVALID_SOCKET;
 	//incoming = peerSock;
-	while (true)
+	while (!mConfig->GetIsEscaped())
 	{
 		//Checking socket
 		if (peerSock == INVALID_SOCKET)
 		{
 			std::cout << "Accept failed with " << WSAGetLastError() << std::endl;
+			mConnReady = false;
 			break;
 		}
 		if (peerSock == 0 || WSAGetLastError() == WSAECONNRESET)
@@ -426,6 +410,7 @@ void Network::ClientListen()
 			mConnReady = false;
 			mNextServer = true;
 			closesocket(peerSock);
+			mConnReady = false;
 			break;
 		}
 
@@ -470,91 +455,87 @@ void Network::ClientListen()
 					break;
 				}
 				//Extact msg
-				if (msgbuffer[0] == 'P' && msgbuffer[1] == 'S') //Pause Command
-				{
-					std::cout << "Pause Command Received" << std::endl;					
-					recvPause(string(msgbuffer));
-				}
-				else if (msgbuffer[0] == 'T' && msgbuffer[1] == 'S') //TimeScale
-				{
-					std::cout << "TimeScale" << std::endl;
-				}
-				else if (msgbuffer[0] == 'G' && msgbuffer[1] == 'P') //Gw Position
-				{
-					//std::cout << "Gw Position" << std::endl;
-					recvGwPos(string(msgbuffer));
-				}
-				else if (msgbuffer[0] == 'G' && msgbuffer[1] == 'F') //Gw Force
-				{
-					std::cout << "Gw Force" << std::endl;
-				}
-				else if (msgbuffer[0] == 'B' && msgbuffer[1] == 'P') //Ball Position
-				{
-					std::cout << "Ball Position" << std::endl;
-				}
-				else if (msgbuffer[0] == 'B' && msgbuffer[1] == 'R') //Ball Rotation
-				{
-					std::cout << "Ball Rotation" << std::endl;
-				}
-				else if (msgbuffer[0] == 'B' && msgbuffer[1] == 'O') //Ball Ownership Receive
-				{
-					std::cout << "Ball Ownership Receive" << std::endl;
-				}
-				else if (msgbuffer[0] == 'C' && msgbuffer[1] == 'I') //New Client ID
-				{
-					std::string input = std::string(msgbuffer);
-					std::stringstream ss;
-					ss.str(input.substr(2));
-					int peerID;
-					ss >> peerID;
-					std::cout << "Assigned Client ID received: " << peerID << std::endl;
-					mLocalPeerID = peerID;
-					mConfig->SetPeerID(mLocalPeerID);
-					//mConfig->SetIsPaused(true);
-					mGwManager->AddGw(mLocalPeerID);
-					//mConfig->SetIsPaused(false);
-				}
+				this->ExtractMsg(msgbuffer);
 			}
 		}
 
 	}
 	//Client DC Connection finish
+	mConnReady = false;
 	//closesocket(incoming);
 	closesocket(peerSock);
 	//Regain all the ball and remove visual Gw
 }
 
-void Network::ServerSend()
+void Network::ServerSend(std::string sent_message)
 {
-	while (!mConfig->GetIsEscaped())
+	if (send(hostSock, sent_message.c_str(), sent_message.size(), 0) == SOCKET_ERROR)
 	{
-		std::string sent_message;
-		std::cout << ">";
-		std::getline(std::cin, sent_message);
-
-		sent_message = "OI" + std::to_string(sent_message.size()) + '|' + sent_message;
-
-		if (send(peerSock, sent_message.c_str(), sent_message.size(), 0) == SOCKET_ERROR)
-		{
-			std::cout << "HOST: FAILED TO SEND" << std::endl;
-		}
+		std::cout << "HOST: FAILED TO SEND Pause" << std::endl;
 	}
 }
 
-void Network::ClientSend()
+void Network::ClientSend(std::string sent_message)
 {
-	while (!mConfig->GetIsEscaped())
+	if (send(peerSock, sent_message.c_str(), sent_message.size(), 0) == SOCKET_ERROR)
 	{
-		std::string sent_message;
-		//std::cout << ">";
-		//std::getline(std::cin, sent_message);
-		sent_message = "PA";
-		sent_message = "OI" + std::to_string(sent_message.size()) + '|' + sent_message;
+		std::cout << "PEER: FAILED TO SEND Pause" << std::endl;
+	}
+}
 
+void Network::ExtractMsg(char msgbuffer[BUFSIZE])
+{
+	//Extact msg
+	if (msgbuffer[0] == 'P' && msgbuffer[1] == 'S') //Pause Command
+	{
+		std::cout << "Pause Command Received" << std::endl;
+		recvPause(string(msgbuffer));
+	}
+	else if (msgbuffer[0] == 'T' && msgbuffer[1] == 'S') //TimeScale
+	{
+		std::cout << "TimeScale" << std::endl;
+	}
+	else if (msgbuffer[0] == 'G' && msgbuffer[1] == 'P') //Gw Position
+	{
+		//std::cout << "Gw Position." << std::endl;
+		recvGwPos(string(msgbuffer));
+	}
+	else if (msgbuffer[0] == 'G' && msgbuffer[1] == 'F') //Gw Force
+	{
+		std::cout << "Gw Force" << std::endl;
+	}
+	else if (msgbuffer[0] == 'B' && msgbuffer[1] == 'P') //Ball Position
+	{
+		std::cout << "Ball Position" << std::endl;
+	}
+	else if (msgbuffer[0] == 'B' && msgbuffer[1] == 'R') //Ball Rotation
+	{
+		std::cout << "Ball Rotation" << std::endl;
+	}
+	else if (msgbuffer[0] == 'B' && msgbuffer[1] == 'O') //Ball Ownership Receive
+	{
+		std::cout << "Ball Ownership Receive" << std::endl;
+	}
+	else if (msgbuffer[0] == 'C' && msgbuffer[1] == 'I') //New Client ID
+	{
+		std::cout << "Accepted by Server" << std::endl;
+		mConnReady = true;
+		mConnected = true;
+	}
+	else if (msgbuffer[0] == 'N' && msgbuffer[1] == 'C')
+	{
+		std::cout << "New Client Accepted" << std::endl; //New Client handling
+		mNumOfClient++;
+		std::string sent_message = "CI " + std::to_string(mNumOfClient);
+		sent_message = "OI" + std::to_string(sent_message.size()) + '|' + sent_message;
 		if (send(hostSock, sent_message.c_str(), sent_message.size(), 0) == SOCKET_ERROR)
 		{
-			std::cout << "PEER: FAILED TO SEND" << std::endl;
+			std::cout << "Fail to send ID back" << std::endl;
+			mConnReady = false;			
 		}
+		//mGwManager->AddGw(mLocalPeerID);
+		mConnReady = true;
+		mConnected = true;
 	}
 }
 
@@ -569,19 +550,13 @@ void Network::SendIsPause()
 
 	std::cout << "SENDING PS: " << std::to_string(mLastPause) << std::endl;
 
-	if (!HostExist)
+	if (mIsHost)
 	{
-		if (send(hostSock, sent_message.c_str(), sent_message.size(), 0) == SOCKET_ERROR)
-		{
-			std::cout << "HOST: FAILED TO SEND Pause" << std::endl;
-		}
+		this->ServerSend(sent_message);
 	}
 	else
 	{
-		if (send(peerSock, sent_message.c_str(), sent_message.size(), 0) == SOCKET_ERROR)
-		{
-			std::cout << "PEER: FAILED TO SEND Pause" << std::endl;
-		}
+		this->ClientSend(sent_message);
 	}
 }
 
@@ -599,19 +574,13 @@ void Network::SendGwPos()
 	std::string sent_message = convert.str();
 	sent_message = "OI" + std::to_string(sent_message.size()) + '|' + sent_message;
 	cout << "Sending: " << sent_message << endl;
-	if (!HostExist)
+	if (mIsHost)
 	{
-		if (send(hostSock, sent_message.c_str(), sent_message.size(), 0) == SOCKET_ERROR)
-		{
-			std::cout << "HOST: FAILED TO SENDGW POS" << std::endl;
-		}
+		this->ServerSend(sent_message);
 	}
 	else
 	{
-		if (send(peerSock, sent_message.c_str(), sent_message.size(), 0) == SOCKET_ERROR)
-		{
-			std::cout << "PEER: FAILED TO SEND GW POS" << std::endl;
-		}
+		this->ClientSend(sent_message);
 	}
 }
 
@@ -626,19 +595,13 @@ void Network::SendGwForce()
 	std::string sent_message = convert.str();
 	sent_message = "OI" + std::to_string(sent_message.size()) + '|' + sent_message;
 	cout << "Sending: " << sent_message << endl;
-	if (!HostExist)
+	if (mIsHost)
 	{
-		if (send(hostSock, sent_message.c_str(), sent_message.size(), 0) == SOCKET_ERROR)
-		{
-			std::cout << "HOST: FAILED TO SENDGW POS" << std::endl;
-		}
+		this->ServerSend(sent_message);
 	}
 	else
 	{
-		if (send(peerSock, sent_message.c_str(), sent_message.size(), 0) == SOCKET_ERROR)
-		{
-			std::cout << "PEER: FAILED TO SEND GW POS" << std::endl;
-		}
+		this->ClientSend(sent_message);
 	}
 }
 

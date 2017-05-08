@@ -8,7 +8,7 @@ ConfigClass::ConfigClass() :
 	mFullScreen(false),
 	mScreenWidth(0),
 	mScreenHeight(0),
-	mSurfaceRadius(30.f),
+	mSurfaceRadius(40.f),
 	mNumberOfBalls(0),
 	mBallRadius(0),
 	mDisplayAll(false),
@@ -22,7 +22,9 @@ ConfigClass::ConfigClass() :
 	mTimeScale(1.f),
 	mInitServer(true),
 	mUDPPort(9171),
-	mHostIP("127.0.0.1")
+	mTCPPort(9172),
+	mHostIP("127.0.0.1"),
+	mMaxClient(3)
 {
 	if (!ReadConfigFile())
 	{
@@ -205,6 +207,16 @@ int ConfigClass::GetUDPPort() const
 	return mUDPPort;
 }
 
+void ConfigClass::SetTCPPort(int InStr)
+{
+	mTCPPort = InStr;
+}
+
+int ConfigClass::GetTCPPort() const
+{
+	return mTCPPort;
+}
+
 void ConfigClass::SetHostIP(string InStr)
 {
 	mHostIP = InStr;
@@ -213,6 +225,16 @@ void ConfigClass::SetHostIP(string InStr)
 string ConfigClass::GetHostIP() const
 {
 	return mHostIP;
+}
+
+void ConfigClass::SetMaxClient(int InVal)
+{
+	mMaxClient = InVal;
+}
+
+int ConfigClass::GetMaxClient() const
+{
+	return mMaxClient;
 }
 
 void ConfigClass::Reset()
@@ -384,6 +406,18 @@ void ConfigClass::StoreValue(string &key, string &value)
 			std::cerr << "Invalid argument: " << ia.what() << '\n';
 		}		
 	}
+	else if (key == "TCPPort")
+	{
+		try {
+			int InTCPPort = stoi(value);
+			mTCPPort = InTCPPort;
+		}
+		catch (const std::invalid_argument& ia)
+		{
+			SetDefault(key);
+			std::cerr << "Invalid argument: " << ia.what() << '\n';
+		}
+	}
 	else if(key == "HostIP")
 	{
 		mHostIP = value;
@@ -430,9 +464,13 @@ void ConfigClass::SetDefault(string & key)
 	{
 		mInitServer = false;
 	}
-	else if (key == "Port")
+	else if (key == "UDPPort")
 	{
 		mUDPPort = 9171;
+	}
+	else if (key == "TCPPort")
+	{
+		mUDPPort = 9172;
 	}
 	else if(key == "HostIP")
 	{

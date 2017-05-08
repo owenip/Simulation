@@ -55,8 +55,14 @@ public:
 	void	SetUDPPort(int InStr);
 	int		GetUDPPort() const;
 
+	void	SetTCPPort(int InStr);
+	int		GetTCPPort() const;
+
 	void	SetHostIP(string InStr);
 	string	GetHostIP() const;
+
+	void	SetMaxClient(int InVal);
+	int		GetMaxClient() const;
 
 	void	Reset();
 
@@ -104,8 +110,10 @@ private:
 
 	float mTimeScale;
 
+	int mMaxClient;
 	bool mInitServer;
 	int mUDPPort;
+	int mTCPPort;
 	string	mHostIP;
 };
 
