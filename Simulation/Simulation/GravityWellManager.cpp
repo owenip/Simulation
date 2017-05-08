@@ -26,21 +26,21 @@ bool GravityWellManager::Initialise(shared_ptr<ConfigClass> Config)
 	SimpleMath::Color GwColor;
 	switch (mLocalPeerID)
 	{
-	case 0:
-	{
-		GwColor = Colors::Red;
-		break;
-	}
-	case 1:
-	{
-		GwColor = Colors::Green;
-		break;
-	}
-	case 2:
-	{
-		GwColor = Colors::Blue;
-		break;
-	}
+		case 0:
+		{
+			GwColor = Colors::Red;
+			break;
+		}
+		case 1:
+		{
+			GwColor = Colors::Green;
+			break;
+		}
+		case 2:
+		{
+			GwColor = Colors::Blue;
+			break;
+		}
 	}
 	this->AddGw(mLocalPeerID, SimpleMath::Vector3::Zero, GwColor);
 	return true;
@@ -69,7 +69,7 @@ void GravityWellManager::Render(SimpleMath::Matrix InView)
 	mDirect3D->GetProj(Proj);
 	mGwEffect->SetProjection(Proj);
 	mGwEffect->SetView(InView);
-
+	std::lock_guard<std::mutex> pt_guard(mustex_gw);
 	for (GravityWellClass* element : mGwIndex)
 	{
 		SimpleMath::Matrix World = SimpleMath::Matrix::Identity;
@@ -120,6 +120,31 @@ float GravityWellManager::GetGwRadius() const
 	return mGwRadius;
 }
 
+
+void GravityWellManager::AddGw(int GwID)
+{
+	std::lock_guard<std::mutex> pt_guard(mustex_gw);
+	SimpleMath::Color GwColor;
+	switch (GwID)
+	{
+		case 0:
+		{
+			GwColor = Colors::Red;
+			break;
+		}
+		case 1:
+		{
+			GwColor = Colors::Green;
+			break;
+		}
+		case 2:
+		{
+			GwColor = Colors::Blue;
+			break;
+		}
+	}
+	this->AddGw(GwID, SimpleMath::Vector3::Zero, GwColor);
+}
 
 void GravityWellManager::AddGw(int InGwID, SimpleMath::Vector3 InGravityWellPos, SimpleMath::Color InGwColor)
 {

@@ -17,6 +17,7 @@ public:
 	void	SetGwRadius(float InGwRadius);
 	float	GetGwRadius() const;
 
+	void	AddGw(int GwID);
 	void	AddGw(int GwID, SimpleMath::Vector3	InGravityWellPos, SimpleMath::Color InGwColor);
 	void	RemoveGw(int GwID);
 

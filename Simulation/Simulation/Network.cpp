@@ -30,7 +30,7 @@ void Network::Initialise(shared_ptr<ConfigClass> InConfig)
 	mUDPPort = mConfig->GetUDPPort();
 	
 	mNetTimer.SetFixedTimeStep(true);
-	mNetTimer.SetTargetElapsedSeconds(1 / (240.f));
+	mNetTimer.SetTargetElapsedSeconds(1 / (200.f));
 }
 
 void Network::Connect()
@@ -369,6 +369,7 @@ void Network::ServerListen()
 						mConnReady = false;
 						break;
 					}
+					mGwManager->AddGw(mLocalPeerID);
 					mConnReady = true;
 				}
 			}
@@ -510,7 +511,8 @@ void Network::ClientListen()
 					mLocalPeerID = peerID;
 					mConfig->SetPeerID(mLocalPeerID);
 					//mConfig->SetIsPaused(true);
-					//mGwManager()
+					mGwManager->AddGw(mLocalPeerID);
+					//mConfig->SetIsPaused(false);
 				}
 			}
 		}

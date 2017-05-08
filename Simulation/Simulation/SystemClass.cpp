@@ -92,11 +92,13 @@ void SystemClass::Run()
 	// Loop until there is a quit message from the window or the user.
 	done = false;
 
-	std::thread thread2(&Simulation::Tick, &mSimulation);
-	SetThreadAffinityMask(thread2.native_handle(), 0b0100);
 	
 	std::thread thread_netowrk(&Network::Tick, &mNetwork);
 	SetThreadAffinityMask(thread_netowrk.native_handle(), 0b0010);
+
+
+	std::thread thread2(&Simulation::Tick, &mSimulation);
+	SetThreadAffinityMask(thread2.native_handle(), 0b0100);
 
 	while (!done)
 	{
