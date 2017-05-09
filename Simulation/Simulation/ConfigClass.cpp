@@ -8,7 +8,7 @@ ConfigClass::ConfigClass() :
 	mFullScreen(false),
 	mScreenWidth(0),
 	mScreenHeight(0),
-	mSurfaceRadius(60.f),
+	mSurfaceRadius(40.f),
 	mNumberOfBalls(0),
 	mBallRadius(0),
 	mDisplayAll(false),

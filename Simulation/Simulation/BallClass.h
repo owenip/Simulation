@@ -81,7 +81,6 @@ private:
 	//Rotation
 	SimpleMath::Vector3 mRotation;
 	
-
 	//Primary Physics State
 	SimpleMath::Vector3 mPosition;	
 	SimpleMath::Vector3 mAcceleration;
@@ -99,6 +98,8 @@ private:
 	float mInverseMass; //Inverse Mass = 1/m
 	//0.995 as no drag
 	float mDamping;
+
+	//Ownership State
 	bool mContended;
 	bool mTransferable;
 

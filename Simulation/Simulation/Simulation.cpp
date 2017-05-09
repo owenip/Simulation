@@ -59,7 +59,7 @@ void Simulation::RunPhysics(DX::StepTimer const& timer)
 	
 	float dt = float(mPhyTimer.GetElapsedSeconds()) * timescale;
 	
-
+	GenSimBallIndex();
 	mManifold.Clear();
 	mBallManager->ClearAccumulator();
 	ApplyGravity();
@@ -117,10 +117,10 @@ unsigned Simulation::GenerateContacts()
 
 void Simulation::GroundBallCollision()
 {	
-	for (auto ball : mBallManager->GetBallIndex())
+	for (auto ball : mBallManager->GetSimIndex())
 	{						
-		if (ball->GetOwenerID() != mPeerID)
-			continue;
+		//if (ball->GetOwenerID() != mPeerID)
+			//continue;
 		float y = ball->GetPosition().y - ball->GetRadius();
 		if (y < 0.0f)
 		{
@@ -149,13 +149,13 @@ void Simulation::GroundBallCollision()
 
 void  Simulation::GroundBallCollision(std::vector<ManifoldPoint> &vec_private)
 {	
-	for (int i = 0; i< mBallManager->GetBallIndex().size(); i++)
+	for (int i = 0; i< mBallManager->GetSimIndex().size(); i++)
 	{
-		if (mBallManager->GetBallIndex()[i]->GetOwenerID() != mPeerID)
-		{
-			continue;
-		}
-		float y = mBallManager->GetBallIndex()[i]->GetPosition().y - mBallManager->GetBallIndex()[i]->GetRadius();
+		//if (mBallManager->GetSimIndex()[i]->GetOwenerID() != mPeerID)
+		//{
+		//	continue;
+		//}
+		float y = mBallManager->GetSimIndex()[i]->GetPosition().y - mBallManager->GetSimIndex()[i]->GetRadius();
 		if (y < 0.0f)
 		{
 			ManifoldPoint contact;
@@ -174,14 +174,14 @@ void  Simulation::GroundBallCollision(std::vector<ManifoldPoint> &vec_private)
 
 void Simulation::BallBallCollision()
 {
-	for (auto b1 : mBallManager->GetBallIndex())
+	for (auto b1 : mBallManager->GetSimIndex())
 	{
-		if (b1->GetOwenerID() != mPeerID)
-			continue;
-		for (auto b2 : mBallManager->GetBallIndex())
+		//if (b1->GetOwenerID() != mPeerID)
+			//continue;
+		for (auto b2 : mBallManager->GetSimIndex())
 		{
-			if (b2->GetOwenerID() != mPeerID)
-				continue;
+			//if (b2->GetOwenerID() != mPeerID)
+				//continue;
 			if ((b1->GetBallId() != b2->GetBallId()))
 			{
 				SimpleMath::Vector3 midline = b1->GetPosition() - b2->GetPosition();
@@ -211,10 +211,10 @@ void Simulation::BallBallCollision()
 
 void Simulation::WallBallCollision()
 {
-	for (auto element : mBallManager->GetBallIndex())
+	for (auto element : mBallManager->GetSimIndex())
 	{
-		if(element->GetOwenerID() != mPeerID)
-			continue;
+		//if(element->GetOwenerID() != mPeerID)
+			//continue;
 		SimpleMath::Vector3 d = element->GetPosition();
 		d.y = 0;
 		float ballDistance = d.LengthSquared();
@@ -236,10 +236,10 @@ void Simulation::WallBallCollision()
 
 void Simulation::ApplyGravity()
 {
-	for (auto ball : mBallManager->GetBallIndex())
+	for (auto ball : mBallManager->GetSimIndex())
 	{
-		if (ball->GetOwenerID() != mPeerID)
-			continue;
+		//if (ball->GetOwenerID() != mPeerID)
+			//continue;
 
 		ball->AddForce(SimpleMath::Vector3(-00.f, -9.81f * ball->GetMass(), 0.f));
 	}
@@ -247,10 +247,10 @@ void Simulation::ApplyGravity()
 
 void Simulation::ApplyGwForce()
 {
-	for (auto ball : mBallManager->GetBallIndex())
+	for (auto ball : mBallManager->GetSimIndex())
 	{
-		if (ball->GetOwenerID() != mPeerID)
-			continue; //Apply force to another peer!!!!
+		//if (ball->GetOwenerID() != mPeerID)
+			//continue; //Apply force to another peer!!!!
 		for (auto Gw : mGwManager->GetGwIndex())
 		{			
 			SimpleMath::Vector3 midline = ball->GetPosition() - Gw->GetPos();
@@ -279,5 +279,21 @@ void Simulation::ApplyGwForce()
 			}
 
 		}	
+	}
+}
+
+void Simulation::GenSimBallIndex()
+{
+	mBallManager->ClearSimIndex();
+	for (auto ball : mBallManager->GetBallIndex())
+	{
+		SimpleMath::Vector3 midline = ball->GetPosition() - mGwManager->GwGetPos(mPeerID);
+		float d = midline.LengthSquared();
+		float rSum = mConfig->GetGwRadius();
+		if (d > rSum* rSum)
+		{
+			continue;
+		}
+		mBallManager->AddSimBall(ball);
 	}
 }

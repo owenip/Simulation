@@ -34,6 +34,8 @@ public:
 	void ApplyGravity();
 	void ApplyGwForce();
 
+	void GenSimBallIndex();
+
 private:
 	std::shared_ptr<BallManagerClass> mBallManager;
 	std::shared_ptr<GravityWellManager> mGwManager;

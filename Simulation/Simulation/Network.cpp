@@ -133,9 +133,10 @@ void Network::Tick()
 
 void Network::SendData()
 {
+	string sendmsg;
 	if(mLastPause != mConfig->GetIsPaused())
-		SendIsPause();
-	SendGwPos();
+		SendIsPause(sendmsg);
+	SendGwPos(sendmsg);
 }
 
 void Network::SetBallManagerPtr(shared_ptr<BallManagerClass> InBallManager)
@@ -347,13 +348,13 @@ void Network::ServerListen()
 
 				//ReadIn Actual msg
 				char msgbuffer[BUFSIZE];
-				iResult = recv(hostSock, msgbuffer, msgLen, 0);
+				iResult = recv(hostSock, msgbuffer, BUFSIZE, 0);
 				if (iResult == SOCKET_ERROR)
 				{
 					break;
 				}
 				//Extact msg
-				this->ExtractMsg(msgbuffer);
+				this->ExtractMsg(string(msgbuffer));
 			}
 		}
 	}
@@ -469,6 +470,7 @@ void Network::ClientListen()
 
 void Network::ServerSend(std::string sent_message)
 {
+
 	if (send(hostSock, sent_message.c_str(), sent_message.size(), 0) == SOCKET_ERROR)
 	{
 		std::cout << "HOST: FAILED TO SEND Pause" << std::endl;
@@ -483,115 +485,114 @@ void Network::ClientSend(std::string sent_message)
 	}
 }
 
-void Network::ExtractMsg(char msgbuffer[BUFSIZE])
-{
-	//Extact msg
-	if (msgbuffer[0] == 'P' && msgbuffer[1] == 'S') //Pause Command
+void Network::ExtractMsg(string msgbuffer)
+{		
+	while (true)
 	{
-		std::cout << "Pause Command Received" << std::endl;
-		recvPause(string(msgbuffer));
-	}
-	else if (msgbuffer[0] == 'T' && msgbuffer[1] == 'S') //TimeScale
-	{
-		std::cout << "TimeScale" << std::endl;
-	}
-	else if (msgbuffer[0] == 'G' && msgbuffer[1] == 'P') //Gw Position
-	{
-		//std::cout << "Gw Position." << std::endl;
-		recvGwPos(string(msgbuffer));
-	}
-	else if (msgbuffer[0] == 'G' && msgbuffer[1] == 'F') //Gw Force
-	{
-		std::cout << "Gw Force" << std::endl;
-	}
-	else if (msgbuffer[0] == 'B' && msgbuffer[1] == 'P') //Ball Position
-	{
-		std::cout << "Ball Position" << std::endl;
-	}
-	else if (msgbuffer[0] == 'B' && msgbuffer[1] == 'R') //Ball Rotation
-	{
-		std::cout << "Ball Rotation" << std::endl;
-	}
-	else if (msgbuffer[0] == 'B' && msgbuffer[1] == 'O') //Ball Ownership Receive
-	{
-		std::cout << "Ball Ownership Receive" << std::endl;
-	}
-	else if (msgbuffer[0] == 'C' && msgbuffer[1] == 'I') //New Client ID
-	{
-		std::cout << "Accepted by Server" << std::endl;
-		mGwManager->SetGwIsActive(0, true);		
-		mConnReady = true;
-		mConnected = true;
-	}
-	else if (msgbuffer[0] == 'N' && msgbuffer[1] == 'C')
-	{
-		std::cout << "New Client Accepted" << std::endl; //New Client handling
-		mNumOfClient++;
-		std::string sent_message = "CI " + std::to_string(mNumOfClient);
-		sent_message = "OI" + std::to_string(sent_message.size()) + '|' + sent_message;
-		if (send(hostSock, sent_message.c_str(), sent_message.size(), 0) == SOCKET_ERROR)
+		if (msgbuffer[0] == 'P' && msgbuffer[1] == 'S') //Pause Command
 		{
-			std::cout << "Fail to send ID back" << std::endl;
-			mConnReady = false;			
+			std::cout << "Pause Command Received" << std::endl;
+			stringstream ss;
+			ss.str(msgbuffer.substr(2));
+			bool InVal;
+			ss >> InVal;
+			recvPause(string(msgbuffer));
 		}
-		mGwManager->SetGwIsActive(mNumOfClient, true);
-		mConnReady = true;
-		mConnected = true;
+		else if (msgbuffer[0] == 'T' && msgbuffer[1] == 'S') //TimeScale
+		{
+			std::cout << "TimeScale" << std::endl;
+		}
+		else if (msgbuffer[0] == 'G' && msgbuffer[1] == 'P') //Gw Position
+		{
+			//std::cout << "Gw Position." << std::endl;
+			recvGwPos(string(msgbuffer));
+		}
+		else if (msgbuffer[0] == 'G' && msgbuffer[1] == 'F') //Gw Force
+		{
+			std::cout << "Gw Force" << std::endl;
+		}
+		else if (msgbuffer[0] == 'B' && msgbuffer[1] == 'P') //Ball Position
+		{
+			std::cout << "Ball Position" << std::endl;
+		}
+		else if (msgbuffer[0] == 'B' && msgbuffer[1] == 'R') //Ball Rotation
+		{
+			std::cout << "Ball Rotation" << std::endl;
+		}
+		else if (msgbuffer[0] == 'B' && msgbuffer[1] == 'O') //Ball Ownership Receive
+		{
+			std::cout << "Ball Ownership Receive" << std::endl;
+		}
+		else if (msgbuffer[0] == 'C' && msgbuffer[1] == 'I') //New Client ID
+		{
+			std::cout << "Accepted by Server" << std::endl;
+			mGwManager->SetGwIsActive(0, true);
+			mConnReady = true;
+			mConnected = true;
+		}
+		else if (msgbuffer[0] == 'N' && msgbuffer[1] == 'C')
+		{
+			std::cout << "New Client Accepted" << std::endl; //New Client handling
+			mNumOfClient++;
+			std::string sent_message = "CI " + std::to_string(mNumOfClient);
+			sent_message = "OI" + std::to_string(sent_message.size()) + '|' + sent_message;
+			if (send(hostSock, sent_message.c_str(), sent_message.size(), 0) == SOCKET_ERROR)
+			{
+				std::cout << "Fail to send ID back" << std::endl;
+				mConnReady = false;
+			}
+			mGwManager->SetGwIsActive(mNumOfClient, true);
+			mConnReady = true;
+			mConnected = true;
+		}
+		else
+		{
+			break;
+		}
 	}
 }
 
-void Network::SendIsPause()
+void Network::SendIsPause(string &str)
 {
 	mLastPause ? mLastPause = false : mLastPause = true;
-	ostringstream convert;
-	convert << "PS"
-		<< mLastPause;
+	stringstream convert;
+	convert << "PS "
+		<< mLastPause << " ";
 	std::string sent_message = convert.str();
 	sent_message = "OI" + std::to_string(sent_message.size()) + '|' + sent_message;
-
-	std::cout << "SENDING PS: " << std::to_string(mLastPause) << std::endl;
-
-	if (mIsHost)
-	{
-		this->ServerSend(sent_message);
-	}
-	else
-	{
-		this->ClientSend(sent_message);
-	}
+	cout << "Sending: " << sent_message << endl;
+	str += sent_message;
 }
 
 
-void Network::SendGwPos()
+void Network::SendGwPos(string &str)
 {
-	ostringstream convert;
-	convert << "GP";
+	stringstream convert;
+	convert << "GP ";
 	SimpleMath::Vector3 GwPos = mGwManager->GwGetPos(mLocalPeerID);
+	
 	convert << mLocalPeerID << " "
 		<< GwPos.x << " "
 		<< GwPos.y << " "
 		<< GwPos.z << " ";
+	
+	//convert.write(reinterpret_cast<char*>(&mLocalPeerID), sizeof(int));
+	//convert.write(reinterpret_cast<char*>(&GwPos), sizeof(SimpleMath::Vector3));
 
 	std::string sent_message = convert.str();
-	sent_message = "OI" + std::to_string(sent_message.size()) + '|' + sent_message;
+	sent_message = std::to_string(sent_message.size()) + '|' + sent_message;
 	cout << "Sending: " << sent_message << endl;
-	if (mIsHost)
-	{
-		this->ServerSend(sent_message);
-	}
-	else
-	{
-		this->ClientSend(sent_message);
-	}
+	
+	str += sent_message;
 }
 
 void Network::SendGwForce()
 {
-	ostringstream convert;
+	stringstream convert;
 	convert << "GF";
 	float GwForce = mGwManager->GwGetForce(mLocalPeerID);
 	convert << mLocalPeerID << " "
-			<< GwForce << endl;
+			<< GwForce << " ";
 
 	std::string sent_message = convert.str();
 	sent_message = "OI" + std::to_string(sent_message.size()) + '|' + sent_message;
@@ -627,6 +628,7 @@ void Network::recvTimeScale(string input)
 
 void Network::recvGwPos(string input)
 {
+	/*
 	
 	stringstream ss;
 	ss.str(input.substr(2));
@@ -638,6 +640,12 @@ void Network::recvGwPos(string input)
 				<< x << "|"
 				<< y << "|" 
 				<< z <<	std::endl;
+	*/
+	int InGwID;
+	SimpleMath::Vector3 InPos;
+	memcpy_s(&InGwID, sizeof(int), input.c_str(), input.length());
+	memcpy_s(&InPos, sizeof(SimpleMath::Vector3), input.c_str() + sizeof(int), input.length() - sizeof(int));
+
 	mGwManager->GwSetPos(InGwID, InPos);
 }
 
@@ -658,7 +666,27 @@ void Network::recvBallPos(string input)
 	stringstream ss;
 	ss.str(input.substr(2));
 	int InBallID;
-	
+	SimpleMath::Vector3 InPos;
+	ss >> InBallID >> InPos.x >> InPos.y >> InPos.z;
+	std::cout << "Re:Ball Pos " << InBallID << "|"
+		<< InPos.x << "|"
+		<< InPos.y << "|"
+		<< InPos.z << std::endl;
+	mBallManager->SetBallPos(InBallID, InPos);
+}
+
+void Network::recvBallRotate(string input)
+{
+	stringstream ss;
+	ss.str(input.substr(2));
+	int InBallID;
+	SimpleMath::Vector3 InRotation;
+	ss >> InBallID >> InRotation.x >> InRotation.y >> InRotation.z;
+	std::cout << "Re:Ball Rotation " << InBallID << "|"
+		<< InRotation.x << "|"
+		<< InRotation.y << "|"
+		<< InRotation.z << std::endl;
+	mBallManager->SetBallPos(InBallID, InRotation);
 }
 
 

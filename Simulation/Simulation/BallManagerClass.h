@@ -26,6 +26,14 @@ public:
 	std::vector<BallClass*> GetBallIndex();
 
 	void GetSimIndex(std::vector<BallClass*>& SimIndex);
+	std::vector<BallClass*> GetSimIndex();
+
+	void ClearSimIndex();
+	void AddSimBall(BallClass* InBall);
+
+	void SetBallPos(int BallID, SimpleMath::Vector3 InPos);
+
+	void SetBallRotatation(int BallID, SimpleMath::Vector3 InRotation);
 
 private:
 	void CreateBallIndex();
@@ -33,6 +41,8 @@ private:
 
 
 private:
+	std::mutex mutex_BallManager;
+
 	shared_ptr<D3DClass> mDirect3D;
 	shared_ptr<ConfigClass> mConfig;
 

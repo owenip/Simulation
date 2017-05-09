@@ -21,6 +21,10 @@ bool BallManagerClass::Initialise(shared_ptr<ConfigClass> Config)
 	mBallRadius = mConfig->GetBallRadius();
 	PeerID = mConfig->GetPeerID();
 
+	mSimBallIndex.reserve(mNumberOfBalls);
+	mOwnedBallIndex.reserve(mNumberOfBalls);
+	mBallIndex.reserve(mNumberOfBalls);
+
 	this->CreateBallIndex();
 
 	return true;
@@ -79,7 +83,7 @@ void BallManagerClass::ClearAccumulator()
 
 void BallManagerClass::Integrate(float dt)
 {
-	for(BallClass *Ball : mBallIndex)
+	for(BallClass *Ball : mSimBallIndex)
 	{
 		if(Ball->GetOwenerID() != mConfig->GetPeerID())
 			continue;
@@ -111,6 +115,9 @@ void BallManagerClass::ReSetBallPosition()
 				mBallIndex[ProcessedBall]->SetVelocity(Zero);
 				mBallIndex[ProcessedBall]->SetAcceleration(Zero);
 				ProcessedBall++;
+
+				
+
 
 				if (ProcessedBall >= mNumberOfBalls)
 				{
@@ -174,6 +181,7 @@ void BallManagerClass::Update(float dt)
 
 void BallManagerClass::Render(SimpleMath::Matrix View)
 {
+	std::lock_guard<std::mutex> BallManager_guard(mutex_BallManager);
 	SimpleMath::Matrix Proj = SimpleMath::Matrix::Identity;
 	mDirect3D->GetProj(Proj);
 	m_Balleffect->SetProjection(Proj);
@@ -183,45 +191,48 @@ void BallManagerClass::Render(SimpleMath::Matrix View)
 
 	if (mConfig->GetDisplayAll() == false)
 	{
-		for (auto Ball : mBallIndex)
+		if (mSimBallIndex.size() > 0)
 		{
-			if (Ball->GetOwenerID() == PeerID)
+			for (auto Ball : mSimBallIndex)
 			{
-				SimpleMath::Color c(0, 0, 0, 0.5f);
-				if (Ball->GetOwenerID() == 0)
+				if (Ball->GetOwenerID() == PeerID)
 				{
-					m_Balleffect->SetLightSpecularColor(0, Colors::Wheat);
-				}
-				else if (Ball->GetOwenerID() == 1)
-				{
-					m_Balleffect->SetLightDiffuseColor(0, Colors::Green);
-				}
-				else if (Ball->GetOwenerID() == 2)
-				{
-					m_Balleffect->SetLightDiffuseColor(0, Colors::Blue);
-				}	
+					SimpleMath::Color c(0, 0, 0, 0.5f);
+					if (Ball->GetOwenerID() == 0)
+					{
+						m_Balleffect->SetLightSpecularColor(0, Colors::Wheat);
+					}
+					else if (Ball->GetOwenerID() == 1)
+					{
+						m_Balleffect->SetLightDiffuseColor(0, Colors::Green);
+					}
+					else if (Ball->GetOwenerID() == 2)
+					{
+						m_Balleffect->SetLightDiffuseColor(0, Colors::Blue);
+					}
 
-				if (Ball->GetMass() == 1.f)
-				{					
-					m_Balleffect->SetTexture(m_LightTexture.Get());
-				}
-				else if (Ball->GetMass() == 2.f)
-				{					
-					m_Balleffect->SetTexture(m_Mediumtexture.Get());
-				}
-				else if (Ball->GetMass() == 5.f)
-				{
-					m_Balleffect->SetTexture(m_Heavytexture.Get());					
-				}
+					if (Ball->GetMass() == 1.f)
+					{
+						m_Balleffect->SetTexture(m_LightTexture.Get());
+					}
+					else if (Ball->GetMass() == 2.f)
+					{
+						m_Balleffect->SetTexture(m_Mediumtexture.Get());
+					}
+					else if (Ball->GetMass() == 5.f)
+					{
+						m_Balleffect->SetTexture(m_Heavytexture.Get());
+					}
 
-				SimpleMath::Vector3 newPos;
-				Ball->GetPosition(newPos);
-				SimpleMath::Matrix  World = SimpleMath::Matrix::CreateFromYawPitchRoll(Ball->GetRotation().y, Ball->GetRotation().x, 0.f);
+					SimpleMath::Vector3 newPos;
+					Ball->GetPosition(newPos);
+					SimpleMath::Matrix  World = SimpleMath::Matrix::CreateFromYawPitchRoll(Ball->GetRotation().y, Ball->GetRotation().x, 0.f);
 
-				World.Translation(newPos);
-				m_Balleffect->SetWorld(World);
-				mBallPrimitive->Draw(m_Balleffect.get(), m_inputLayout.Get());
+					World.Translation(newPos);
+					m_Balleffect->SetWorld(World);
+					mBallPrimitive->Draw(m_Balleffect.get(), m_inputLayout.Get());
 
+				}
 			}
 		}
 	}
@@ -288,6 +299,46 @@ std::vector<BallClass*> BallManagerClass::GetBallIndex()
 void BallManagerClass::GetSimIndex(std::vector<BallClass*>& SimIndex)
 {
 	mSimBallIndex = SimIndex;
+}
+
+std::vector<BallClass*> BallManagerClass::GetSimIndex()
+{
+	return mSimBallIndex;
+}
+
+void BallManagerClass::ClearSimIndex()
+{
+	std::lock_guard<std::mutex> BallManager_guard(mutex_BallManager);
+	mSimBallIndex.clear();
+}
+
+void BallManagerClass::AddSimBall(BallClass * InBall)
+{
+	std::lock_guard<std::mutex> BallManager_guard(mutex_BallManager);
+	mSimBallIndex.push_back(InBall);
+}
+
+void BallManagerClass::SetBallPos(int BallID, SimpleMath::Vector3 InPos)
+{
+
+	for (BallClass *Ball : mSimBallIndex)
+	{
+		if (Ball->GetBallId() != BallID)
+			continue;
+		Ball->SetPosition(InPos);
+		break;
+	}
+}
+
+void BallManagerClass::SetBallRotatation(int BallID, SimpleMath::Vector3 InRotation)
+{
+	for (BallClass *Ball : mSimBallIndex)
+	{
+		if (Ball->GetBallId() != BallID)
+			continue;
+		Ball->SetRotation(InRotation);
+		break;
+	}
 }
 
 void BallManagerClass::CreateBallIndex()

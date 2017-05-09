@@ -9,7 +9,7 @@ struct client_type
 	SOCKET socket;
 };
 
-#define BUFSIZE 512
+#define BUFSIZE 1024
 const char OPTION_VALUE = 1;
 
 class Network
@@ -44,10 +44,10 @@ private:
 	void ServerSend(std::string sent_message);
 	void ClientSend(std::string sent_message);
 
-	void ExtractMsg(char Inmsg[BUFSIZE]);
+	void ExtractMsg(string msgbuffer);
 
-	void SendIsPause();
-	void SendGwPos();
+	void SendIsPause(string &str);
+	void SendGwPos(string &str);
 	void SendGwForce();
 
 	void recvPause(string input);
