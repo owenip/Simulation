@@ -36,6 +36,8 @@ public:
 
 	void GenSimBallIndex();
 
+	void CheckTransferableBall();
+
 private:
 	std::shared_ptr<BallManagerClass> mBallManager;
 	std::shared_ptr<GravityWellManager> mGwManager;

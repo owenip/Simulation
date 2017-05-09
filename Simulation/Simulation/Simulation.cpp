@@ -401,6 +401,10 @@ void Simulation::ApplyGwForce()
 				//continue; //Apply force to another peer!!!!
 			for (auto Gw : mGwManager->GetGwIndex())
 			{
+				if (Gw->GetIsActive() == false)
+				{
+					continue;
+				}
 				SimpleMath::Vector3 midline = ball->GetPosition() - Gw->GetPos();
 				float d = midline.LengthSquared();
 				float rSum = mConfig->GetGwRadius();
@@ -437,6 +441,10 @@ void Simulation::ApplyGwForce()
 			//continue; //Apply force to another peer!!!!
 			for (auto Gw : mGwManager->GetGwIndex())
 			{
+				if(Gw->GetIsActive() == false)
+				{
+					continue;
+				}
 				SimpleMath::Vector3 midline = ball->GetPosition() - Gw->GetPos();
 				float d = midline.LengthSquared();
 				float rSum = mConfig->GetGwRadius();
@@ -475,10 +483,34 @@ void Simulation::GenSimBallIndex()
 		SimpleMath::Vector3 midline = ball->GetPosition() - mGwManager->GwGetPos(mPeerID);
 		float d = midline.LengthSquared();
 		float rSum = mConfig->GetGwRadius();
-		if (d > rSum* rSum)
+		if (d > rSum* rSum && ball->GetOwenerID() != mPeerID)
 		{
 			continue;
 		}
 		mBallManager->AddSimBall(ball);
+	}
+}
+
+void Simulation::CheckTransferableBall()
+{
+	for (auto ball : mBallManager->GetBallIndex())
+	{
+		if (ball->GetOwenerID() != mPeerID)
+			continue;
+		for (auto Gw : mGwManager->GetGwIndex())
+		{
+			if (Gw->GetIsActive() == false)
+			{
+				continue;
+			}
+			SimpleMath::Vector3 midline = ball->GetPosition() - Gw->GetPos();
+			float d = midline.LengthSquared();
+			float rSum = mConfig->GetGwRadius();
+			if (d > rSum* rSum)
+			{
+				continue;
+			}
+			ball->mTransferable = true;
+		}
 	}
 }

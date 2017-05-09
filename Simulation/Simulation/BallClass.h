@@ -72,6 +72,7 @@ public:
 	SimpleMath::Vector3 GetRotation() const;
 
 	SimpleMath::Vector3 mLastPosition;
+	bool mTransferable;
 private:
 	void recalculate();
 	
@@ -101,7 +102,7 @@ private:
 
 	//Ownership State
 	bool mContended;
-	bool mTransferable;
+	
 
 	struct Derivative
 	{
