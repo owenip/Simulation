@@ -75,19 +75,41 @@ bool BallManagerClass::Initialise(shared_ptr<D3DClass> Direct3D)
 
 void BallManagerClass::ClearAccumulator()
 {
-	for (BallClass *Ball : mBallIndex)
+	if (mConfig->GetDisplayAll() == false)
 	{
-		Ball->ClearAccumulator();
+		for (BallClass *Ball : mSimBallIndex)
+		{
+			Ball->ClearAccumulator();
+		}
+	}
+	else
+	{
+		for (BallClass *Ball : mBallIndex)
+		{
+			Ball->ClearAccumulator();
+		}
 	}
 }
 
 void BallManagerClass::Integrate(float dt)
 {
-	for(BallClass *Ball : mSimBallIndex)
+	if (mConfig->GetDisplayAll() == false)
 	{
-		if(Ball->GetOwenerID() != mConfig->GetPeerID())
-			continue;
-		Ball->Integrate(dt);
+		for (BallClass *Ball : mSimBallIndex)
+		{
+			if (Ball->GetOwenerID() != mConfig->GetPeerID())
+				continue;
+			Ball->Integrate(dt);
+		}
+	}
+	else
+	{
+		for (BallClass *Ball : mBallIndex)
+		{
+			if (Ball->GetOwenerID() != mConfig->GetPeerID())
+				continue;
+			Ball->Integrate(dt);
+		}
 	}
 }
 
@@ -161,21 +183,43 @@ void BallManagerClass::ReSetBallPosition()
 
 void BallManagerClass::Update(float dt)
 {
-	for (auto Ball: mBallIndex)
+	if (mConfig->GetDisplayAll() == false)
 	{
-		SimpleMath::Vector3 newPos, newVelocity, newtotation;
-		Ball->GetPosition(newPos);
-		Ball->GetVelocity(newVelocity);
-		Ball->GetRotation(newtotation);
-		//Create yaw pitch row
-		newtotation.y = atan2f(Ball->mLastPosition.x - newPos.x, Ball->mLastPosition.z - newPos.z);
-		newtotation.x -= abs(newVelocity.x* dt  ) + abs(newVelocity.z * dt);
+		for (auto Ball : mSimBallIndex)
+		{
+			SimpleMath::Vector3 newPos, newVelocity, newtotation;
+			Ball->GetPosition(newPos);
+			Ball->GetVelocity(newVelocity);
+			Ball->GetRotation(newtotation);
+			//Create yaw pitch row
+			newtotation.y = atan2f(Ball->mLastPosition.x - newPos.x, Ball->mLastPosition.z - newPos.z);
+			newtotation.x -= abs(newVelocity.x* dt) + abs(newVelocity.z * dt);
 
-		if (newtotation.x >= XM_PI * 2)
-			newtotation.x = 0;
-		newtotation.z = 0.f;
+			if (newtotation.x >= XM_PI * 2)
+				newtotation.x = 0;
+			newtotation.z = 0.f;
 
-		Ball->SetRotation(newtotation);
+			Ball->SetRotation(newtotation);
+		}
+	}
+	else
+	{
+		for (auto Ball : mBallIndex)
+		{
+			SimpleMath::Vector3 newPos, newVelocity, newtotation;
+			Ball->GetPosition(newPos);
+			Ball->GetVelocity(newVelocity);
+			Ball->GetRotation(newtotation);
+			//Create yaw pitch row
+			newtotation.y = atan2f(Ball->mLastPosition.x - newPos.x, Ball->mLastPosition.z - newPos.z);
+			newtotation.x -= abs(newVelocity.x* dt) + abs(newVelocity.z * dt);
+
+			if (newtotation.x >= XM_PI * 2)
+				newtotation.x = 0;
+			newtotation.z = 0.f;
+
+			Ball->SetRotation(newtotation);
+		}
 	}
 }
 
@@ -240,24 +284,43 @@ void BallManagerClass::Render(SimpleMath::Matrix View)
 	{
 		for (auto Ball : mBallIndex)
 		{			
-			if (Ball->GetOwenerID() == 0)
-				m_Balleffect->SetLightDiffuseColor(0, Colors::Wheat);
-			else if (Ball->GetOwenerID() == 1)
-				m_Balleffect->SetLightDiffuseColor(0, Colors::Green);
-			else if (Ball->GetOwenerID() == 2)
-				m_Balleffect->SetLightDiffuseColor(0, Colors::Blue);
+			//if (Ball->GetOwenerID() == PeerID)
+			{
+				SimpleMath::Color c(0, 0, 0, 0.5f);
+				if (Ball->GetOwenerID() == 0)
+				{
+					m_Balleffect->SetLightSpecularColor(0, Colors::Wheat);
+				}
+				else if (Ball->GetOwenerID() == 1)
+				{
+					m_Balleffect->SetLightDiffuseColor(0, Colors::Green);
+				}
+				else if (Ball->GetOwenerID() == 2)
+				{
+					m_Balleffect->SetLightDiffuseColor(0, Colors::Blue);
+				}
 
-			
-			SimpleMath::Vector3 newPos, newVelocity;
-			Ball->GetPosition(newPos);
-			Ball->GetVelocity(newVelocity);
-			//SimpleMath::Matrix World = SimpleMath::Matrix::Identity;
-			SimpleMath::Matrix  World = SimpleMath::Matrix::CreateFromYawPitchRoll(Ball->GetRotation().y, Ball->GetRotation().x, 0.f);
+				if (Ball->GetMass() == 1.f)
+				{
+					m_Balleffect->SetTexture(m_LightTexture.Get());
+				}
+				else if (Ball->GetMass() == 2.f)
+				{
+					m_Balleffect->SetTexture(m_Mediumtexture.Get());
+				}
+				else if (Ball->GetMass() == 5.f)
+				{
+					m_Balleffect->SetTexture(m_Heavytexture.Get());
+				}
 
-			World.Translation(newPos);
-			m_Balleffect->SetWorld(World);
+				SimpleMath::Vector3 newPos;
+				Ball->GetPosition(newPos);
+				SimpleMath::Matrix  World = SimpleMath::Matrix::CreateFromYawPitchRoll(Ball->GetRotation().y, Ball->GetRotation().x, 0.f);
 
-			mBallPrimitive->Draw(m_Balleffect.get(), m_inputLayout.Get());			
+				World.Translation(newPos);
+				m_Balleffect->SetWorld(World);
+				mBallPrimitive->Draw(m_Balleffect.get(), m_inputLayout.Get());
+			}
 		}
 	}
 }
@@ -320,7 +383,7 @@ void BallManagerClass::AddSimBall(BallClass * InBall)
 
 void BallManagerClass::SetBallPos(int BallID, SimpleMath::Vector3 InPos)
 {
-
+	//std::lock_guard<std::mutex> BallManager_guard(mutex_BallManager);
 	for (BallClass *Ball : mBallIndex)
 	{
 		if (Ball->GetBallId() != BallID)
@@ -332,6 +395,7 @@ void BallManagerClass::SetBallPos(int BallID, SimpleMath::Vector3 InPos)
 
 void BallManagerClass::SetBallRotatation(int BallID, SimpleMath::Vector3 InRotation)
 {
+	std::lock_guard<std::mutex> BallManager_guard(mutex_BallManager);
 	for (BallClass *Ball : mBallIndex)
 	{
 		if (Ball->GetBallId() != BallID)
@@ -343,6 +407,7 @@ void BallManagerClass::SetBallRotatation(int BallID, SimpleMath::Vector3 InRotat
 
 void BallManagerClass::CreateBallIndex()
 {
+	//std::lock_guard<std::mutex> BallManager_guard(mutex_BallManager);
 	mBallIndex.clear();
 	//Spawn along x axis
 	//for (int i = 0; i < mNumberOfBalls; i++)

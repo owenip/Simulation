@@ -9,7 +9,7 @@ struct client_type
 	SOCKET socket;
 };
 
-#define BUFSIZE 1024
+#define BUFSIZE 655536
 const char OPTION_VALUE = 1;
 
 class Network

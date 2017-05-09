@@ -24,9 +24,9 @@ Network::~Network()
 	//Clean up Winsock
 	WSACleanup();
 
-	mConfig.reset();
-	mBallManager.reset();
-	mGwManager.reset();
+	//mConfig.reset();
+	//mBallManager.reset();
+	//mGwManager.reset();
 }
 
 void Network::Initialise(shared_ptr<ConfigClass> InConfig)
@@ -37,7 +37,7 @@ void Network::Initialise(shared_ptr<ConfigClass> InConfig)
 	mUDPPort = mConfig->GetUDPPort();
 	
 	mNetTimer.SetFixedTimeStep(true);
-	mNetTimer.SetTargetElapsedSeconds(1 / (200.f));
+	mNetTimer.SetTargetElapsedSeconds(1 / (60.f));
 }
 
 void Network::Connect()
@@ -111,8 +111,10 @@ void Network::Tick()
 {
 	std::thread thread_Connect(&Network::Connect, this);
 	while (true)
-	{		
-		if (mConfig->GetIsEscaped())
+	{
+		mIsEscaped = mConfig->GetIsEscaped();
+		
+		if (mIsEscaped)
 		{
 			break;
 		}
@@ -138,7 +140,7 @@ void Network::SendData()
 		SendIsPause(sendmsg);
 	SendGwPos(sendmsg);
 	SendBallPos(sendmsg);
-
+	
 
 	sendmsg += "#";
 	sendmsg = "OI" + std::to_string(sendmsg.size()) + '|' + sendmsg;
@@ -312,7 +314,7 @@ void Network::ServerListen()
 	hostSock = accept(hostSock, NULL, NULL);
 	std::cout << "Attemp to Accept incoming socket" << std::endl;
 	
-	while (!mConfig->GetIsEscaped())
+	while (!mIsEscaped)
 	{
 		//Checking socket
 		if (hostSock == INVALID_SOCKET)
@@ -410,7 +412,7 @@ void Network::ClientListen()
 {
 	//SOCKET incoming = INVALID_SOCKET;
 	//incoming = peerSock;
-	while (!mConfig->GetIsEscaped())
+	while (!mIsEscaped)
 	{
 		//Checking socket
 		if (peerSock == INVALID_SOCKET)
@@ -673,7 +675,7 @@ void Network::SendBallPos(string &str)
 {
 	for(auto Ball: mBallManager->GetBallIndex())
 	{
-		if(Ball->GetOwenerID() == mLocalPeerID)
+		if(Ball->GetOwenerID() != mLocalPeerID)		
 			continue;
 		SimpleMath::Vector3 BallPos = Ball->GetPosition();
 		stringstream convert;
@@ -685,7 +687,6 @@ void Network::SendBallPos(string &str)
 
 		std::string sent_message = convert.str();
 		cout << "Sending: " << sent_message << endl;
-
 		str += sent_message;
 	}
 	
