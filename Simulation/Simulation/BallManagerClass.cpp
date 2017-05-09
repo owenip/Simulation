@@ -321,7 +321,7 @@ void BallManagerClass::AddSimBall(BallClass * InBall)
 void BallManagerClass::SetBallPos(int BallID, SimpleMath::Vector3 InPos)
 {
 
-	for (BallClass *Ball : mSimBallIndex)
+	for (BallClass *Ball : mBallIndex)
 	{
 		if (Ball->GetBallId() != BallID)
 			continue;
@@ -332,7 +332,7 @@ void BallManagerClass::SetBallPos(int BallID, SimpleMath::Vector3 InPos)
 
 void BallManagerClass::SetBallRotatation(int BallID, SimpleMath::Vector3 InRotation)
 {
-	for (BallClass *Ball : mSimBallIndex)
+	for (BallClass *Ball : mBallIndex)
 	{
 		if (Ball->GetBallId() != BallID)
 			continue;
@@ -432,7 +432,7 @@ void BallManagerClass::CreateBallIndex()
 			//mBallIndex[i]->AddForce(SimpleMath::Vector3(05.f, -0.981f, 50.f));
 			/*mBallIndex[i]->SetVelocity(SimpleMath::Vector3(6.65f * i, -4.f, 6.3f * i));
 			mBallIndex[i]->SetAcceleration(SimpleMath::Vector3(0.f, 0.f, 0.f));*/
-			//mBallIndex[i]->SetOwenerID(1);
+			mBallIndex[i]->SetOwenerID(1);
 			//mBallIndex[i]->SetMass(150.f);
 		}
 		mBallIndex[i + 1]->SetMass(2.f);

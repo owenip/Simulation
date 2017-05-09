@@ -1,0 +1,13 @@
+//Config File
+FullScreen=false
+ScreenWidth=1024
+ScreenHeight=768
+NumOfBalls=256
+BallRadius=0.5
+Elasticity=0.8
+Friction=0.995
+PeerID=0
+IsServer=True
+UDPPort=9171
+TCPPort=9172
+HostIP=150.237.93.182

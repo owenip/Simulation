@@ -49,6 +49,7 @@ private:
 	void SendIsPause(string &str);
 	void SendGwPos(string &str);
 	void SendGwForce();
+	void SendBallPos(string& str);
 
 	void recvPause(string input);
 	void recvTimeScale(string input);
