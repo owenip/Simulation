@@ -17,7 +17,8 @@ void Simulation::Initialise(shared_ptr<ConfigClass> InConfig)
 	mElasticity = mConfig->GetElasticForce();
 	mGravity = SimpleMath::Vector3(0.f, -9.81f, 0.f);
 	TarPhyFreq = mConfig->GetTarPhyFreq();
-	mPhyTimer.SetFixedTimeStep(false);
+	mPhyTimer.SetFixedTimeStep(true);
+	mPhyTimer.SetTargetElapsedSeconds(1 / TarPhyFreq);
 	mPeerID = mConfig->GetPeerID();
 
 	//mManifold = make_unique<ContactManifold>();
@@ -36,6 +37,13 @@ void Simulation::Tick()
 {
 	while (true)
 	{
+		if (mConfig->GetIsEscaped())
+		{
+			break;
+		}
+		if (TarPhyFreq != mConfig->GetTarNetworkFreq())
+			mPhyTimer.SetTargetElapsedSeconds(1 / TarPhyFreq);
+
 		mPhyTimer.Tick([&]()
 		{
 			if (!mConfig->GetIsPaused())
@@ -43,10 +51,7 @@ void Simulation::Tick()
 				RunPhysics(mPhyTimer);
 			}			
 		});
-		if (mConfig->GetIsEscaped())
-		{			
-			break;
-		}
+		
 	}
 }
 
@@ -56,6 +61,8 @@ void Simulation::RunPhysics(DX::StepTimer const& timer)
 	mFriction = mConfig->GetFriction();
 	mElasticity = mConfig->GetElasticForce();
 	
+	float ActualPhyFreq = float(mPhyTimer.GetFramesPerSecond());
+	mConfig->SetActualPhyFreq(ActualPhyFreq);
 	
 	float dt = float(mPhyTimer.GetElapsedSeconds()) * timescale;
 	

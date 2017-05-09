@@ -383,26 +383,14 @@ void BallManagerClass::AddSimBall(BallClass * InBall)
 
 void BallManagerClass::SetBallPos(int BallID, SimpleMath::Vector3 InPos)
 {
-	//std::lock_guard<std::mutex> BallManager_guard(mutex_BallManager);
-	for (BallClass *Ball : mBallIndex)
-	{
-		if (Ball->GetBallId() != BallID)
-			continue;
-		Ball->SetPosition(InPos);
-		break;
-	}
+	//std::lock_guard<std::mutex> BallManager_guard(mutex_BallManager);	
+	mBallIndex[BallID]->SetPosition(InPos);	
 }
 
 void BallManagerClass::SetBallRotatation(int BallID, SimpleMath::Vector3 InRotation)
 {
-	std::lock_guard<std::mutex> BallManager_guard(mutex_BallManager);
-	for (BallClass *Ball : mBallIndex)
-	{
-		if (Ball->GetBallId() != BallID)
-			continue;
-		Ball->SetRotation(InRotation);
-		break;
-	}
+	std::lock_guard<std::mutex> BallManager_guard(mutex_BallManager);	
+	mBallIndex[BallID]->SetRotation(InRotation);	
 }
 
 void BallManagerClass::CreateBallIndex()
@@ -437,7 +425,7 @@ void BallManagerClass::CreateBallIndex()
 			for (auto j = 0; j < CurSide; j++)
 			{
 				
-				SimpleMath::Vector3 SpawnPos(CurSpawnX, mBallRadius * 10.f, CurSpawnZ);
+				SimpleMath::Vector3 SpawnPos(CurSpawnX, mBallRadius, CurSpawnZ);
 				BallClass *Ball = new BallClass(ProcessedBall, 0, mBallRadius, 1.f,
 					SpawnPos);
 				//Ball->Initialize(ProcessedBall, PeerID, mBallRadius, 10.f,

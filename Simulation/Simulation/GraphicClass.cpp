@@ -154,11 +154,15 @@ void GraphicClass::Tick()
 		{			
 			Render();
 		});
+		mGwForce = mGwManager->GwGetForce(mPeerID);
+		
 		mActualFPS = mGraphicTimer.GetFramesPerSecond();
 		mTarGraphicFreq = mConfig->GetTarGraphicFreq();
 		mTarPhysicsFreq = mConfig->GetTarPhyFreq();
 		mTarNetowrkFreq = mConfig->GetTarNetworkFreq();
-		mGwForce = mGwManager->GwGetForce(mPeerID);
+		
+		mActualNetworkFreq = mConfig->GetActualNetworkFreq();
+		mActualPhysicsFreq = mConfig->GetActualPhyFreq();
 		/*if (mIsEscaped)
 			break;*/
 	}
@@ -250,7 +254,10 @@ bool GraphicClass::InitAntTweak(const HWND hwnd)
 	int barSize[2] = { mScreenWidth / 4, mScreenHeight / 4 };
 	TwSetParam(mATBar, nullptr, "size", TW_PARAM_INT32, 2, barSize);
 	//Non-Changable variables
-	TwAddVarRW(mATBar, "Actual FPS", TW_TYPE_DOUBLE, &mActualFPS, "");
+	TwAddVarRW(mATBar, "Actual FPS", TW_TYPE_FLOAT, &mActualFPS, "");
+	TwAddVarRW(mATBar, "Actual Phy feq", TW_TYPE_FLOAT, &mActualPhysicsFreq, "");
+	TwAddVarRW(mATBar, "Actual Net feq", TW_TYPE_FLOAT, &mActualNetworkFreq, "");
+
 	TwAddVarRW(mATBar, "Balls ownwed by this peer", TW_TYPE_INT32, &mNumberOfBalls, "min=0 max=64000");
 	TwAddVarRW(mATBar, "Balls contended", TW_TYPE_INT32, nullptr, "");
 	TwAddVarRW(mATBar, "Total number of balls", TW_TYPE_INT32, &mNumberOfBalls, "");

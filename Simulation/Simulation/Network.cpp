@@ -36,20 +36,39 @@ void Network::Initialise(shared_ptr<ConfigClass> InConfig)
 	mLocalPeerID = mConfig->GetPeerID();
 	mUDPPort = mConfig->GetUDPPort();
 	
+	TarFreq = mConfig->GetTarNetworkFreq();
+
 	mNetTimer.SetFixedTimeStep(true);
-	mNetTimer.SetTargetElapsedSeconds(1 / (60.f));
+	mNetTimer.SetTargetElapsedSeconds(1 / TarFreq);
+}
+
+void Network::Update(DX::StepTimer const & timer)
+{
+	//float dt = float(mNetTimer.GetElapsedSeconds());
+	float ActualNetFreq = float(mNetTimer.GetFramesPerSecond());
+	mConfig->SetActualNetworkFreq(ActualNetFreq);
+
+	
+	if(TarFreq != mConfig->GetTarNetworkFreq())
+		mNetTimer.SetTargetElapsedSeconds(1 / mConfig->GetTarNetworkFreq());
+
 }
 
 void Network::Connect()
 {
 	//Setup Flag
 	mConnReady = false;
-	
-	if(mConfig->GetInitServer())
+	bool HostExist = InitUPDListener();
+	if(!HostExist)
 	{
 		InitServer();
+		std::thread thread_IPBoardcast(&Network::InitUDPBoardcaster, this);
+		thread_IPBoardcast.detach();
 		std::thread thread_sListen(&Network::ServerListen, this);
 		mIsHost = true;
+		//mLocalPeerID = 0;
+		//mConfig->SetPeerID(mLocalPeerID);
+		//mGwManager->GetGwIndex()[mLocalPeerID]->SetIsActive(true);
 		thread_sListen.detach();		
 	}
 	else
@@ -57,13 +76,17 @@ void Network::Connect()
 		if (InitClient())
 		{
 			std::thread thread_cListen(&Network::ClientListen, this);
+			//mLocalPeerID = 1;
+			//mConfig->SetPeerID(mLocalPeerID);
+			//mGwManager->GetGwIndex()[mLocalPeerID]->SetIsActive(true);
 			mIsHost = false;
 			thread_cListen.detach();
 		}
 		else
 		{
 			//Cant Connect to Host
-			mConfig->SetInitServer(true);
+			//mConfig->SetInitServer(true);
+			mIsHost = true;
 		}
 	}
 	mConnReady = true;
@@ -124,6 +147,7 @@ void Network::Tick()
 		}
 		mNetTimer.Tick([&]
 		{
+			Update(mNetTimer);
 			if (mConnected)
 			{
 				SendData();
@@ -280,7 +304,7 @@ void Network::InitUDPBoardcaster()
 
 	IPmsg = "OI" + std::to_string(IPmsg.size()) + " " + IPmsg;
 
-	while (!mConfig->GetIsEscaped())
+	while (!mIsEscaped)
 	{
 		sendto(UDPSendSock, IPmsg.c_str(), sizeof(IPmsg), 0, (SOCKADDR*)&broadAddr, sizeof(broadAddr));
 		Sleep(500);
@@ -383,7 +407,7 @@ bool Network::InitClient()
 {
 	hostSock = socket(AF_INET, SOCK_STREAM, 0);
 	peerSock = socket(AF_INET, SOCK_STREAM, 0);
-	HostIP = mConfig->GetHostIP();
+	//HostIP = mConfig->GetHostIP();
 	peerAddr.sin_family = AF_INET;
 	inet_pton(AF_INET, HostIP.c_str(), &peerAddr.sin_addr);
 	peerAddr.sin_port = htons(mTCPPort);
@@ -758,7 +782,7 @@ void Network::recvBallPos(string input)
 		<< InPos.z << std::endl;
 	mBallManager->SetBallPos(InBallID, InPos);
 }
-
+ 
 void Network::recvBallRotate(string input)
 {
 	stringstream ss;

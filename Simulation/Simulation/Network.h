@@ -19,6 +19,8 @@ public:
 	~Network();
 
 	void Initialise(shared_ptr<ConfigClass> InConfig);
+	void Update(DX::StepTimer const& timer);
+
 
 	void Connect();
 	void Tick();
@@ -66,7 +68,8 @@ private:
 	shared_ptr<GravityWellManager> mGwManager;
 
 	DX::StepTimer mNetTimer;
-	
+	float TarFreq;
+
 	int		mLocalPeerID;
 
 	bool mIsHost;

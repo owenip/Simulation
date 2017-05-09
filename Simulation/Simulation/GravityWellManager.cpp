@@ -190,28 +190,14 @@ void GravityWellManager::SetLocalID(int GwID)
 
 void GravityWellManager::GwSetPos(int GwID, SimpleMath::Vector3 InGravityWellPos)
 {
-	std::lock_guard<std::mutex> pt_guard(mustex_gw);
-	for (auto Gw: mGwIndex)
-	{
-		if (Gw->GetGwID() == GwID)
-		{
-			Gw->SetPos(InGravityWellPos);
-			break;
-		}
-	}
+	std::lock_guard<std::mutex> pt_guard(mustex_gw);	
+	mGwIndex[GwID]->SetPos(InGravityWellPos);		
 }
 
 SimpleMath::Vector3 GravityWellManager::GwGetPos(int GwID)
 {
 	std::lock_guard<std::mutex> pt_guard(mustex_gw);
-	for (vector<GravityWellClass*>::iterator iter = mGwIndex.begin();
-		iter != mGwIndex.end(); ++iter)
-	{
-		if ((*iter)->GetGwID() == GwID)
-		{
-			return (*iter)->GetPos();
-		}		
-	}
+	return mGwIndex[GwID]->GetPos();
 }
 
 

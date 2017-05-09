@@ -52,6 +52,7 @@ private:
 	std::vector<BallClass*> mBallIndex;
 	std::vector<BallClass*> mSimBallIndex;
 	std::vector<BallClass*> mOwnedBallIndex;
+	std::vector<BallClass*> mNetPendingBallIndex;
 
 	std::unique_ptr<DirectX::GeometricPrimitive> mBallPrimitive;
 	std::unique_ptr<DirectX::GeometricPrimitive> mMedBallPrimitive;

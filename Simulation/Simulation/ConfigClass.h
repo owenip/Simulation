@@ -46,6 +46,15 @@ public:
 	void	SetTarNetworkFreq(float &InVal);
 	float	GetTarNetworkFreq() const;
 
+	void	SetActualPhyFreq(float &InVal);
+	float	GetActualPhyFreq() const;
+
+	void	SetActualGraphicFreq(float &InVal);
+	float	GetActualGraphicFreq() const;
+
+	void	SetActualNetworkFreq(float &InVal);
+	float	GetActualNetworkFreq() const;
+
 	void	SetTimeScale(float &InTimeScale);
 	float	GettimeScale() const;
 
@@ -108,6 +117,10 @@ private:
 	float mTarGraphicFreq;		//60
 	float mTarNetworkFreq;		//4-30?
 
+	float mActualPhysicsFreq;		
+	float mActualGraphicFreq;
+	float mActualNetworkFreq;
+	
 	float mTimeScale;
 
 	int mMaxClient;

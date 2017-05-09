@@ -43,12 +43,15 @@ private:
 	//Timer
 	float timescale;
 	DX::StepTimer mGraphicTimer;	
-	double mActualFPS;
+	float mActualFPS;
 
 	//Target Freq
 	float mTarGraphicFreq;
 	float mTarPhysicsFreq;
 	float mTarNetowrkFreq;
+
+	float mActualPhysicsFreq;	
+	float mActualNetworkFreq;
 
 	//Input
 	unique_ptr<Keyboard> m_keyboard;

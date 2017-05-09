@@ -16,9 +16,9 @@ ConfigClass::ConfigClass() :
 	mPeerID(0),
 	mFriction(0.5f),
 	mElasticity(0),
-	mTarPhysicsFreq(60.f),
+	mTarPhysicsFreq(120.f),
 	mTarGraphicFreq(60.f),
-	mTarNetworkFreq(120.f),
+	mTarNetworkFreq(30.f),
 	mTimeScale(1.f),
 	mInitServer(true),
 	mUDPPort(9171),
@@ -118,7 +118,7 @@ int ConfigClass::GetPeerID() const
 
 void ConfigClass::SetElasticForce(float &InForce)
 {
-	std::lock_guard<std::mutex> config_guard(mutex_config);
+	//std::lock_guard<std::mutex> config_guard(mutex_config);
 	mElasticity = InForce;
 }
 
@@ -129,7 +129,7 @@ float ConfigClass::GetElasticForce() const
 
 void ConfigClass::SetFriction(float &InFriction)
 {
-	std::lock_guard<std::mutex> config_guard(mutex_config);
+	//std::lock_guard<std::mutex> config_guard(mutex_config);
 	mFriction = InFriction;
 }
 
@@ -140,7 +140,7 @@ float ConfigClass::GetFriction() const
 
 void ConfigClass::SetTarPhyFreq(float &InVal)
 {
-	std::lock_guard<std::mutex> config_guard(mutex_config);
+	//std::lock_guard<std::mutex> config_guard(mutex_config);
 	if(InVal > 0)
 		mTarPhysicsFreq = InVal;
 }
@@ -152,7 +152,7 @@ float ConfigClass::GetTarPhyFreq() const
 
 void ConfigClass::SetTarGraphicFreq(float &InVal)
 {
-	std::lock_guard<std::mutex> config_guard(mutex_config);
+	//std::lock_guard<std::mutex> config_guard(mutex_config);
 	if (InVal > 0)
 		mTarGraphicFreq = InVal;
 }
@@ -164,7 +164,7 @@ float ConfigClass::GetTarGraphicFreq() const
 
 void ConfigClass::SetTarNetworkFreq(float &InVal)
 {
-	std::lock_guard<std::mutex> config_guard(mutex_config);
+	//std::lock_guard<std::mutex> config_guard(mutex_config);
 	if (InVal > 0)
 		mTarNetworkFreq = InVal;
 }
@@ -172,6 +172,36 @@ void ConfigClass::SetTarNetworkFreq(float &InVal)
 float ConfigClass::GetTarNetworkFreq() const
 {
 	return mTarNetworkFreq;
+}
+
+void ConfigClass::SetActualPhyFreq(float & InVal)
+{
+	mActualPhysicsFreq = InVal;
+}
+
+float ConfigClass::GetActualPhyFreq() const
+{
+	return mActualPhysicsFreq;
+}
+
+void ConfigClass::SetActualGraphicFreq(float & InVal)
+{
+	mActualGraphicFreq = InVal;
+}
+
+float ConfigClass::GetActualGraphicFreq() const
+{
+	return mActualGraphicFreq;
+}
+
+void ConfigClass::SetActualNetworkFreq(float & InVal)
+{	
+	mActualNetworkFreq = InVal;
+}
+
+float ConfigClass::GetActualNetworkFreq() const
+{
+	return mActualNetworkFreq;
 }
 
 void ConfigClass::SetTimeScale(float & InTimeScale)
