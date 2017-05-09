@@ -38,7 +38,7 @@ bool BallManagerClass::Initialise(shared_ptr<D3DClass> Direct3D)
 	m_Balleffect = std::make_unique<DirectX::BasicEffect>(mDirect3D->GetDevice());
 	m_Balleffect->SetPerPixelLighting(true);
 	m_Balleffect->SetLightingEnabled(true);
-	m_Balleffect->SetAmbientLightColor(Colors::White);
+	//m_Balleffect->SetAmbientLightColor(Colors::White);
 	m_Balleffect->SetLightEnabled(0, true);
 	m_Balleffect->SetTextureEnabled(true);	
 	m_Balleffect->SetTexture(m_LightTexture.Get());
@@ -50,7 +50,7 @@ bool BallManagerClass::Initialise(shared_ptr<D3DClass> Direct3D)
 	m_MedBalleffect = std::make_unique<DirectX::BasicEffect>(mDirect3D->GetDevice());
 	m_MedBalleffect->SetPerPixelLighting(true);
 	m_MedBalleffect->SetLightingEnabled(true);
-	m_MedBalleffect->SetAmbientLightColor(Colors::White);
+	//m_MedBalleffect->SetAmbientLightColor(Colors::White);
 	m_MedBalleffect->SetLightEnabled(0, true);
 	m_MedBalleffect->SetTextureEnabled(true);
 	m_MedBalleffect->SetTexture(m_Mediumtexture.Get());
@@ -62,7 +62,7 @@ bool BallManagerClass::Initialise(shared_ptr<D3DClass> Direct3D)
 	m_HeavyBalleffect = std::make_unique<DirectX::BasicEffect>(mDirect3D->GetDevice());
 	m_HeavyBalleffect->SetPerPixelLighting(true);
 	m_HeavyBalleffect->SetLightingEnabled(true);
-	m_HeavyBalleffect->SetAmbientLightColor(Colors::White);
+	//m_HeavyBalleffect->SetAmbientLightColor(Colors::White);
 	m_HeavyBalleffect->SetLightEnabled(0, true);
 	m_HeavyBalleffect->SetTextureEnabled(true);
 	m_HeavyBalleffect->SetTexture(m_Heavytexture.Get());
@@ -130,7 +130,7 @@ void BallManagerClass::ReSetBallPosition()
 			for (auto j = 0; j < CurSide; j++)
 			{
 
-				SimpleMath::Vector3 SpawnPos(CurSpawnX, mBallRadius * 10.f, CurSpawnZ);
+				SimpleMath::Vector3 SpawnPos(CurSpawnX, mBallRadius, CurSpawnZ);
 				SimpleMath::Vector3 Zero(SimpleMath::Vector3::Zero);
 				mBallIndex[ProcessedBall]->SetPosition(SpawnPos);
 				mBallIndex[ProcessedBall]->SetRotation(Zero);
@@ -231,7 +231,7 @@ void BallManagerClass::Render(SimpleMath::Matrix View)
 	m_Balleffect->SetProjection(Proj);
 	m_Balleffect->SetView(View);
 	m_Balleffect->SetLightDirection(0, -SimpleMath::Vector3::UnitY);
-	m_Balleffect->SetSpecularPower(1.f);
+	//m_Balleffect->SetLightDiffuseColor(0.5f);
 
 	if (mConfig->GetDisplayAll() == false)
 	{
@@ -244,7 +244,7 @@ void BallManagerClass::Render(SimpleMath::Matrix View)
 					SimpleMath::Color c(0, 0, 0, 0.5f);
 					if (Ball->GetOwenerID() == 0)
 					{
-						m_Balleffect->SetLightSpecularColor(0, Colors::Wheat);
+						m_Balleffect->SetLightDiffuseColor(0, Colors::Red);
 					}
 					else if (Ball->GetOwenerID() == 1)
 					{
@@ -289,7 +289,7 @@ void BallManagerClass::Render(SimpleMath::Matrix View)
 				SimpleMath::Color c(0, 0, 0, 0.5f);
 				if (Ball->GetOwenerID() == 0)
 				{
-					m_Balleffect->SetLightSpecularColor(0, Colors::Wheat);
+					m_Balleffect->SetLightDiffuseColor(0, Colors::Red);
 				}
 				else if (Ball->GetOwenerID() == 1)
 				{
@@ -391,6 +391,11 @@ void BallManagerClass::SetBallRotatation(int BallID, SimpleMath::Vector3 InRotat
 {
 	std::lock_guard<std::mutex> BallManager_guard(mutex_BallManager);	
 	mBallIndex[BallID]->SetRotation(InRotation);	
+}
+
+void BallManagerClass::RecvBallOwnerShip(int BallID)
+{
+	mBallIndex[BallID]->SetOwenerID(mConfig->GetPeerID());
 }
 
 void BallManagerClass::CreateBallIndex()

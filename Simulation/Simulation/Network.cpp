@@ -37,7 +37,7 @@ void Network::Initialise(shared_ptr<ConfigClass> InConfig)
 	mUDPPort = mConfig->GetUDPPort();
 	
 	TarFreq = mConfig->GetTarNetworkFreq();
-
+	
 	mNetTimer.SetFixedTimeStep(true);
 	mNetTimer.SetTargetElapsedSeconds(1 / TarFreq);
 }
@@ -162,11 +162,15 @@ void Network::SendData()
 	string sendmsg;
 	if(mLastPause != mConfig->GetIsPaused())
 		SendIsPause(sendmsg);
+	if (mLastTimeScale != mConfig->GettimeScale())
+	{
+		SendTimeScale(sendmsg);
+	}
 	SendGwPos(sendmsg);
 	SendBallPos(sendmsg);
 	
-
-	sendmsg += "#";
+	float curTime = float(mNetTimer.GetTotalSeconds());
+	sendmsg = "TP " + std::to_string(curTime) + "#" + sendmsg ;	
 	sendmsg = "OI" + std::to_string(sendmsg.size()) + '|' + sendmsg;
 	if(mIsHost)
 	{
@@ -577,20 +581,21 @@ void Network::ExtractMsg(string msgbuffer)
 		}		
 		if (IsErrorMsg == true)
 			break;
-				
 		
-		if (str_msg[0] == 'P' && str_msg[1] == 'S') //Pause Command
+		if (msgbuffer[0] == 'T' && msgbuffer[1] == 'P') //TimeStamp Checking
+		{			
+			if (recvTimeStamp(string(msgbuffer)) == false)
+				break;
+		}		
+		else if (str_msg[0] == 'P' && str_msg[1] == 'S') //Pause Command
 		{
-			std::cout << "Pause Command Received" << std::endl;
-			stringstream ss;
-			ss.str(msgbuffer.substr(2));
-			bool InVal;
-			ss >> InVal;
+			std::cout << "Pause Command Received" << std::endl;			
 			recvPause(string(msgbuffer));
 		}
 		else if (msgbuffer[0] == 'T' && msgbuffer[1] == 'S') //TimeScale
 		{
 			std::cout << "TimeScale" << std::endl;
+			recvTimeScale(string(msgbuffer));
 		}
 		else if (str_msg[0] == 'G' && str_msg[1] == 'P') //Gw Position
 		{
@@ -613,6 +618,8 @@ void Network::ExtractMsg(string msgbuffer)
 		else if (msgbuffer[0] == 'B' && msgbuffer[1] == 'O') //Ball Ownership Receive
 		{
 			std::cout << "Ball Ownership Receive" << std::endl;
+			SendBallOwnerShip(string(msgbuffer));
+
 		}
 		else if (str_msg[0] == 'C' && str_msg[1] == 'I') //New Client ID
 		{
@@ -652,6 +659,18 @@ void Network::SendIsPause(string &str)
 	str += sent_message;
 }
 
+void Network::SendTimeScale(string &str)
+{
+	mLastTimeScale = mConfig->GettimeScale();
+	stringstream convert;
+	convert << "TS "
+		<< mLastTimeScale << "#";
+	std::string sent_message = convert.str();
+	//sent_message = std::to_string(sent_message.size()) + '|' + sent_message;
+	cout << "Sending: " << sent_message << endl;	
+	str += sent_message;
+}
+
 
 void Network::SendGwPos(string &str)
 {
@@ -674,25 +693,18 @@ void Network::SendGwPos(string &str)
 	str += sent_message;
 }
 
-void Network::SendGwForce()
+void Network::SendGwForce(string &str)
 {
 	stringstream convert;
-	convert << "GF";
+	convert << "GF ";
 	float GwForce = mGwManager->GwGetForce(mLocalPeerID);
 	convert << mLocalPeerID << " "
-			<< GwForce << " ";
+		<< GwForce << "#";
 
 	std::string sent_message = convert.str();
-	sent_message = "OI" + std::to_string(sent_message.size()) + '|' + sent_message;
+	//sent_message = "OI" + std::to_string(sent_message.size()) + '|' + sent_message;
 	cout << "Sending: " << sent_message << endl;
-	if (mIsHost)
-	{
-		this->ServerSend(sent_message);
-	}
-	else
-	{
-		this->ClientSend(sent_message);
-	}
+	str += sent_message;
 }
 
 void Network::SendBallPos(string &str)
@@ -717,6 +729,24 @@ void Network::SendBallPos(string &str)
 	
 }
 
+void Network::SendBallOwnerShip(string & str)
+{
+
+}
+
+bool Network::recvTimeStamp(string & input)
+{
+	stringstream ss;
+	ss.str(input.substr(2));
+	float InTimeStamp;
+	ss >> InTimeStamp;
+	std::cout << "TimeStamp: " << InTimeStamp << std::endl;
+	if (InTimeStamp < mLastTimeStamp)
+		return false;
+	mLastTimeStamp = InTimeStamp;
+	return true;
+}
+
 void Network::recvPause(string input)
 {
 	stringstream ss;
@@ -733,6 +763,7 @@ void Network::recvTimeScale(string input)
 	ss.str(input.substr(2));
 	float InTimeScale;
 	ss >> InTimeScale;
+	mLastPause = InTimeScale;
 	mConfig->SetTimeScale(InTimeScale);
 }
 
@@ -795,6 +826,15 @@ void Network::recvBallRotate(string input)
 		<< InRotation.y << "|"
 		<< InRotation.z << std::endl;
 	mBallManager->SetBallPos(InBallID, InRotation);
+}
+
+void Network::recvBallOwner(string input)
+{
+	stringstream ss;
+	ss.str(input.substr(2));
+	int InBallID;
+	ss >> InBallID;
+	mBallManager->RecvBallOwnerShip(InBallID);
 }
 
 

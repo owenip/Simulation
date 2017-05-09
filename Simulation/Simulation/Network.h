@@ -49,10 +49,13 @@ private:
 	void ExtractMsg(string msgbuffer);
 
 	void SendIsPause(string &str);
+	void SendTimeScale(string &str);
 	void SendGwPos(string &str);
-	void SendGwForce();
+	void SendGwForce(string &str);
 	void SendBallPos(string& str);
+	void SendBallOwnerShip(string &str);
 
+	bool recvTimeStamp(string &str);
 	void recvPause(string input);
 	void recvTimeScale(string input);
 	void recvGwPos(string input);
@@ -69,7 +72,7 @@ private:
 
 	DX::StepTimer mNetTimer;
 	float TarFreq;
-
+	float mLastTimeStamp;
 	int		mLocalPeerID;
 
 	bool mIsHost;
@@ -94,6 +97,6 @@ private:
 	std::vector<client_type> mClientIndex;
 
 	bool mLastPause;
-
+	float mLastTimeScale;
 };
 

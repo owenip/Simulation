@@ -18,7 +18,7 @@ CameraClass::CameraClass():
 
 bool CameraClass::Initialize(const SimpleMath::Vector3 &gravityWellPos)
 {
-	mMovementGain = 0.01f;
+	mMovementGain = 0.0001f;
 	mDsitanceFromTarget = 30.f;
 	this->CalCamPosHeight(mHeightfromTarget);
 

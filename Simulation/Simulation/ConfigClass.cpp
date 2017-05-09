@@ -18,7 +18,7 @@ ConfigClass::ConfigClass() :
 	mElasticity(0),
 	mTarPhysicsFreq(120.f),
 	mTarGraphicFreq(60.f),
-	mTarNetworkFreq(30.f),
+	mTarNetworkFreq(25.f),
 	mTimeScale(1.f),
 	mInitServer(true),
 	mUDPPort(9171),

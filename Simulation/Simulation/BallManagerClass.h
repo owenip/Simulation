@@ -35,6 +35,8 @@ public:
 
 	void SetBallRotatation(int BallID, SimpleMath::Vector3 InRotation);
 
+	void RecvBallOwnerShip(int BallID);
+
 private:
 	void CreateBallIndex();
 	void CreateTexture();
