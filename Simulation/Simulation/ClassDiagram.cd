@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="CameraClass" Collapsed="true">
+    <Position X="5" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gBAEiAIBAIAACQCQAgAAARgAgCEQAijYQwABAAAACgA=</HashCode>
+      <FileName>CameraClass.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ConfigClass" Collapsed="true">
+    <Position X="3.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>FGGIAAMkZRAFJzAolwhBEhlRAWACBBZADrCZLQCVAFQ=</HashCode>
+      <FileName>ConfigClass.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="D3DClass" Collapsed="true">
+    <Position X="6.75" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>UAAEggBgAYABAQgIAgkAQQEAAAAgAApQTAEhIAAABAI=</HashCode>
+      <FileName>D3DClass.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GraphicClass" Collapsed="true">
+    <Position X="4.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>FBQIAAEwAIBDiVgAihgBMwABAHAgCBAiAhAwJBAwSEA=</HashCode>
+      <FileName>GraphicClass.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SystemClass">
+    <Position X="0.75" Y="0.5" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAQBIAAAAIAACQBACEAYAQAAgQABAABAAAAghAABAAI=</HashCode>
+      <FileName>SystemClass.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GravityWellClass" Collapsed="true">
+    <Position X="5.75" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAIAAAAAAAARAAAAAkAAgQBADAABGAAkAAAiCIgAE=</HashCode>
+      <FileName>GravityWellClass.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GravityWellManager" Collapsed="true">
+    <Position X="5.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAYIBIIAIRYAYIIAgAIgwTAhBQAgwgAAJECABAAUAA=</HashCode>
+      <FileName>GravityWellManager.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ContactManifold" Collapsed="true">
+    <Position X="2.5" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAIQABRACAAEAAAACAQAAAAAAgAQAiAAAAAABAAAA=</HashCode>
+      <FileName>ContactManifold.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Simulation" Collapsed="true">
+    <Position X="0.75" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BARBAAQ4A8AAgSAAQAAAAQABAEAQAAABAgARBAAAUAA=</HashCode>
+      <FileName>Simulation.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BallClass" Collapsed="true">
+    <Position X="7.5" Y="2.25" Width="1.5" />
+    <NestedTypes>
+      <Struct Name="BallClass::Derivative" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>BallClass.h</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>IIQABYAkBKKBEUgAAAIAAAAAAEYIGkgiAEjBAimAAgc=</HashCode>
+      <FileName>BallClass.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BallManagerClass" Collapsed="true">
+    <Position X="7.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>UQUAAAACCJAIAREMAw4ABSAAAAQAQUAIABEAKAEQECg=</HashCode>
+      <FileName>BallManagerClass.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Network" Collapsed="true">
+    <Position X="5.5" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgQJA0yMAMgIoQEAAAWBkIBVEEAEAAQBgGIBEiQgQAQ=</HashCode>
+      <FileName>Network.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DX::StepTimer" Collapsed="true">
+    <Position X="5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACQEQAAAAQEQAABQEAIAIAAIAABQCAAgCAwBQJAAwAA=</HashCode>
+      <FileName>StepTimer.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
