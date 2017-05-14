@@ -2,6 +2,7 @@
 FullScreen=false
 ScreenWidth=1024
 ScreenHeight=768
+SurfaceRadius=40.f
 NumOfBalls=25
 BallRadius=0.5
 Elasticity=0.8
