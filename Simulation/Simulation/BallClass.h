@@ -72,6 +72,7 @@ public:
 	SimpleMath::Vector3 GetRotation() const;
 
 	SimpleMath::Vector3 mLastPosition;
+	SimpleMath::Vector3 mLastVelocity;
 	bool mTransferable;
 private:
 	void recalculate();

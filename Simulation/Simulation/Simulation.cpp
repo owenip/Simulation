@@ -326,7 +326,8 @@ void Simulation::WallBallCollision()
 			SimpleMath::Vector3 d = element->GetPosition();
 			d.y = 0;
 			float ballDistance = d.LengthSquared();
-			if (ballDistance >= (mConfig->GetSurfaceRadius() - element->GetRadius()) * (mConfig->GetSurfaceRadius() - element->GetRadius()))
+			if (ballDistance >= (mConfig->GetSurfaceRadius() - element->GetRadius()) 
+				* (mConfig->GetSurfaceRadius() - element->GetRadius()))
 			{
 
 				d.Normalize();

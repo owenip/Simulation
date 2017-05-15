@@ -160,10 +160,7 @@ void ContactManifold::ResolveVelocity(ManifoldPoint &mp)
 	if (mp.balls[1])
 	{
 		totalInverseMass += mp.balls[1]->GetInverseMass();
-	}
-	// If all particles have infinite mass, then impulses have no effect
-	if (totalInverseMass <= 0) return;
-
+	}	
 	//Calculate te impulse to apply
 	auto impulse = deltaVelocity / totalInverseMass;
 

@@ -68,17 +68,17 @@ void BallClass::Integrate(float duration)
 		duration = 0.0001f;
 	}
 
-	this->mLastPosition = this->mPosition;
+	this->mLastPosition = this->mPosition;	
+
 	// Update linear position.
-
-
-
-	this->mPosition += this->mVelocity * duration;
+	this->mPosition += (this->mVelocity + this->mLastVelocity)/2 * duration;
+	this->mPosition += this->mAcceleration * duration * duration * 0.5f;
 
 	// Work out the acceleration from the force.
 	SimpleMath::Vector3 resultingAcc = this->mAcceleration;
 	resultingAcc += this->mForceAccum *this->mInverseMass;
 
+	this->mLastVelocity = this->mVelocity;
 	//Update linear velocity from the acceleration
 	this->mVelocity += resultingAcc * duration;
 
