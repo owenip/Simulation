@@ -205,22 +205,26 @@ void BallManagerClass::Update(float dt)
 	}
 	else
 	{
-		//for (auto Ball : mBallIndex)
-		//{
-		//	SimpleMath::Vector3 newPos, newVelocity, newtotation;
-		//	Ball->GetPosition(newPos);
-		//	Ball->GetVelocity(newVelocity);
-		//	Ball->GetRotation(newtotation);
-		//	//Create yaw pitch row
-		//	newtotation.y = atan2f(Ball->mLastPosition.x - newPos.x, Ball->mLastPosition.z - newPos.z);
-		//	newtotation.x -= abs(newVelocity.x* dt) + abs(newVelocity.z * dt);
+		for (auto Ball : mBallIndex)
+		{
+			if (Ball->GetOwenerID() == PeerID)
+			{
+			}
+			SimpleMath::Vector3 newPos, newVelocity, newtotation;
+			Ball->GetPosition(newPos);
+			Ball->GetVelocity(newVelocity);
+			Ball->GetRotation(newtotation);
+			//Create yaw pitch row
+			newtotation.y = atan2f(Ball->mLastPosition.x - newPos.x, Ball->mLastPosition.z - newPos.z);
+			newtotation.x -= abs(newVelocity.x* dt) + abs(newVelocity.z * dt);
 
-		//	if (newtotation.x >= XM_PI * 2)
-		//		newtotation.x = 0;
-		//	newtotation.z = 0.f;
+			if (newtotation.x >= XM_PI * 2)
+				newtotation.x = 0;
+			newtotation.z = 0.f;
 
-		//	Ball->SetRotation(newtotation);
-		//}
+			Ball->SetRotation(newtotation);
+		}
+	
 	}
 }
 
@@ -236,7 +240,7 @@ void BallManagerClass::Render(SimpleMath::Matrix View)
 
 	if (mConfig->GetDisplayAll() == false)
 	{
-		if (mSimBallIndex.size() > 0)
+		//if (mSimBallIndex.size() > 0)
 		{
 			for (auto Ball : mSimBallIndex)
 			{
@@ -300,6 +304,8 @@ void BallManagerClass::Render(SimpleMath::Matrix View)
 				{
 					m_Balleffect->SetLightDiffuseColor(0, Colors::Blue);
 				}
+				else
+					m_Balleffect->SetLightDiffuseColor(0, Colors::Red);
 
 				if (Ball->GetMass() == 1.f)
 				{

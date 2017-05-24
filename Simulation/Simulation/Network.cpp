@@ -760,7 +760,7 @@ void Network::SendBallOwnerShip(string & str)
 			<< Ball->GetBallId() << "#";
 
 		std::string sent_message = convert.str();
-		cout << "Sending: " << sent_message << endl;
+		//cout << "Sending: " << sent_message << endl;
 		str += sent_message;
 
 		Ball->mTransferable == false;
