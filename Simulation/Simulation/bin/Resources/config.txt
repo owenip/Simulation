@@ -2,8 +2,7 @@
 FullScreen=false
 ScreenWidth=1024
 ScreenHeight=768
-NumOfBalls=26
-BallRadius=0.5
+NumOfBalls=50
 Elasticity=0.8
 Friction=0.995
 PeerID=1

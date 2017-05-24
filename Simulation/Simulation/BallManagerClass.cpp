@@ -26,7 +26,7 @@ bool BallManagerClass::Initialise(shared_ptr<ConfigClass> Config)
 	mBallIndex.reserve(mNumberOfBalls);
 
 	this->CreateBallIndex();
-
+	this->CalOwnedBall();
 	return true;
 }
 
@@ -396,7 +396,9 @@ void BallManagerClass::SetBallRotatation(int BallID, SimpleMath::Vector3 InRotat
 
 void BallManagerClass::RecvBallOwnerShip(int BallID)
 {
-	mBallIndex[BallID]->SetOwenerID(mConfig->GetPeerID());
+	mBallIndex[BallID]->SetOwenerID(PeerID);
+	mBallIndex[BallID]->mTransferable = false;
+	this->CalOwnedBall();
 }
 
 void BallManagerClass::CreateBallIndex()
@@ -526,7 +528,7 @@ void BallManagerClass::CalOwnedBall()
 	int OwnedBallCount = 0;
 	for (int i =0; i<mBallIndex.size();i++)
 	{
-		if (mBallIndex[i]->GetOwenerID() != PeerID)
+		if (mBallIndex[i]->GetOwenerID() == PeerID)
 			OwnedBallCount++;
 	}
 	mConfig->mOwnedBall = OwnedBallCount;

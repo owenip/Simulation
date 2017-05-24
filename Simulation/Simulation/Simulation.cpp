@@ -41,9 +41,11 @@ void Simulation::Tick()
 		{
 			break;
 		}
-		if (TarPhyFreq != mConfig->GetTarNetworkFreq())
+		if (TarPhyFreq != mConfig->GetTarPhyFreq())
+		{
+			TarPhyFreq = mConfig->GetTarPhyFreq();
 			mPhyTimer.SetTargetElapsedSeconds(1 / TarPhyFreq);
-
+		}
 		mPhyTimer.Tick([&]()
 		{
 			if (!mConfig->GetIsPaused())

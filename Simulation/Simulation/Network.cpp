@@ -172,7 +172,7 @@ void Network::SendData()
 	SendGwForce(sendmsg);
 	SendBallPos(sendmsg);
 	SendBallOwnerShip(sendmsg);
-
+	mBallManager->CalOwnedBall();
 	float curTime = float(mNetTimer.GetTotalSeconds());
 	sendmsg = "TP " + std::to_string(curTime) + "#" + sendmsg ;	
 	sendmsg = "OI" + std::to_string(sendmsg.size()) + '|' + sendmsg;
@@ -748,8 +748,8 @@ void Network::SendBallPos(string &str)
 }
 
 void Network::SendBallOwnerShip(string & str)
-{
-	if(mConfig->mOwnedBall > (mConfig->GetNumberOfBalls() / 2)+1)
+{	
+	if(mConfig->mOwnedBall  < (mConfig->GetNumberOfBalls() / 2))
 		return;
 	for (auto Ball : mBallManager->GetBallIndex())
 	{
@@ -760,14 +760,14 @@ void Network::SendBallOwnerShip(string & str)
 			<< Ball->GetBallId() << "#";
 
 		std::string sent_message = convert.str();
-		//cout << "Sending: " << sent_message << endl;
+		cout << "Sending: " << sent_message << endl;
 		str += sent_message;
 
 		Ball->mTransferable == false;
 		if (mLocalPeerID == 0)
 			Ball->SetOwenerID(1);
 		else
-			Ball->SetOwenerID(0);
+			Ball->SetOwenerID(0);		
 		return;
 	}
 }
@@ -871,9 +871,9 @@ void Network::recvBallOwner(string input)
 {
 	stringstream ss;
 	ss.str(input.substr(2));
-	int InBallID;
-	ss >> InBallID;
-	mBallManager->RecvBallOwnerShip(InBallID);
+	int InBOwnerID;
+	ss >> InBOwnerID;
+	mBallManager->RecvBallOwnerShip(InBOwnerID);
 }
 
 
