@@ -75,6 +75,10 @@ public:
 
 	void	Reset();
 
+	//Surface properties
+	float mSurfaceRadius;
+	float mBallRadius;
+	int mOwnedBall;
 private:
 	bool ReadConfigFile();
 	void StoreValue(string &key, string &value);
@@ -95,11 +99,11 @@ private:
 	int mScreenWidth, mScreenHeight;
 
 	//Surface properties
-	float mSurfaceRadius;
+	//float mSurfaceRadius;
 
 	//Ball properties
 	int mNumberOfBalls;
-	float mBallRadius;
+	//float mBallRadius;
 	bool mDisplayAll;
 	
 	//Gravity Well Properties

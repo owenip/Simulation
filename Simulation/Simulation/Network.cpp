@@ -16,6 +16,7 @@ Network::Network() :
 
 	if (WSAStartup(MAKEWORD(2, 2), &WSAData) != 0) /* Load Winsock 2.2 DLL */
 		std::cout << "WSAStartup() failed with error: " << std::endl;
+	
 }
 
 
@@ -55,7 +56,7 @@ void Network::Update(DX::StepTimer const & timer)
 }
 
 void Network::Connect()
-{
+{	
 	//Setup Flag
 	mConnReady = false;
 	bool HostExist = InitUPDListener();
@@ -75,11 +76,12 @@ void Network::Connect()
 	{
 		if (InitClient())
 		{
+			
 			std::thread thread_cListen(&Network::ClientListen, this);
+			mIsHost = false;
 			//mLocalPeerID = 1;
 			//mConfig->SetPeerID(mLocalPeerID);
-			//mGwManager->GetGwIndex()[mLocalPeerID]->SetIsActive(true);
-			mIsHost = false;
+			//mGwManager->GetGwIndex()[mLocalPeerID]->SetIsActive(true);			
 			thread_cListen.detach();
 		}
 		else
@@ -90,7 +92,7 @@ void Network::Connect()
 		}
 	}
 	mConnReady = true;
-
+	
 	//HostExist = InitUPDListener();
 	//if(!HostExist || mNextServer == true)
 	//{
@@ -167,8 +169,10 @@ void Network::SendData()
 		SendTimeScale(sendmsg);
 	}
 	SendGwPos(sendmsg);
+	SendGwForce(sendmsg);
 	SendBallPos(sendmsg);
-	
+	SendBallOwnerShip(sendmsg);
+
 	float curTime = float(mNetTimer.GetTotalSeconds());
 	sendmsg = "TP " + std::to_string(curTime) + "#" + sendmsg ;	
 	sendmsg = "OI" + std::to_string(sendmsg.size()) + '|' + sendmsg;
@@ -227,8 +231,8 @@ bool Network::InitUPDListener()
 	tv.tv_sec = 2;
 	tv.tv_usec = 500000;
 
-
-	while (true) //Waiting incoming IP Host address for set seconds	
+	int counter = 0;
+	while (counter < 10) //Waiting incoming IP Host address for set seconds	
 	{
 		printf("Listening to Boardcast Host IP\n");
 		strLen = select(1, &readfds, NULL, NULL, &tv);
@@ -263,6 +267,7 @@ bool Network::InitUPDListener()
 				}
 			}
 		}
+		counter++;
 	}
 	//Closing 
 	closesocket(hRecvSock);
@@ -318,6 +323,7 @@ void Network::InitUDPBoardcaster()
 
 void Network::InitServer()
 {	
+	std::cout << "Init Host..." << std::endl;
 	hostSock = socket(AF_INET, SOCK_STREAM, 0);
 	peerSock = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -348,12 +354,17 @@ void Network::ServerListen()
 		if (hostSock == INVALID_SOCKET)
 		{
 			std::cout << "Accept failed with " << WSAGetLastError() << std::endl;
+			mBallManager->CollectAllBallOwnerShip();
+			mGwManager->SetGwIsActive(1, false);
 			break;
 		}
 		if (hostSock == 0 || WSAGetLastError() == WSAECONNRESET)
 		{
 			std::cout << "Client disconnected" << std::endl;
-			mConnReady = false;
+			mConnReady = false;			
+			//this->ServerListen();
+			mBallManager->CollectAllBallOwnerShip();
+			mGwManager->SetGwIsActive(1, false);
 			break;
 		}
 
@@ -413,7 +424,8 @@ bool Network::InitClient()
 	peerSock = socket(AF_INET, SOCK_STREAM, 0);
 	//HostIP = mConfig->GetHostIP();
 	peerAddr.sin_family = AF_INET;
-	inet_pton(AF_INET, HostIP.c_str(), &peerAddr.sin_addr);
+	HostIP = "127.0.0.1";
+	inet_pton(AF_INET, HostIP.c_str(), &peerAddr.sin_addr);	
 	peerAddr.sin_port = htons(mTCPPort);
 
 	int iResult = connect(peerSock, (SOCKADDR *)&peerAddr, sizeof(peerAddr));
@@ -447,15 +459,21 @@ void Network::ClientListen()
 		{
 			std::cout << "Accept failed with " << WSAGetLastError() << std::endl;
 			mConnReady = false;
+			mBallManager->CollectAllBallOwnerShip();
+			mGwManager->SetGwIsActive(0, false);
 			break;
 		}
 		if (peerSock == 0 || WSAGetLastError() == WSAECONNRESET)
 		{
 			std::cout << "HOST disconnected" << std::endl;
+
 			mConnReady = false;
 			mNextServer = true;
 			closesocket(peerSock);
 			mConnected = false;
+			mBallManager->CollectAllBallOwnerShip();
+			mGwManager->SetGwIsActive(0, false);
+			//this->Connect();
 			break;
 		}
 
@@ -589,12 +607,12 @@ void Network::ExtractMsg(string msgbuffer)
 		}		
 		else if (str_msg[0] == 'P' && str_msg[1] == 'S') //Pause Command
 		{
-			std::cout << "Pause Command Received" << std::endl;			
+			//std::cout << "Pause Command Received" << std::endl;			
 			recvPause(string(msgbuffer));
 		}
 		else if (msgbuffer[0] == 'T' && msgbuffer[1] == 'S') //TimeScale
 		{
-			std::cout << "TimeScale" << std::endl;
+			//std::cout << "TimeScale" << std::endl;
 			recvTimeScale(string(msgbuffer));
 		}
 		else if (str_msg[0] == 'G' && str_msg[1] == 'P') //Gw Position
@@ -604,7 +622,8 @@ void Network::ExtractMsg(string msgbuffer)
 		}
 		else if (msgbuffer[0] == 'G' && msgbuffer[1] == 'F') //Gw Force
 		{
-			std::cout << "Gw Force" << std::endl;
+			//std::cout << "Gw Force" << std::endl;
+			recvGwForce(string(msgbuffer));
 		}
 		else if (msgbuffer[0] == 'B' && msgbuffer[1] == 'P') //Ball Position
 		{
@@ -613,12 +632,13 @@ void Network::ExtractMsg(string msgbuffer)
 		}
 		else if (msgbuffer[0] == 'B' && msgbuffer[1] == 'R') //Ball Rotation
 		{
-			std::cout << "Ball Rotation" << std::endl;
+			//std::cout << "Ball Rotation" << std::endl;
 		}
 		else if (msgbuffer[0] == 'B' && msgbuffer[1] == 'O') //Ball Ownership Receive
 		{
-			std::cout << "Ball Ownership Receive" << std::endl;
-			SendBallOwnerShip(string(msgbuffer));
+			//std::cout << "Ball Ownership Receive" << std::endl;
+			recvBallOwner(string(msgbuffer));
+
 
 		}
 		else if (str_msg[0] == 'C' && str_msg[1] == 'I') //New Client ID
@@ -639,7 +659,7 @@ void Network::ExtractMsg(string msgbuffer)
 				std::cout << "Fail to send ID back" << std::endl;
 				mConnReady = false;
 			}
-			mGwManager->SetGwIsActive(mNumOfClient, true);
+			mGwManager->SetGwIsActive(1, true);
 			mConnReady = true;
 			mConnected = true;
 		}		
@@ -654,8 +674,7 @@ void Network::SendIsPause(string &str)
 	convert << "PS "
 		<< mLastPause << "#";
 	std::string sent_message = convert.str();
-	//sent_message = std::to_string(sent_message.size()) + '|' + sent_message;
-	cout << "Sending: " << sent_message << endl;
+	//cout << "Sending: " << sent_message << endl;
 	str += sent_message;
 }
 
@@ -667,7 +686,7 @@ void Network::SendTimeScale(string &str)
 		<< mLastTimeScale << "#";
 	std::string sent_message = convert.str();
 	//sent_message = std::to_string(sent_message.size()) + '|' + sent_message;
-	cout << "Sending: " << sent_message << endl;	
+	//cout << "Sending: " << sent_message << endl;	
 	str += sent_message;
 }
 
@@ -688,7 +707,7 @@ void Network::SendGwPos(string &str)
 
 	std::string sent_message = convert.str();
 	//sent_message = sent_message;
-	cout << "Sending: " << sent_message << endl;
+	//cout << "Sending: " << sent_message << endl;
 	
 	str += sent_message;
 }
@@ -702,8 +721,7 @@ void Network::SendGwForce(string &str)
 		<< GwForce << "#";
 
 	std::string sent_message = convert.str();
-	//sent_message = "OI" + std::to_string(sent_message.size()) + '|' + sent_message;
-	cout << "Sending: " << sent_message << endl;
+	//cout << "Sending: " << sent_message << endl;
 	str += sent_message;
 }
 
@@ -716,13 +734,13 @@ void Network::SendBallPos(string &str)
 		SimpleMath::Vector3 BallPos = Ball->GetPosition();
 		stringstream convert;
 		convert << "BP "
-				 << Ball->GetBallId() << " "
-				<< BallPos.x << " "
-				<< BallPos.y << " "
-				<< BallPos.z << "#";
+			<< Ball->GetBallId() << " "
+			<< BallPos.x << " "
+			<< BallPos.y << " "
+			<< BallPos.z << "#";
 
 		std::string sent_message = convert.str();
-		cout << "Sending: " << sent_message << endl;
+		//cout << "Sending: " << sent_message << endl;
 		str += sent_message;
 	}
 	
@@ -731,7 +749,27 @@ void Network::SendBallPos(string &str)
 
 void Network::SendBallOwnerShip(string & str)
 {
+	if(mConfig->mOwnedBall > (mConfig->GetNumberOfBalls() / 2)+1)
+		return;
+	for (auto Ball : mBallManager->GetBallIndex())
+	{
+		if (Ball->GetOwenerID() != mLocalPeerID || Ball->mTransferable == false)
+			continue;
+		stringstream convert;
+		convert << "BO "
+			<< Ball->GetBallId() << "#";
 
+		std::string sent_message = convert.str();
+		//cout << "Sending: " << sent_message << endl;
+		str += sent_message;
+
+		Ball->mTransferable == false;
+		if (mLocalPeerID == 0)
+			Ball->SetOwenerID(1);
+		else
+			Ball->SetOwenerID(0);
+		return;
+	}
 }
 
 bool Network::recvTimeStamp(string & input)
@@ -740,7 +778,7 @@ bool Network::recvTimeStamp(string & input)
 	ss.str(input.substr(2));
 	float InTimeStamp;
 	ss >> InTimeStamp;
-	std::cout << "TimeStamp: " << InTimeStamp << std::endl;
+	//std::cout << "TimeStamp: " << InTimeStamp << std::endl;
 	if (InTimeStamp < mLastTimeStamp)
 		return false;
 	mLastTimeStamp = InTimeStamp;
@@ -753,7 +791,8 @@ void Network::recvPause(string input)
 	ss.str(input.substr(2));	
 	bool InVal;
 	ss >> InVal;
-	mLastPause = InVal;
+	mLastPause = InVal;	
+	//cout << "Re: " << input << endl;
 	mConfig->SetIsPaused(InVal);
 }
 
@@ -775,11 +814,11 @@ void Network::recvGwPos(string input)
 	float x, y, z;
 	ss >>InGwID >> x >> y >> z;
 	SimpleMath::Vector3 InPos(x, y, z);
-	std::cout << "Re:Gw Position " << InGwID << "|"
-				<< x << "|"
-				<< y << "|" 
-				<< z <<	std::endl;
-	
+	//std::cout << "Re:Gw Position " << InGwID << "|"
+	//			<< x << "|"
+	//			<< y << "|" 
+	//			<< z <<	std::endl;
+	//
 	/*int InGwID;
 	SimpleMath::Vector3 InPos;
 	memcpy_s(&InGwID, sizeof(int), input.c_str(), input.length());
@@ -795,8 +834,8 @@ void Network::recvGwForce(string input)
 	int InGwID;
 	float InGwForce;
 	ss >> InGwID >> InGwForce;
-	std::cout << "Re:Gw Force " << InGwID << "|"		
-		<< InGwForce << std::endl;
+	/*std::cout << "Re:Gw Force " << InGwID << "|"		
+		<< InGwForce << std::endl;*/
 	mGwManager->GwSetForce(InGwID, InGwForce);
 }
 
@@ -807,10 +846,10 @@ void Network::recvBallPos(string input)
 	int InBallID;
 	SimpleMath::Vector3 InPos;
 	ss >> InBallID >> InPos.x >> InPos.y >> InPos.z;
-	std::cout << "Re:Ball Pos " << InBallID << "|"
+	/*std::cout << "Re:Ball Pos " << InBallID << "|"
 		<< InPos.x << "|"
 		<< InPos.y << "|"
-		<< InPos.z << std::endl;
+		<< InPos.z << std::endl;*/
 	mBallManager->SetBallPos(InBallID, InPos);
 }
  
@@ -821,10 +860,10 @@ void Network::recvBallRotate(string input)
 	int InBallID;
 	SimpleMath::Vector3 InRotation;
 	ss >> InBallID >> InRotation.x >> InRotation.y >> InRotation.z;
-	std::cout << "Re:Ball Rotation " << InBallID << "|"
+	/*std::cout << "Re:Ball Rotation " << InBallID << "|"
 		<< InRotation.x << "|"
 		<< InRotation.y << "|"
-		<< InRotation.z << std::endl;
+		<< InRotation.z << std::endl;*/
 	mBallManager->SetBallPos(InBallID, InRotation);
 }
 

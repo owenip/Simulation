@@ -242,14 +242,16 @@ void GravityWellManager::GwMoveByMouse(float mouseX, float mouseY)
 	this->GwAddMove(move);
 }
 
-void GravityWellManager::GwMoveUp()
+void GravityWellManager::GwMoveUp(float Indt)
 {
-	this->GwAddMove(SimpleMath::Vector3::Up);
+	dt = Indt;
+	this->GwAddMove(SimpleMath::Vector3::Up * Indt);
 }
 
-void GravityWellManager::GwMoveDown()
+void GravityWellManager::GwMoveDown(float Indt)
 {
-	this->GwAddMove(SimpleMath::Vector3::Down);
+	dt = Indt;
+	this->GwAddMove(SimpleMath::Vector3::Down * Indt);
 }
 
 void GravityWellManager::GwAddAttractF()

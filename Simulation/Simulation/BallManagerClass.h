@@ -37,10 +37,15 @@ public:
 
 	void RecvBallOwnerShip(int BallID);
 
+	void CollectAllBallOwnerShip();
+
+	void CalOwnedBall();
+
 private:
 	void CreateBallIndex();
 	void CreateTexture();
 
+	
 
 private:
 	std::mutex mutex_BallManager;

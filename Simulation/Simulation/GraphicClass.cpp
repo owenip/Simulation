@@ -163,6 +163,7 @@ void GraphicClass::Tick()
 		
 		mActualNetworkFreq = mConfig->GetActualNetworkFreq();
 		mActualPhysicsFreq = mConfig->GetActualPhyFreq();
+		mOwnedBall = mConfig->mOwnedBall;
 		/*if (mIsEscaped)
 			break;*/
 	}
@@ -170,8 +171,9 @@ void GraphicClass::Tick()
 
 bool GraphicClass::Update(DX::StepTimer const& timer)
 {
-	CheckInput();
-	//float dt = float(mGraphicTimer.GetElapsedSeconds());
+	float dt = float(mGraphicTimer.GetElapsedSeconds());
+	CheckInput(dt);
+	
 	mCamera->SetLookAt(mGwManager->GwGetPos(mPeerID));
 	//mBallManager->Integrate(dt);
 	//CheckInput();
@@ -258,7 +260,7 @@ bool GraphicClass::InitAntTweak(const HWND hwnd)
 	TwAddVarRW(mATBar, "Actual Phy feq", TW_TYPE_FLOAT, &mActualPhysicsFreq, "");
 	TwAddVarRW(mATBar, "Actual Net feq", TW_TYPE_FLOAT, &mActualNetworkFreq, "");
 
-	TwAddVarRW(mATBar, "Balls ownwed by this peer", TW_TYPE_INT32, &mNumberOfBalls, "min=0 max=64000");
+	TwAddVarRW(mATBar, "Balls ownwed by this peer", TW_TYPE_INT32, &mOwnedBall, "min=0 max=64000");
 	TwAddVarRW(mATBar, "Balls contended", TW_TYPE_INT32, nullptr, "");
 	TwAddVarRW(mATBar, "Total number of balls", TW_TYPE_INT32, &mNumberOfBalls, "");
 	TwAddVarRW(mATBar, "Magnitude of applied force ", TW_TYPE_FLOAT, &mGwForce, "");
@@ -275,7 +277,7 @@ bool GraphicClass::InitAntTweak(const HWND hwnd)
 	return true;
 }
 
-void GraphicClass::CheckInput()
+void GraphicClass::CheckInput(float dt)
 {
 	auto kbState = m_keyboard->GetState();
 	tracker.Update(kbState);
@@ -361,12 +363,12 @@ void GraphicClass::CheckInput()
 	else if (kbState.M)
 	{
 		//Increase the height of the gravity well above the surface
-		mGwManager->GwMoveUp();
+		mGwManager->GwMoveUp(dt);
 	}
 	else if (kbState.N)
 	{
 		//Decrease the height of the gravity well above the surface
-		mGwManager->GwMoveDown();
+		mGwManager->GwMoveDown(dt);
 	}
 	else if (tracker.pressed.F1)
 	{
@@ -401,6 +403,44 @@ void GraphicClass::CheckInput()
 			mFriction = 1.f;
 		mConfig->SetFriction(mFriction);
 	}
+	else if (tracker.pressed.PageUp)
+	{
+
+		mConfig->mSurfaceRadius >= 100.f ? mConfig->mSurfaceRadius = 100.f : mConfig->mSurfaceRadius += 1.f;
+		//Surface
+		mSurface = GeometricPrimitive::CreateCylinder(mDirect3D->GetDeviceContext(), 0.05f, mConfig->GetSurfaceRadius() * 2);
+		//mSurface = Model::CreateFromCMO(mDirect3D->GetDevice(), L".\\Resources\\surface.cmo", *m_fxFactory, true, true);
+		DX::ThrowIfFailed(
+			CreateDDSTextureFromFile(mDirect3D->GetDevice(), L".\\Resources\\roomtexture.dds", nullptr,
+				mSurfaceTex.ReleaseAndGetAddressOf(), 0));
+		//Wall
+		mWall = GeometricPrimitive::CreateCylinder(mDirect3D->GetDeviceContext(), 50.f, mConfig->GetSurfaceRadius() * 2);
+		mWall->CreateInputLayout(m_effect.get(), mWallInputLayout.ReleaseAndGetAddressOf());
+	}
+	else if (tracker.pressed.PageDown)
+	{
+		mConfig->mSurfaceRadius <= 5.f ? mConfig->mSurfaceRadius = 5.f : mConfig->mSurfaceRadius -= 1.f;
+		//Surface
+		mSurface = GeometricPrimitive::CreateCylinder(mDirect3D->GetDeviceContext(), 0.05f, mConfig->GetSurfaceRadius() * 2);
+		//mSurface = Model::CreateFromCMO(mDirect3D->GetDevice(), L".\\Resources\\surface.cmo", *m_fxFactory, true, true);
+		DX::ThrowIfFailed(
+			CreateDDSTextureFromFile(mDirect3D->GetDevice(), L".\\Resources\\roomtexture.dds", nullptr,
+				mSurfaceTex.ReleaseAndGetAddressOf(), 0));
+		//Wall
+		mWall = GeometricPrimitive::CreateCylinder(mDirect3D->GetDeviceContext(), 50.f, mConfig->GetSurfaceRadius() * 2);
+		mWall->CreateInputLayout(m_effect.get(), mWallInputLayout.ReleaseAndGetAddressOf());
+	}
+	else if (tracker.pressed.Home)
+	{
+		mConfig->mSurfaceRadius >= 0.5 ? mConfig->mSurfaceRadius = 0.5f : mConfig->mSurfaceRadius += .01f;
+		mBallManager->Initialise(mDirect3D);
+	}
+	else if (tracker.pressed.End)
+	{
+		
+		mConfig->mSurfaceRadius <= 0.01f ? mConfig->mSurfaceRadius = 0.01f : mConfig->mSurfaceRadius -= .01f;
+		mBallManager->Initialise(mDirect3D);
+	}
 
 	//Camera Control
 	if (kbState.W)
@@ -433,6 +473,7 @@ void GraphicClass::CheckInput()
 		//Camera zoom out
 		mCamera->ZoomOut();
 	}
+	
 	//else if (tracker.pressed.Right)
 	//{
 	//	mCamera->RotateY();

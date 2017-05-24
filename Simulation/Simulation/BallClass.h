@@ -74,6 +74,9 @@ public:
 	SimpleMath::Vector3 mLastPosition;
 	SimpleMath::Vector3 mLastVelocity;
 	bool mTransferable;
+	//Ownership State
+	bool mContended;
+
 private:
 	void recalculate();
 	
@@ -101,8 +104,7 @@ private:
 	//0.995 as no drag
 	float mDamping;
 
-	//Ownership State
-	bool mContended;
+	
 	
 
 	struct Derivative

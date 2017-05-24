@@ -183,6 +183,7 @@ void BallManagerClass::ReSetBallPosition()
 
 void BallManagerClass::Update(float dt)
 {
+	this->CalOwnedBall();
 	if (mConfig->GetDisplayAll() == false)
 	{
 		for (auto Ball : mSimBallIndex)
@@ -204,22 +205,22 @@ void BallManagerClass::Update(float dt)
 	}
 	else
 	{
-		for (auto Ball : mBallIndex)
-		{
-			SimpleMath::Vector3 newPos, newVelocity, newtotation;
-			Ball->GetPosition(newPos);
-			Ball->GetVelocity(newVelocity);
-			Ball->GetRotation(newtotation);
-			//Create yaw pitch row
-			newtotation.y = atan2f(Ball->mLastPosition.x - newPos.x, Ball->mLastPosition.z - newPos.z);
-			newtotation.x -= abs(newVelocity.x* dt) + abs(newVelocity.z * dt);
+		//for (auto Ball : mBallIndex)
+		//{
+		//	SimpleMath::Vector3 newPos, newVelocity, newtotation;
+		//	Ball->GetPosition(newPos);
+		//	Ball->GetVelocity(newVelocity);
+		//	Ball->GetRotation(newtotation);
+		//	//Create yaw pitch row
+		//	newtotation.y = atan2f(Ball->mLastPosition.x - newPos.x, Ball->mLastPosition.z - newPos.z);
+		//	newtotation.x -= abs(newVelocity.x* dt) + abs(newVelocity.z * dt);
 
-			if (newtotation.x >= XM_PI * 2)
-				newtotation.x = 0;
-			newtotation.z = 0.f;
+		//	if (newtotation.x >= XM_PI * 2)
+		//		newtotation.x = 0;
+		//	newtotation.z = 0.f;
 
-			Ball->SetRotation(newtotation);
-		}
+		//	Ball->SetRotation(newtotation);
+		//}
 	}
 }
 
@@ -490,7 +491,7 @@ void BallManagerClass::CreateBallIndex()
 			//mBallIndex[i]->AddForce(SimpleMath::Vector3(05.f, -0.981f, 50.f));
 			/*mBallIndex[i]->SetVelocity(SimpleMath::Vector3(6.65f * i, -4.f, 6.3f * i));
 			mBallIndex[i]->SetAcceleration(SimpleMath::Vector3(0.f, 0.f, 0.f));*/
-			mBallIndex[i]->SetOwenerID(1);
+			//mBallIndex[i]->SetOwenerID(1);
 			//mBallIndex[i]->SetMass(150.f);
 		}
 		mBallIndex[i + 1]->SetMass(2.f);
@@ -509,5 +510,25 @@ void BallManagerClass::CreateTexture()
 	DX::ThrowIfFailed(
 		CreateWICTextureFromFile(mDirect3D->GetDevice(), L".\\Resources\\earth.bmp", nullptr,
 			m_Heavytexture.ReleaseAndGetAddressOf()));
+}
+
+void BallManagerClass::CollectAllBallOwnerShip()
+{
+	for (auto ball : mBallIndex)
+	{
+		if (ball->GetOwenerID() != PeerID)
+			ball->SetOwenerID(PeerID);
+	}
+}
+
+void BallManagerClass::CalOwnedBall()
+{
+	int OwnedBallCount = 0;
+	for (int i =0; i<mBallIndex.size();i++)
+	{
+		if (mBallIndex[i]->GetOwenerID() != PeerID)
+			OwnedBallCount++;
+	}
+	mConfig->mOwnedBall = OwnedBallCount;
 }
 

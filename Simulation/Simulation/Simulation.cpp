@@ -80,7 +80,7 @@ void Simulation::RunPhysics(DX::StepTimer const& timer)
 	{
 		mManifold.ResolveContact(dt);
 	}
-
+	CheckTransferableBall();
 	mBallManager->Update(dt);
 }
 
@@ -124,7 +124,7 @@ unsigned Simulation::GenerateContacts()
 
 void Simulation::GroundBallCollision()
 {	
-	if (mConfig->GetDisplayAll() == false)
+	//if (mConfig->GetDisplayAll() == false)
 	{
 		for (auto ball : mBallManager->GetSimIndex())
 		{
@@ -154,42 +154,42 @@ void Simulation::GroundBallCollision()
 			}
 		}
 	}
-	else
-	{
-		for (auto ball : mBallManager->GetBallIndex())
-		{
-			//if (ball->GetOwenerID() != mPeerID)
-			//continue;
-			float y = ball->GetPosition().y - ball->GetRadius();
-			if (y < 0.0f)
-			{
-				ManifoldPoint contact;
-				contact.contactNormal = SimpleMath::Vector3::Up;
-				contact.balls[0] = ball;
-				contact.balls[1] = nullptr;
-				contact.penetration = -y;
-				contact.restitution = mElasticity;
-				contact.friction = mFriction;
-				mManifold.Add(contact);
+	//else
+	//{
+	//	for (auto ball : mBallManager->GetBallIndex())
+	//	{
+	//		//if (ball->GetOwenerID() != mPeerID)
+	//		//continue;
+	//		float y = ball->GetPosition().y - ball->GetRadius();
+	//		if (y < 0.0f)
+	//		{
+	//			ManifoldPoint contact;
+	//			contact.contactNormal = SimpleMath::Vector3::Up;
+	//			contact.balls[0] = ball;
+	//			contact.balls[1] = nullptr;
+	//			contact.penetration = -y;
+	//			contact.restitution = mElasticity;
+	//			contact.friction = mFriction;
+	//			mManifold.Add(contact);
 
-				SimpleMath::Vector3 Vel = ball->GetVelocity();
-				if (Vel.y < 0.5f && Vel.y > -0.5f)
-				{
-					Vel.y = 0.f;
-					ball->SetVelocity(Vel);
-					SimpleMath::Vector3 mg(-0.f, -9.81f * ball->GetMass(), 0.f);
-					SimpleMath::Vector3 FrictionForce = mFriction * mg.Length() * -Vel;
-					ball->AddForce(FrictionForce);
-				}
-			}
-		}
-	}
+	//			SimpleMath::Vector3 Vel = ball->GetVelocity();
+	//			if (Vel.y < 0.5f && Vel.y > -0.5f)
+	//			{
+	//				Vel.y = 0.f;
+	//				ball->SetVelocity(Vel);
+	//				SimpleMath::Vector3 mg(-0.f, -9.81f * ball->GetMass(), 0.f);
+	//				SimpleMath::Vector3 FrictionForce = mFriction * mg.Length() * -Vel;
+	//				ball->AddForce(FrictionForce);
+	//			}
+	//		}
+	//	}
+	//}
 }
 
 
 void  Simulation::GroundBallCollision(std::vector<ManifoldPoint> &vec_private)
 {	
-	if (mConfig->GetDisplayAll() == false)
+	//if (mConfig->GetDisplayAll() == false)
 	{
 		for (int i = 0; i < mBallManager->GetSimIndex().size(); i++)
 		{
@@ -213,35 +213,35 @@ void  Simulation::GroundBallCollision(std::vector<ManifoldPoint> &vec_private)
 			}
 		}
 	}
-	else
-	{
-		for (int i = 0; i < mBallManager->GetBallIndex().size(); i++)
-		{
-			//if (mBallManager->GetSimIndex()[i]->GetOwenerID() != mPeerID)
-			//{
-			//	continue;
-			//}
-			float y = mBallManager->GetBallIndex()[i]->GetPosition().y - mBallManager->GetBallIndex()[i]->GetRadius();
-			if (y < 0.0f)
-			{
-				ManifoldPoint contact;
-				contact.contactNormal = SimpleMath::Vector3::Up;
-				contact.balls[0] = mBallManager->GetBallIndex()[i];
-				contact.balls[1] = nullptr;
-				contact.penetration = -y;
-				contact.restitution = mElasticity;
-				contact.friction = mFriction;
-				vec_private.push_back(contact);
+	//else
+	//{
+	//	for (int i = 0; i < mBallManager->GetBallIndex().size(); i++)
+	//	{
+	//		//if (mBallManager->GetSimIndex()[i]->GetOwenerID() != mPeerID)
+	//		//{
+	//		//	continue;
+	//		//}
+	//		float y = mBallManager->GetBallIndex()[i]->GetPosition().y - mBallManager->GetBallIndex()[i]->GetRadius();
+	//		if (y < 0.0f)
+	//		{
+	//			ManifoldPoint contact;
+	//			contact.contactNormal = SimpleMath::Vector3::Up;
+	//			contact.balls[0] = mBallManager->GetBallIndex()[i];
+	//			contact.balls[1] = nullptr;
+	//			contact.penetration = -y;
+	//			contact.restitution = mElasticity;
+	//			contact.friction = mFriction;
+	//			vec_private.push_back(contact);
 
 
-			}
-		}
-	}
+	//		}
+	//	}
+	//}
 }
 
 void Simulation::BallBallCollision()
 {
-	if (mConfig->GetDisplayAll() == false)
+	//if (mConfig->GetDisplayAll() == false)
 	{
 		for (auto b1 : mBallManager->GetSimIndex())
 		{
@@ -277,47 +277,47 @@ void Simulation::BallBallCollision()
 			}
 		}
 	}
-	else
-	{
-		for (auto b1 : mBallManager->GetBallIndex())
-		{
-			//if (b1->GetOwenerID() != mPeerID)
-			//continue;
-			for (auto b2 : mBallManager->GetSimIndex())
-			{
-				//if (b2->GetOwenerID() != mPeerID)
-				//continue;
-				if ((b1->GetBallId() != b2->GetBallId()))
-				{
-					SimpleMath::Vector3 midline = b1->GetPosition() - b2->GetPosition();
-					float d = midline.LengthSquared();
-					float rSum = b1->GetRadius() + b2->GetRadius();
-					if (d > rSum* rSum)
-					{
-						continue;
-					}
-					else
-					{
-						float size = midline.Length();
-						ManifoldPoint contact;
-						SimpleMath::Vector3 normal = midline * (1.f / size);
-						contact.contactNormal = normal;
-						contact.balls[0] = b1;
-						contact.balls[1] = b2;
-						contact.penetration = (b1->GetRadius() + b2->GetRadius() - size);
-						contact.restitution = mElasticity;
-						contact.friction = mFriction;
-						mManifold.Add(contact);
-					}
-				}
-			}
-		}
-	}
+	//else
+	//{
+	//	for (auto b1 : mBallManager->GetBallIndex())
+	//	{
+	//		//if (b1->GetOwenerID() != mPeerID)
+	//		//continue;
+	//		for (auto b2 : mBallManager->GetSimIndex())
+	//		{
+	//			//if (b2->GetOwenerID() != mPeerID)
+	//			//continue;
+	//			if ((b1->GetBallId() != b2->GetBallId()))
+	//			{
+	//				SimpleMath::Vector3 midline = b1->GetPosition() - b2->GetPosition();
+	//				float d = midline.LengthSquared();
+	//				float rSum = b1->GetRadius() + b2->GetRadius();
+	//				if (d > rSum* rSum)
+	//				{
+	//					continue;
+	//				}
+	//				else
+	//				{
+	//					float size = midline.Length();
+	//					ManifoldPoint contact;
+	//					SimpleMath::Vector3 normal = midline * (1.f / size);
+	//					contact.contactNormal = normal;
+	//					contact.balls[0] = b1;
+	//					contact.balls[1] = b2;
+	//					contact.penetration = (b1->GetRadius() + b2->GetRadius() - size);
+	//					contact.restitution = mElasticity;
+	//					contact.friction = mFriction;
+	//					mManifold.Add(contact);
+	//				}
+	//			}
+	//		}
+	//	}
+	//}
 }
 
 void Simulation::WallBallCollision()
 {
-	if (mConfig->GetDisplayAll() == false)
+	//if (mConfig->GetDisplayAll() == false)
 	{
 		for (auto element : mBallManager->GetSimIndex())
 		{
@@ -342,35 +342,35 @@ void Simulation::WallBallCollision()
 			}
 		}
 	}
-	else
-	{
-		for (auto element : mBallManager->GetBallIndex())
-		{
-			//if(element->GetOwenerID() != mPeerID)
-			//continue;
-			SimpleMath::Vector3 d = element->GetPosition();
-			d.y = 0;
-			float ballDistance = d.LengthSquared();
-			if (ballDistance >= (mConfig->GetSurfaceRadius() - element->GetRadius()) * (mConfig->GetSurfaceRadius() - element->GetRadius()))
-			{
+	//else
+	//{
+	//	for (auto element : mBallManager->GetBallIndex())
+	//	{
+	//		//if(element->GetOwenerID() != mPeerID)
+	//		//continue;
+	//		SimpleMath::Vector3 d = element->GetPosition();
+	//		d.y = 0;
+	//		float ballDistance = d.LengthSquared();
+	//		if (ballDistance >= (mConfig->GetSurfaceRadius() - element->GetRadius()) * (mConfig->GetSurfaceRadius() - element->GetRadius()))
+	//		{
 
-				d.Normalize();
-				ManifoldPoint contact;
-				contact.contactNormal = -d;
-				contact.balls[0] = element;
-				contact.balls[1] = nullptr;
-				contact.penetration = sqrtf(ballDistance) - mConfig->GetSurfaceRadius();
-				contact.restitution = mElasticity;
-				contact.friction = mFriction;
-				mManifold.Add(contact);
-			}
-		}
-	}
+	//			d.Normalize();
+	//			ManifoldPoint contact;
+	//			contact.contactNormal = -d;
+	//			contact.balls[0] = element;
+	//			contact.balls[1] = nullptr;
+	//			contact.penetration = sqrtf(ballDistance) - mConfig->GetSurfaceRadius();
+	//			contact.restitution = mElasticity;
+	//			contact.friction = mFriction;
+	//			mManifold.Add(contact);
+	//		}
+	//	}
+	//}
 }
 
 void Simulation::ApplyGravity()
 {
-	if (mConfig->GetDisplayAll() == false)
+	//if (mConfig->GetDisplayAll() == false)
 	{
 		for (auto ball : mBallManager->GetSimIndex())
 		{
@@ -380,21 +380,21 @@ void Simulation::ApplyGravity()
 			ball->AddForce(SimpleMath::Vector3(-00.f, -9.81f * ball->GetMass(), 0.f));
 		}
 	}
-	else
-	{
-		for (auto ball : mBallManager->GetBallIndex())
-		{
-			//if (ball->GetOwenerID() != mPeerID)
-			//continue;
+	//else
+	//{
+	//	for (auto ball : mBallManager->GetBallIndex())
+	//	{
+	//		//if (ball->GetOwenerID() != mPeerID)
+	//		//continue;
 
-			ball->AddForce(SimpleMath::Vector3(-00.f, -9.81f * ball->GetMass(), 0.f));
-		}
-	}
+	//		ball->AddForce(SimpleMath::Vector3(-00.f, -9.81f * ball->GetMass(), 0.f));
+	//	}
+	//}
 }
 
 void Simulation::ApplyGwForce()
 {
-	if (mConfig->GetDisplayAll() == false)
+	//if (mConfig->GetDisplayAll() == false)
 	{
 		for (auto ball : mBallManager->GetSimIndex())
 		{
@@ -434,53 +434,53 @@ void Simulation::ApplyGwForce()
 			}
 		}
 	}
-	else
-	{
-		for (auto ball : mBallManager->GetBallIndex())
-		{
-			//if (ball->GetOwenerID() != mPeerID)
-			//continue; //Apply force to another peer!!!!
-			for (auto Gw : mGwManager->GetGwIndex())
-			{
-				if(Gw->GetIsActive() == false)
-				{
-					continue;
-				}
-				SimpleMath::Vector3 midline = ball->GetPosition() - Gw->GetPos();
-				float d = midline.LengthSquared();
-				float rSum = mConfig->GetGwRadius();
-				if (d > rSum* rSum)
-				{
-					continue;
-				}
-				float ApplyingForce = Gw->GetForce();
+	//else
+	//{
+	//	for (auto ball : mBallManager->GetBallIndex())
+	//	{
+	//		//if (ball->GetOwenerID() != mPeerID)
+	//		//continue; //Apply force to another peer!!!!
+	//		for (auto Gw : mGwManager->GetGwIndex())
+	//		{
+	//			if(Gw->GetIsActive() == false)
+	//			{
+	//				continue;
+	//			}
+	//			SimpleMath::Vector3 midline = ball->GetPosition() - Gw->GetPos();
+	//			float d = midline.LengthSquared();
+	//			float rSum = mConfig->GetGwRadius();
+	//			if (d > rSum* rSum)
+	//			{
+	//				continue;
+	//			}
+	//			float ApplyingForce = Gw->GetForce();
 
-				if (ApplyingForce > 0)
-				{
-					//float size = midline.Length();
-					//SimpleMath::Vector3 normal = midline * (1.f / size);
-					midline.Normalize();
-					ball->AddForce(midline * ApplyingForce);
-				}
-				else
-				{
-					midline = Gw->GetPos() - ball->GetPosition();
-					//float size = midline.Length();
-					//SimpleMath::Vector3 normal = midline * (1.f / size);
-					midline.Normalize();
-					ball->AddForce(-midline * ApplyingForce);
-				}
+	//			if (ApplyingForce > 0)
+	//			{
+	//				//float size = midline.Length();
+	//				//SimpleMath::Vector3 normal = midline * (1.f / size);
+	//				midline.Normalize();
+	//				ball->AddForce(midline * ApplyingForce);
+	//			}
+	//			else
+	//			{
+	//				midline = Gw->GetPos() - ball->GetPosition();
+	//				//float size = midline.Length();
+	//				//SimpleMath::Vector3 normal = midline * (1.f / size);
+	//				midline.Normalize();
+	//				ball->AddForce(-midline * ApplyingForce);
+	//			}
 
-			}
-		}
-	}
+	//		}
+	//	}
+	//}
 }
 
 void Simulation::GenSimBallIndex()
 {
 	mBallManager->ClearSimIndex();
 	for (auto ball : mBallManager->GetBallIndex())
-	{
+	{		
 		SimpleMath::Vector3 midline = ball->GetPosition() - mGwManager->GwGetPos(mPeerID);
 		float d = midline.LengthSquared();
 		float rSum = mConfig->GetGwRadius();
@@ -489,6 +489,14 @@ void Simulation::GenSimBallIndex()
 			continue;
 		}
 		mBallManager->AddSimBall(ball);
+	}
+	for (auto ball : mBallManager->GetBallIndex())
+	{
+		if (ball->GetOwenerID() == mPeerID)
+		{
+			mBallManager->AddSimBall(ball);
+			continue;
+		}
 	}
 }
 

@@ -34,6 +34,8 @@ public:
 	void	GwMoveLeft();
 	void	GwMoveRight();
 	void	GwMoveByMouse(float mouseX, float mouseY);
+	void GwMoveUp(float dt);
+	void GwMoveDown(float dt);
 	void	GwMoveUp();
 	void	GwMoveDown();
 
@@ -71,5 +73,6 @@ private:
 		
 	float mGWMovementGain;
 	float mGwForceGain;
+	float dt;
 };
 

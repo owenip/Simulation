@@ -27,7 +27,7 @@ public:
 private:
 	bool Render();
 	bool InitAntTweak(const HWND hwnd);
-	void CheckInput();
+	void CheckInput(float dt);
 	
 
 private:
@@ -66,6 +66,7 @@ private:
 
 	//Ball
 	int mNumberOfBalls;
+	int mOwnedBall;
 	std::shared_ptr<BallManagerClass> mBallManager;
 
 	//GravityWell
